@@ -1,26 +1,166 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Soft and warm: ivory grounds, near-black ink, hairline borders and rounded photos,
+  with a muted palace green and gold from the Kraton as the only accents.
+*/
+@theme {
+  --color-ink: #1a1a1a;
+  --color-ink-muted: #77756d;
+  --color-cream: #f9f7ee;
+  --color-sand: #efebdf;
+  --color-jade: #2f5c4c;
+  --color-wheat: #f4ecd2;
+  --color-peach: #f5e6db;
+  --color-gold: #d6a443;
+  --color-clay: #bf6b4a;
+  /* The company logo colour, from the mark in src/app/icon.svg */
+  --color-brand: #fc532a;
+
+  /* Stand-ins for sunday.ai's Basel Grotesk (headings and text) and Styrene B (small labels).
+     When the licences are bought, load those files with next/font/local in the layout instead. */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-label: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-javanese: var(--font-noto-javanese), serif;
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.6;
+  --text-lede: 1.25rem;
+  --text-lede--line-height: 1.5;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Big headlines: regular weight, tight tracking, normal case */
+@utility display {
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1;
 }
 
-@media (prefers-color-scheme: dark) {
+/* The small line above a headline */
+@utility kicker {
+  font-family: var(--font-label);
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  line-height: 1.35;
+}
+
+/* Small labels for fields, lengths and prices */
+@utility label {
+  font-family: var(--font-label);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+}
+
+/* Buttons: soft pills */
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.8rem 1.4rem;
+  font-size: 0.975rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 150ms, border-color 150ms, color 150ms;
+}
+
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Lines carousels and full-bleed rows up with the max-w-7xl content column */
+    --gutter: 1.25rem;
+    @media (min-width: 40rem) {
+      --gutter: max(2rem, calc((100vw - 80rem) / 2 + 2rem));
+    }
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: white;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-jade);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+}
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+}
+
+@utility animate-rise {
+  animation: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@utility animate-draw {
+  transform-origin: left;
+  animation: draw 1600ms cubic-bezier(0.45, 0, 0.2, 1) 500ms both;
+}
+@utility animate-appear {
+  animation: appear 500ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-draw,
+  .animate-appear {
+    animation: none;
+  }
+}
+
+/* Native <details> disclosure: hide the default marker, rotate our own. */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .disclosure-icon {
+  transform: rotate(45deg);
+}
+
+/* Horizontal carousels: scroll by touch or trackpad, no visible scrollbar */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
