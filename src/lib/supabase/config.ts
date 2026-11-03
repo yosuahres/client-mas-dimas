@@ -1,0 +1,19 @@
+// Supabase settings from the environment (see .env.example).
+// Until they're set, the public site shows the built-in content and /admin shows setup steps.
+
+export type SupabaseConfig = {
+  url: string;
+  anonKey: string;
+};
+
+export function supabaseConfig(): SupabaseConfig | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  return url && anonKey ? { url, anonKey } : null;
+}
+
+export function requireSupabaseConfig(): SupabaseConfig {
+  const config = supabaseConfig();
+  if (!config) throw new Error("Supabase isn't configured: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  return config;
+}
