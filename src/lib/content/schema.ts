@@ -38,7 +38,7 @@ export type TourRecord = {
   interests: TourInterest[];
   /** Cheapest price for the whole vehicle with driver, fuel and parking, in rupiah; null when quoted on request. */
   priceFromIdr: number | null;
-  /** An R2 object key ("tours/abc.webp"), or a path under /public for the bundled photos ("/photos/borobudur.jpg"). */
+  /** A Supabase Storage key ("tours/abc.webp"), or a path under /public for the bundled photos ("/photos/borobudur.jpg"). */
   photo: string | null;
   photoCredit: PhotoCredit | null;
   text: Translations<TourText>;

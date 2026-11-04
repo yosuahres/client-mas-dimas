@@ -4,16 +4,17 @@ The admin panel lives at `/admin`. Everything a guest reads can be changed there
 
 The client writes in **Indonesian only**. When they save, English and French are translated automatically with Google Cloud Translation.
 
-Content is stored in **Supabase** (database and admin logins). Photos are stored in **Cloudflare R2**. See `docs/costs.md` for what each costs. Until Supabase is connected, the website shows the content it launched with and `/admin` shows the setup steps.
+Content, admin logins and photos are all stored in **Supabase** (database, Auth and Storage). See `docs/costs.md` for what each costs. Until Supabase is connected, the website shows the content it launched with and `/admin` shows the setup steps.
 
 ## 1. Supabase
 
 1. Create a project at supabase.com, under the client's own account. Pick the Singapore region (closest to Jogja).
 2. In the project, open **SQL Editor** and run, in this order:
    - `supabase/migrations/20261104000000_site_content.sql` (the tables and access rules)
+   - `supabase/migrations/20261104010000_photos_bucket.sql` (the public `photos` bucket, which only admins can upload to)
    - `supabase/seed.sql` (the 15 packages, 5 cars, 27 places, routes, reviews and questions the site launched with)
 3. **Authentication → Sign In / Providers → Email**: turn **off** "Allow new users to sign up". Admins are only added from `/admin/users` or by you.
-4. **Project Settings → API**: copy the project URL, the `anon` key and the `service_role` key into the environment (step 3 below).
+4. **Project Settings → API Keys**: copy the project URL, the publishable key (`sb_publishable_…`) and a secret key (`sb_secret_…`) into the environment (step 3 below).
 
 ### The first admin
 
@@ -28,32 +29,19 @@ Content is stored in **Supabase** (database and admin logins). Photos are stored
 
 3. Sign in at `/admin/login`. Further admins can be added from **Settings → Admin users**.
 
-Only accounts with that role can sign in, and the database checks the same role before any change, so a leaked anon key can't be used to edit the site.
+Only accounts with that role can sign in, and the database checks the same role before any change, so a leaked publishable key can't be used to edit the site.
 
-## 2. Cloudflare R2 (photos)
+## 2. Photos (Supabase Storage)
 
-1. In Cloudflare, **R2 → Create bucket**, e.g. `jogja-transport-photos`. A card must be on file to enable R2; nothing is charged under 10 GB.
-2. **Bucket → Settings → Custom Domains**: connect `img.jogja-transport.com` (the domain's DNS must be on Cloudflare). Don't use the `r2.dev` link in production: it's rate-limited.
-3. **Bucket → Settings → CORS policy**, so the admin panel can upload straight from the browser:
+Nothing to set up beyond the photos bucket migration in step 1: uploads use the admin's own login, and the bucket's policies check the same admin role as the tables. No extra keys are needed.
 
-   ```json
-   [
-     {
-       "AllowedOrigins": ["https://www.jogja-transport.com", "http://localhost:3000"],
-       "AllowedMethods": ["PUT"],
-       "AllowedHeaders": ["content-type"],
-       "MaxAgeSeconds": 3600
-     }
-   ]
-   ```
+Photos are resized in the browser to at most 2000 px wide and saved as WebP (usually 150–400 KB) before upload, straight from the browser to Supabase. The bucket refuses anything that isn't WebP or is over 5 MB. Replacing or deleting a package photo deletes the old file. The 15 photos the site launched with stay in `public/photos/` until they're replaced.
 
-4. **R2 → Manage API tokens → Create API token**: permission "Object Read & Write", limited to this bucket. Copy the access key ID, the secret, and the account ID.
-
-Photos are resized in the browser to at most 2000 px wide and saved as WebP (usually 150–400 KB) before upload. Replacing or deleting a package photo deletes the old file from R2. The 15 photos the site launched with stay in `public/photos/` until they're replaced.
+The free plan holds 1 GB of files and about 5 GB of downloads a month (see `docs/costs.md`). If the site outgrows that, move photos to Cloudflare R2: the R2 version of the upload code is in git history (commit `847283e`).
 
 ## 3. Google Cloud Translation (English and French)
 
-1. At console.cloud.google.com, create a project (e.g. "Jogja Transport") under the client's Google account and turn on billing for it. A card is required, but the first 500,000 characters a month are free; the whole site is about 40,000 characters per language, and only changed text is translated.
+1. At console.cloud.google.com, create a project (e.g. "Jogja Travel") under the client's Google account and turn on billing for it. A card is required, but the first 500,000 characters a month are free; the whole site is about 40,000 characters per language, and only changed text is translated.
 2. **APIs & Services → Library**: enable **Cloud Translation API**.
 3. **APIs & Services → Credentials → Create credentials → API key**. Edit the key: under "API restrictions" choose **Restrict key → Cloud Translation API**. Copy it into `GOOGLE_TRANSLATE_API_KEY`.
 4. **Make it impossible to pay anything**: **APIs & Services → Cloud Translation API → Quotas & System Limits**, find the **characters per day** quota (filter for "per day") and set it to **15,000**. That's at most ~465,000 a month, inside the free 500,000. Past the cap, Google refuses the request for the rest of the day and the admin shows a notice; nothing is charged.
@@ -69,7 +57,7 @@ How it works for the client:
 
 ## 4. Environment variables
 
-Copy `.env.example` to `.env.local` for development. In production, enter the same names in **cPanel → Setup Node.js App → Environment variables**, then restart the app. `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and `R2_PUBLIC_URL` are read at build time too, so set them where the site is built (GitHub Actions secrets, or your machine) as well.
+Copy `.env.example` to `.env.local` for development. In production, enter the same names in **cPanel → Setup Node.js App → Environment variables**, then restart the app. `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are read at build time too, so set them where the site is built (GitHub Actions secrets, or your machine) as well.
 
 ## How changes reach the website
 

@@ -8,16 +8,16 @@ import { requireSupabaseConfig } from "@/lib/supabase/config";
 
 /** Reads what any visitor may see. No cookies, so it's safe inside "use cache". */
 export function createPublicClient() {
-  const { url, anonKey } = requireSupabaseConfig();
-  return createClient(url, anonKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { url, publishableKey } = requireSupabaseConfig();
+  return createClient(url, publishableKey, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
 /** Acts as the signed-in admin, so row-level security decides what they may change. */
 export async function createSessionClient() {
   // Cookies first: it marks the caller as request-time, so admin pages aren't run at build.
   const cookieStore = await cookies();
-  const { url, anonKey } = requireSupabaseConfig();
-  return createServerClient(url, anonKey, {
+  const { url, publishableKey } = requireSupabaseConfig();
+  return createServerClient(url, publishableKey, {
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (cookiesToSet) => {
@@ -33,7 +33,7 @@ export async function createSessionClient() {
 /** Bypasses row-level security. Only for managing admin accounts, after requireAdmin(). */
 export function createServiceClient() {
   const { url } = requireSupabaseConfig();
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY isn't set");
-  return createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const secretKey = process.env.SUPABASE_SECRET_KEY;
+  if (!secretKey) throw new Error("SUPABASE_SECRET_KEY isn't set");
+  return createClient(url, secretKey, { auth: { persistSession: false, autoRefreshToken: false } });
 }

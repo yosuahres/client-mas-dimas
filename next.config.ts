@@ -1,15 +1,15 @@
 import type { NextConfig } from "next";
 
-// Photos uploaded in the admin panel are served from the R2 bucket's public origin (e.g. https://img.jogja-transport.com).
-const r2PublicUrl = process.env.R2_PUBLIC_URL;
+// Photos uploaded in the admin panel are served from the public "photos" bucket in Supabase Storage.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
-  ...(r2PublicUrl && {
+  ...(supabaseUrl && {
     images: {
-      remotePatterns: [new URL(`${r2PublicUrl.replace(/\/$/, "")}/**`)],
+      remotePatterns: [new URL(`${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/photos/**`)],
     },
   }),
   turbopack: {

@@ -98,7 +98,7 @@ export function AdminSidebar({ email }: { email: string }) {
           className="flex items-center gap-2 px-1 pt-2 pb-1 text-[15px] font-medium tracking-[-0.02em]"
         >
           <LogoMark className="size-5 text-brand" />
-          jogja transport
+          jogja travel
         </Link>
         <a
           href="/en"

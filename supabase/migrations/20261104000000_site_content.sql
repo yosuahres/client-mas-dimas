@@ -1,5 +1,5 @@
 -- Content for the public site, edited from /admin.
--- Anyone may read published rows (the site reads with the anon key);
+-- Anyone may read published rows (the site reads with the publishable key);
 -- only signed-in users whose app_metadata.role is "admin" may read drafts or write.
 -- Translated fields are jsonb objects: {"en": ..., "id": ..., "fr": ...}; "en" is required.
 

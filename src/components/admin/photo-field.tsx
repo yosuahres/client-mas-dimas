@@ -8,7 +8,7 @@ import { requestPhotoUpload } from "@/app/admin/(panel)/photo-actions";
 import { Button } from "@/components/ui/button";
 
 // Photos are shrunk in the browser before upload: at most 2000 px wide, WebP, aiming under ~400 KB,
-// which keeps R2 well inside its free tier and pages fast for guests on mobile data.
+// which keeps Supabase Storage well inside its free tier and pages fast for guests on mobile data.
 const MAX_WIDTH = 2000;
 const TARGET_BYTES = 400_000;
 
@@ -32,7 +32,7 @@ async function compressToWebp(file: File): Promise<Blob> {
 
 type PhotoFieldProps = {
   name: string;
-  /** The stored value: an R2 key or a /public path. */
+  /** The stored value: a storage key or a /public path. */
   defaultValue: string | null;
   /** The URL to preview the stored value. */
   defaultPreview: string | null;
@@ -51,8 +51,13 @@ export function PhotoField({ name, defaultValue, defaultPreview, error }: PhotoF
         const webp = await compressToWebp(file);
         const target = await requestPhotoUpload("tours");
         if (!target.ok) throw new Error(target.error);
-        const response = await fetch(target.uploadUrl, { method: "PUT", body: webp, headers: { "content-type": "image/webp" } });
-        if (!response.ok) throw new Error(`The upload to R2 failed (${response.status}). Check the bucket's CORS settings.`);
+        // Each upload gets a new key, so the file never changes and browsers may cache it for a year.
+        const response = await fetch(target.uploadUrl, {
+          method: "PUT",
+          body: webp,
+          headers: { "content-type": "image/webp", "cache-control": "max-age=31536000" },
+        });
+        if (!response.ok) throw new Error(`The upload failed (${response.status}). Try again.`);
         setValue(target.key);
         setPreview(target.previewUrl);
         toast.success(`Photo uploaded (${Math.round(webp.size / 1000)} KB). Save to use it.`);

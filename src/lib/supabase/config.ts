@@ -3,17 +3,17 @@
 
 export type SupabaseConfig = {
   url: string;
-  anonKey: string;
+  publishableKey: string;
 };
 
 export function supabaseConfig(): SupabaseConfig | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  return url && anonKey ? { url, anonKey } : null;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  return url && publishableKey ? { url, publishableKey } : null;
 }
 
 export function requireSupabaseConfig(): SupabaseConfig {
   const config = supabaseConfig();
-  if (!config) throw new Error("Supabase isn't configured: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  if (!config) throw new Error("Supabase isn't configured: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
   return config;
 }

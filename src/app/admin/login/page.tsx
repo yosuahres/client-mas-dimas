@@ -34,7 +34,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
       <div className="flex w-full max-w-sm flex-col items-center gap-6">
         <p className="flex items-center gap-2 text-[1.05rem] font-medium tracking-[-0.02em]">
           <LogoMark className="size-6 text-brand" />
-          jogja transport
+          jogja travel
         </p>
         <Card className="w-full">
           <CardContent className="flex flex-col gap-4 pt-6">

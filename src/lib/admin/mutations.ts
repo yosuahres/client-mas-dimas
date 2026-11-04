@@ -4,8 +4,7 @@ import { refresh, updateTag } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/session";
 import { tables } from "@/lib/content/rows";
-import { isBundledPhoto } from "@/lib/photos";
-import { deleteObject } from "@/lib/r2";
+import { isBundledPhoto, PHOTO_BUCKET } from "@/lib/photos";
 
 // Helpers for the admin's server actions. Not server actions themselves, so the browser can't call them.
 
@@ -22,14 +21,12 @@ export async function nextPosition(table: string) {
   return ((data?.[0] as { position: number } | undefined)?.position ?? -1) + 1;
 }
 
-/** Removes a photo that's no longer used, if it was uploaded to R2. A failure only leaves an unused file behind. */
+/** Removes a photo that's no longer used, if it was uploaded from the admin. A failure only leaves an unused file behind. */
 export async function discardPhoto(photo: string | null) {
   if (!photo || isBundledPhoto(photo)) return;
-  try {
-    await deleteObject(photo);
-  } catch (error) {
-    console.error(`Couldn't delete the old photo "${photo}" from R2; it can be removed by hand.`, error);
-  }
+  const { supabase } = await requireAdmin();
+  const { error } = await supabase.storage.from(PHOTO_BUCKET).remove([photo]);
+  if (error) console.error(`Couldn't delete the old photo "${photo}" from storage; it can be removed by hand.`, error);
 }
 
 // The site needs at least one shown package (the home page photo and search) and one shown car with a transfer rate

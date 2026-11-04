@@ -10,7 +10,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: { template: "%s · Jogja Transport admin", default: "Jogja Transport admin" },
+  title: { template: "%s · Jogja Travel admin", default: "Jogja Travel admin" },
   robots: { index: false, follow: false },
 };
 

@@ -10,13 +10,13 @@ export const metadata: Metadata = { title: "Admin users" };
 export default async function UsersPage() {
   const { user } = await requireAdmin();
 
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (!process.env.SUPABASE_SECRET_KEY) {
     return (
       <>
         <PageHeader title="Admin users" />
         <PageBody width="max-w-2xl">
           <p className="rounded-xl border px-4 py-6 text-sm text-muted-foreground">
-            Managing admins needs the <code className="rounded bg-muted px-1">SUPABASE_SERVICE_ROLE_KEY</code> setting on the
+            Managing admins needs the <code className="rounded bg-muted px-1">SUPABASE_SECRET_KEY</code> setting on the
             server. Until it&apos;s set, add admins in the Supabase dashboard (see docs/admin.md).
           </p>
         </PageBody>

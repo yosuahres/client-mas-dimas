@@ -1,4 +1,4 @@
-# Running costs: Jogja Transport website
+# Running costs: Jogja Travel website
 
 Prices are estimates as of November 2026, at about Rp 16,500 per USD. Check them on the vendor's site before you quote the client.
 
@@ -14,8 +14,8 @@ Prices are estimates as of November 2026, at about Rp 16,500 per USD. Check them
 | Item | What it's for | Free limit | Will we hit it? | Paid tier if needed |
 |---|---|---|---|---|
 | Supabase database | Articles, 15 tour packages, fleet, transfers | 500 MB | No. Text data stays well under 50 MB. | Pro $25/mo (~Rp 410k) |
-| Cloudflare R2 (recommended for photos) | Article and package photos uploaded from the admin panel | 10 GB storage, 1M uploads + 10M reads / month, **egress always free** | No. About 30,000 compressed photos fit. | $0.015 / GB / month beyond 10 GB |
-| Supabase Storage (alternative to R2) | Same as above | 1 GB files, ~5 GB egress / month | Not if photos are compressed before upload (WebP, ≤ 300 KB): about 3,000 photos fit. | Pro: 100 GB storage, 250 GB egress |
+| Supabase Storage (used now for photos) | Article and package photos uploaded from the admin panel | 1 GB files, ~5 GB egress / month | Not if photos are compressed before upload (they are: WebP, ≤ 400 KB): about 3,000 photos fit. Egress is the tighter limit on a busy month. | Pro: 100 GB storage, 250 GB egress |
+| Cloudflare R2 (upgrade path for photos) | Same as above, if Supabase Storage runs short | 10 GB storage, 1M uploads + 10M reads / month, **egress always free** | No. About 30,000 compressed photos fit. | $0.015 / GB / month beyond 10 GB |
 | Supabase Auth | Admin login | 50,000 users / month | No. A handful of admins. | — |
 | SSL certificate | https | Free AutoSSL / Let's Encrypt in cPanel | — | — |
 | Domain email (yarkasi@jogja-transport.com) | Business email | Included with cPanel hosting | — | — |
@@ -39,7 +39,7 @@ Prices are estimates as of November 2026, at about Rp 16,500 per USD. Check them
 | **Image transformations** (resize on the fly) are Pro-only | — | Use `next/image` on the server instead |
 | Limit of 2 active free projects per account | — | Make the project under the client's account, or under one used only for this client |
 
-### Cloudflare R2: catches
+### Cloudflare R2 (if we switch photos to it): catches
 
 | Catch | What we do |
 |---|---|

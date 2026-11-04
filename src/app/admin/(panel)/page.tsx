@@ -6,7 +6,6 @@ import type { ElementType } from "react";
 import { PageBody, PageHeader } from "@/components/admin/page-header";
 import { adminFaqs, adminPlaces, adminReviews, adminTextOverrides, adminTours, adminVehicles } from "@/lib/admin/queries";
 import { isTranslationConfigured } from "@/lib/machine-translation/google";
-import { isR2Configured } from "@/lib/r2";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -45,11 +44,10 @@ export default async function DashboardPage() {
       good: "English and French are translated automatically from the Indonesian.",
       bad: "Automatic translation isn't set up: add GOOGLE_TRANSLATE_API_KEY on the server.",
     },
-    { ok: isR2Configured(), good: "Photo uploads are set up.", bad: "Photo uploads aren't set up: add the R2 settings on the server." },
     {
-      ok: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+      ok: Boolean(process.env.SUPABASE_SECRET_KEY),
       good: "Admin users can be managed here.",
-      bad: "Add SUPABASE_SERVICE_ROLE_KEY on the server to manage admin users here.",
+      bad: "Add SUPABASE_SECRET_KEY on the server to manage admin users here.",
     },
     {
       ok: sampleReviews.length === 0,

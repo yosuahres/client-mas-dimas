@@ -8,7 +8,7 @@ import type { SiteContent } from "./schema";
 
 export const defaultContent: SiteContent = {
   "settings": {
-    "businessName": "Jogja Transport",
+    "businessName": "Jogja Travel",
     "siteUrl": "https://www.jogja-transport.com",
     "whatsappNumber": "628112653767",
     "phoneDisplay": "+62 811 2653 767",

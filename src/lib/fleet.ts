@@ -1,4 +1,4 @@
-// The cars Jogja Transport drives, with their day rates. Edited in /admin/fleet; read with getFleet()
+// The cars Jogja Travel drives, with their day rates. Edited in /admin/fleet; read with getFleet()
 // from @/lib/content/public. All amounts are whole rupiah.
 import type { VehicleRecord } from "@/lib/content/schema";
 
