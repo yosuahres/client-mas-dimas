@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Carousel } from "@/components/carousel";
 import { PriceTeaser } from "@/components/tour/tour-row";
 import { localePath } from "@/i18n/config";
-import { fill } from "@/i18n/format";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getTours } from "@/lib/content/public";
 import { tourHref } from "@/lib/tours";
@@ -41,11 +40,7 @@ export async function ToursSection() {
                   />
                 ) : null}
               </Link>
-              <p className="label mt-4 flex justify-between gap-4 text-ink-muted">
-                <span>{dict.catalog.lengths[tour.length]}</span>
-                <span>{fill(dict.tourPage.packageCode, { code: tour.code })}</span>
-              </p>
-              <h3 className="mt-1.5 text-[1.35rem] leading-[1.2] font-normal tracking-[-0.02em]">
+              <h3 className="mt-4 text-[1.35rem] leading-[1.2] font-normal tracking-[-0.02em]">
                 <Link href={href} className="hover:underline hover:underline-offset-4">
                   {tour.name}
                 </Link>

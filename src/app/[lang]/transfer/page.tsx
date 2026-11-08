@@ -91,7 +91,7 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
           </Suspense>
 
           <div className="px-2 sm:px-0">
-            <PopularRoutes routes={routes} places={places} vehicles={vehicles} locale={locale} dict={dict} />
+            <PopularRoutes routes={routes} places={places} vehicles={vehicles} site={site} locale={locale} dict={dict} />
           </div>
         </div>
       </main>
@@ -145,6 +145,8 @@ function TransferResults({ search, places, vehicles, site, locale, dict }: Resul
         ))}
       </ul>
 
+      <BiggerVehicleNote site={site} dict={dict} />
+
       <div className="mt-6 max-w-prose border-l-[3px] border-gold pl-4">
         <p className="font-medium">{t.estimateTitle}</p>
         <p className="mt-1 text-[0.95rem] text-ink-muted">{t.estimateBody}</p>
@@ -182,9 +184,23 @@ function VehicleRow({ quote, trip, site, locale, dict }: VehicleRowProps) {
   );
 }
 
-type PopularRoutesProps = Pick<ResultsProps, "places" | "vehicles" | "locale" | "dict"> & { routes: PopularRoute[] };
+/** The fleet stops at the cars set up for transfers; bigger groups ask for a price. */
+function BiggerVehicleNote({ site, dict }: Pick<ResultsProps, "site" | "dict">) {
+  const t = dict.transferPage;
+  return (
+    <p className="mt-6 text-ink-muted">
+      {t.biggerVehicle}{" "}
+      <a href={whatsappLink(site, t.biggerVehicleMessage)} className="font-medium text-ink underline underline-offset-4">
+        {t.biggerVehicleLink}
+      </a>
+    </p>
+  );
+}
 
-function PopularRoutes({ routes, places, vehicles, locale, dict }: PopularRoutesProps) {
+type PopularRoutesProps = Pick<ResultsProps, "places" | "vehicles" | "site" | "locale" | "dict"> & { routes: PopularRoute[] };
+
+// Each route shows every transfer car, so a guest needing a HiAce sees its price without searching.
+function PopularRoutes({ routes, places, vehicles, site, locale, dict }: PopularRoutesProps) {
   const t = dict.transferPage;
   return (
     <section aria-labelledby="popular-title" className="mt-16 border-t border-sand pt-12">
@@ -197,22 +213,34 @@ function PopularRoutes({ routes, places, vehicles, locale, dict }: PopularRoutes
           const from = findPlace(places, route.from)!;
           const to = findPlace(places, route.to)!;
           const { distanceKm, minutes } = estimateRoute(from, to);
-          const [cheapest] = quoteTransfer(vehicles, distanceKm);
+          const quotes = quoteTransfer(vehicles, distanceKm);
           return (
             <li key={`${route.from}-${route.to}`}>
               <Link
                 href={transferHref(localePath(locale, "/transfer"), route)}
                 className="flex h-full flex-col justify-between gap-4 rounded-2xl bg-cream p-5 hover:bg-sand"
               >
-                <span className="font-medium">
-                  {from.name} <span aria-hidden="true">→</span>
-                  <span className="sr-only">–</span> {to.name}
+                <span>
+                  <span className="block font-medium">
+                    {from.name} <span aria-hidden="true">→</span>
+                    <span className="sr-only">–</span> {to.name}
+                  </span>
+                  <span className="mt-1 block text-[0.95rem] text-ink-muted">
+                    {distanceKm} km · {formatDuration(minutes, dict.transfer.duration)}
+                  </span>
                 </span>
-                <span className="text-[0.95rem] text-ink-muted">
-                  {distanceKm} km · {formatDuration(minutes, dict.transfer.duration)}
-                  <br />
-                  <span className="font-medium text-ink tabular-nums">
-                    {fill(t.popularPrice, { price: formatIdr(cheapest.totalIdr, locale) })}
+                <span className="block">
+                  <span className="label block text-[0.75rem] text-ink-muted">{t.popularPrices}</span>
+                  <span className="mt-1.5 block divide-y divide-ink/10 text-[0.95rem]">
+                    {quotes.map((quote) => (
+                      <span key={quote.vehicle} className="flex items-baseline justify-between gap-3 py-1.5">
+                        <span>
+                          {quote.name}{" "}
+                          <span className="text-ink-muted">· {fill(dict.transfer.seats, { seats: quote.seats })}</span>
+                        </span>
+                        <span className="font-medium whitespace-nowrap tabular-nums">{formatIdr(quote.totalIdr, locale)}</span>
+                      </span>
+                    ))}
                   </span>
                 </span>
               </Link>
@@ -220,6 +248,7 @@ function PopularRoutes({ routes, places, vehicles, locale, dict }: PopularRoutes
           );
         })}
       </ul>
+      <BiggerVehicleNote site={site} dict={dict} />
     </section>
   );
 }

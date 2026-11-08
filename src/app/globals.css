@@ -21,7 +21,6 @@
      When the licences are bought, load those files with next/font/local in the layout instead. */
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-label: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
-  --font-javanese: var(--font-noto-javanese), serif;
 
   --text-body: 1.0625rem;
   --text-body--line-height: 1.6;

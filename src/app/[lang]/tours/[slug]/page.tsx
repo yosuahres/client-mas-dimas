@@ -48,14 +48,33 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
     .filter((other) => other.slug !== tour.slug)
     .slice(0, 4);
   const multiDay = tour.length === "multi-day";
-  const included = multiDay ? [...t.includedItems, t.includedMultiDay] : t.includedItems;
-  const excluded = multiDay ? [...t.excludedItems, t.excludedMultiDay] : t.excludedItems;
+  const included = [
+    ...t.includedItems,
+    ...(multiDay ? [t.includedMultiDay] : []),
+    ...(tour.accommodationOffered ? [t.includedAccommodation] : []),
+  ];
+  const excluded = [
+    ...t.excludedItems,
+    ...(tour.accommodationOffered ? [t.excludedAccommodation] : multiDay ? [t.excludedMultiDay] : []),
+  ];
+  const dropOffs = tour.dropOffs.length > 0 ? tour.dropOffs : [t.dropOffDefault];
+  const priceLabel = (price: number | null, template: string) =>
+    price === null ? t.onRequest : fill(template, { price: formatIdr(price, locale) });
+  const priceFacts = tour.accommodationOffered
+    ? [
+        { label: dict.catalog.stays.transport, value: priceLabel(tour.priceFromIdr, t.fromPrice) },
+        { label: dict.catalog.stays.accommodation, value: priceLabel(tour.accommodationPriceFromIdr, t.fromPriceAccommodation) },
+      ]
+    : [{ label: t.price, value: priceLabel(tour.priceFromIdr, t.fromPrice) }];
   const bookingProps = {
     tourName: tour.name,
     priceFromIdr: tour.priceFromIdr,
+    accommodationPriceFromIdr: tour.accommodationOffered ? tour.accommodationPriceFromIdr : undefined,
+    dropOffs,
     locale,
     text: dict.bookingCard,
-    priceText: { fromPrice: t.fromPrice, onRequest: t.onRequest },
+    stayText: dict.catalog.stays,
+    priceText: { fromPrice: t.fromPrice, fromPriceAccommodation: t.fromPriceAccommodation, onRequest: t.onRequest },
     fleet: fleet.map(({ id, name, seats }) => ({ id, name, seats })),
     site: { whatsappNumber: site.whatsappNumber, idrPerUsd: site.idrPerUsd },
   };
@@ -75,8 +94,7 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
             <Link href={localePath(locale, "/tours")} className="pill bg-white/15 px-4 py-2 text-[0.9rem] text-white backdrop-blur-md hover:bg-white/25">
               ← {t.allTours}
             </Link>
-            <p className="kicker mt-8 text-white/80">{fill(t.packageCode, { code: tour.code })}</p>
-            <h1 id="tour-title" className="display mt-2 max-w-5xl text-[clamp(2.75rem,6.5vw,5.5rem)]">
+            <h1 id="tour-title" className="display mt-8 max-w-5xl text-[clamp(2.75rem,6.5vw,5.5rem)]">
               {tour.name}
             </h1>
             <p className="mt-5 max-w-2xl text-lede text-white/90">{tour.summary}</p>
@@ -91,11 +109,17 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
                 <dd className="mt-1 font-medium">{t.pickupValue}</dd>
               </div>
               <div>
-                <dt className="label text-white/65">{t.price}</dt>
+                <dt className="label text-white/65">{t.dropOff}</dt>
                 <dd className="mt-1 font-medium">
-                  {tour.priceFromIdr === null ? t.onRequest : fill(t.fromPrice, { price: formatIdr(tour.priceFromIdr, locale) })}
+                  {dropOffs.length > 1 ? fill(t.dropOffChoice, { count: dropOffs.length }) : dropOffs[0]}
                 </dd>
               </div>
+              {priceFacts.map((fact) => (
+                <div key={fact.label}>
+                  <dt className="label text-white/65">{fact.label}</dt>
+                  <dd className="mt-1 font-medium">{fact.value}</dd>
+                </div>
+              ))}
             </dl>
           </div>
           </div>
@@ -115,7 +139,22 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
                   </li>
                 ))}
               </ol>
-              <p className="mt-4 text-ink-muted">{t.destinationsNote}</p>
+            </section>
+
+            <section aria-labelledby="drop-offs-title">
+              <h2 id="drop-offs-title" className="display text-[clamp(2rem,3.5vw,2.75rem)]">
+                {t.dropOffs}
+              </h2>
+              <ul className="mt-6 divide-y divide-ink/10 border-y border-ink/10">
+                {dropOffs.map((place) => (
+                  <li key={place} className="flex items-baseline gap-5 py-4">
+                    <span aria-hidden="true" className="w-6 shrink-0 text-jade">
+                      →
+                    </span>
+                    <span className="text-xl tracking-[-0.01em]">{place}</span>
+                  </li>
+                ))}
+              </ul>
             </section>
 
             <section aria-labelledby="included-title" className="grid gap-10 sm:grid-cols-2">
@@ -145,20 +184,6 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
                   ))}
                 </ul>
               </div>
-            </section>
-
-            <section aria-labelledby="know-title">
-              <h2 id="know-title" className="text-lg font-medium">
-                {t.goodToKnow}
-              </h2>
-              <ul className="mt-4 max-w-prose space-y-2.5 text-ink-muted">
-                {t.notes.map((note) => (
-                  <li key={note} className="flex gap-3">
-                    <span aria-hidden="true" className="mt-[0.6em] size-1.5 shrink-0 rounded-full bg-jade" />
-                    {note}
-                  </li>
-                ))}
-              </ul>
             </section>
           </div>
 
@@ -195,10 +220,7 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
                         />
                       ) : null}
                     </div>
-                    <p className="label mt-4 text-ink-muted">
-                      {other.code} · {dict.catalog.lengths[other.length]}
-                    </p>
-                    <h3 className="mt-1.5 text-lg leading-snug font-medium group-hover:underline group-hover:underline-offset-4">
+                    <h3 className="mt-4 text-lg leading-snug font-medium group-hover:underline group-hover:underline-offset-4">
                       {other.name}
                     </h3>
                     <div className="mt-2">

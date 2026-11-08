@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Manrope, Noto_Sans_Javanese } from "next/font/google";
+import { Geist, Manrope } from "next/font/google";
 
 import { WhatsappIcon } from "@/components/icons";
 import { languageAlternates, locales, ogLocale } from "@/i18n/config";
@@ -18,13 +18,6 @@ const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin", "latin-ext"],
   weight: ["500", "600"],
-});
-
-// Used once, for the city name in aksara Jawa, as on Jogja's street signs.
-const notoJavanese = Noto_Sans_Javanese({
-  variable: "--font-noto-javanese",
-  subsets: ["javanese"],
-  weight: ["400"],
 });
 
 export function generateStaticParams() {
@@ -72,7 +65,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const site = await getSite();
 
   return (
-    <html lang={locale} data-scroll-behavior="smooth" className={`${geist.variable} ${manrope.variable} ${notoJavanese.variable}`}>
+    <html lang={locale} data-scroll-behavior="smooth" className={`${geist.variable} ${manrope.variable}`}>
       <body className="min-h-full">
         {children}
 

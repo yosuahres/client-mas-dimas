@@ -26,8 +26,8 @@ export async function GuidesSection() {
             <p className="mt-6 text-[1.1rem] leading-[1.6] text-white/85">{t.lede}</p>
             <ul className="mt-7 flex flex-wrap gap-2">
               {t.included.map((item) => (
-                <li key={item.title} className="rounded-full bg-white/15 px-3.5 py-1.5 text-[0.9rem] backdrop-blur-sm">
-                  {item.title}
+                <li key={item} className="rounded-full bg-white/15 px-3.5 py-1.5 text-[0.9rem] backdrop-blur-sm">
+                  {item}
                 </li>
               ))}
             </ul>

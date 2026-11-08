@@ -9,6 +9,9 @@ import { getPhotoCredits, getSite, getTours } from "@/lib/content/public";
 import { whatsappLink } from "@/lib/site";
 import { tourHref } from "@/lib/tours";
 
+// The most popular packages; the rest are one click away on /tours.
+const FOOTER_TOUR_COUNT = 5;
+
 // A rounded green call-to-action card, then a light footer.
 export async function SiteFooter() {
   const locale = await getLocale();
@@ -53,23 +56,21 @@ export async function SiteFooter() {
                 <LogoMark className="size-8 text-brand" />
                 {site.businessName.toLowerCase()}
               </Link>
-              {/* Laid out like a Jogja street sign: Latin name over aksara Jawa */}
-              <div className="mt-8 inline-block rounded-2xl border border-ink/15 px-5 py-3 text-center">
-                <p className="text-xl font-medium tracking-wide">Yogyakarta</p>
-                <p lang="jv-Java" className="mt-1 font-javanese text-lg text-ink-muted">
-                  ꦔꦪꦺꦴꦒꦾꦏꦂꦠ
-                </p>
-              </div>
             </div>
 
             <FooterColumn title={t.columns.tours} className="lg:col-span-3">
-              {tours.map((tour) => (
+              {tours.slice(0, FOOTER_TOUR_COUNT).map((tour) => (
                 <li key={tour.slug}>
                   <Link href={tourHref(locale, tour)} className="hover:underline">
                     {tour.name}
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href={localePath(locale, "/tours")} className="font-medium hover:underline">
+                  {dict.tourPage.allTours} →
+                </Link>
+              </li>
             </FooterColumn>
 
             <FooterColumn title={t.columns.plan} className="lg:col-span-3">
@@ -108,17 +109,20 @@ export async function SiteFooter() {
           </div>
 
           <div className="mt-16 space-y-3 border-t border-ink/10 pt-8 text-[0.85rem] text-ink-muted">
-            <p>
-              {t.photos}{" "}
-              {photoCredits.map((credit, index) => (
-                <span key={credit.source}>
-                  <a href={credit.source} className="underline underline-offset-2 hover:text-ink">
-                    {credit.subject}
-                  </a>{" "}
-                  {t.by} {credit.author} ({credit.license}){index < photoCredits.length - 1 ? ", " : "."}
-                </span>
-              ))}
-            </p>
+            <details>
+              <summary className="cursor-pointer hover:text-ink">{t.photoCredits}</summary>
+              <p className="mt-2">
+                {t.photos}{" "}
+                {photoCredits.map((credit, index) => (
+                  <span key={credit.source}>
+                    <a href={credit.source} className="underline underline-offset-2 hover:text-ink">
+                      {credit.subject}
+                    </a>{" "}
+                    {t.by} {credit.author} ({credit.license}){index < photoCredits.length - 1 ? ", " : "."}
+                  </span>
+                ))}
+              </p>
+            </details>
             <p>
               © <CurrentYear /> {site.businessName}. {dict.meta.city}.
             </p>
