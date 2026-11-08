@@ -1,6 +1,6 @@
 import "server-only";
 
-import { requireAdmin } from "@/lib/admin/session";
+import { readAsAdmin } from "@/lib/admin/session";
 import {
   faqFromRow,
   placeFromRow,
@@ -21,10 +21,10 @@ import {
 import type { Locale } from "@/i18n/config";
 
 // What the admin pages show: fresh from the database (never cached), hidden items included.
+// Each read starts at once, alongside the session check that readAsAdmin shares across the request.
 
 async function selectAll<Row>(table: string): Promise<Row[]> {
-  const { supabase } = await requireAdmin();
-  const { data, error } = await supabase.from(table).select("*").order("position");
+  const { data, error } = await readAsAdmin((supabase) => supabase.from(table).select("*").order("position"));
   if (error) throw new Error(`Couldn't read ${table}: ${error.message}`);
   return data as Row[];
 }
@@ -34,8 +34,9 @@ export async function adminTours() {
 }
 
 export async function adminTour(slug: string) {
-  const { supabase } = await requireAdmin();
-  const { data, error } = await supabase.from(tables.tours).select("*").eq("slug", slug).maybeSingle<TourRow>();
+  const { data, error } = await readAsAdmin((supabase) =>
+    supabase.from(tables.tours).select("*").eq("slug", slug).maybeSingle<TourRow>(),
+  );
   if (error) throw new Error(`Couldn't read the package: ${error.message}`);
   return data ? tourFromRow(data) : null;
 }
@@ -61,16 +62,16 @@ export async function adminFaqs() {
 }
 
 export async function adminSettings() {
-  const { supabase } = await requireAdmin();
-  const { data, error } = await supabase.from(tables.settings).select("*").eq("id", 1).maybeSingle<SettingsRow>();
+  const { data, error } = await readAsAdmin((supabase) =>
+    supabase.from(tables.settings).select("*").eq("id", 1).maybeSingle<SettingsRow>(),
+  );
   if (error) throw new Error(`Couldn't read the business details: ${error.message}`);
   return data ? settingsFromRow(data) : null;
 }
 
 /** Saved page-text edits, by locale then dotted key. */
 export async function adminTextOverrides() {
-  const { supabase } = await requireAdmin();
-  const { data, error } = await supabase.from(tables.text).select("locale, key, value");
+  const { data, error } = await readAsAdmin((supabase) => supabase.from(tables.text).select("locale, key, value"));
   if (error) throw new Error(`Couldn't read the website text: ${error.message}`);
   const byLocale: Record<Locale, Record<string, string>> = { en: {}, id: {}, fr: {} };
   for (const row of data as { locale: Locale; key: string; value: string }[]) byLocale[row.locale][row.key] = row.value;

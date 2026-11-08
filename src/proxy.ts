@@ -40,12 +40,14 @@ async function adminProxy(request: NextRequest) {
       },
     },
   });
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims refreshes an expired session like getUser, but checks the token's signature locally (the project signs
+  // with asymmetric keys) instead of a round trip to the Auth server on every click. requireAdmin() still asks the
+  // Auth server, so a removed admin is locked out straight away.
+  const { data } = await supabase.auth.getClaims();
+  const signedIn = Boolean(data?.claims);
 
   const onLoginPage = request.nextUrl.pathname === ADMIN_LOGIN;
-  if (!user && !onLoginPage) {
+  if (!signedIn && !onLoginPage) {
     const login = request.nextUrl.clone();
     login.pathname = ADMIN_LOGIN;
     login.search = "";
