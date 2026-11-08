@@ -37,13 +37,15 @@ const sql = [
   ),
   insert(
     "tours",
-    ["slug", "code", "length", "interests", "price_from_idr", "photo", "photo_credit", "text", "position", "published"],
+    ["slug", "code", "length", "interests", "price_from_idr", "accommodation_offered", "accommodation_price_from_idr", "photo", "photo_credit", "text", "position", "published"],
     tours.map((tour, index) => [
       text(tour.slug),
       text(tour.code),
       text(tour.length),
       `array[${tour.interests.map(text).join(", ")}]::text[]`,
       num(tour.priceFromIdr),
+      bool(tour.accommodationOffered),
+      num(tour.accommodationPriceFromIdr),
       text(tour.photo),
       json(tour.photoCredit),
       json(tour.text),

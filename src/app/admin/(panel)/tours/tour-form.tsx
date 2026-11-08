@@ -22,6 +22,8 @@ type TourFormProps = {
 export function TourForm({ tour, photoPreview }: TourFormProps) {
   const { onSubmit, pending, fieldErrors: errors } = useAdminForm(saveTour.bind(null, tour?.slug ?? null));
   const [onRequest, setOnRequest] = useState(tour ? tour.priceFromIdr === null : false);
+  const [accommodationOffered, setAccommodationOffered] = useState(tour?.accommodationOffered ?? true);
+  const [accommodationOnRequest, setAccommodationOnRequest] = useState(tour ? tour.accommodationPriceFromIdr === null : true);
 
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-6">
@@ -62,7 +64,7 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
         <div className="grid gap-3 sm:grid-cols-2">
           <TextField
             name="priceFromIdr"
-            label="Price from (Rp, per vehicle)"
+            label="Transport only: price from (Rp, per vehicle)"
             inputMode="numeric"
             placeholder="550000"
             defaultValue={tour?.priceFromIdr ?? ""}
@@ -77,6 +79,37 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
             defaultChecked={onRequest}
             onCheckedChange={setOnRequest}
           />
+        </div>
+
+        <div className="grid gap-3">
+          <SwitchField
+            name="accommodationOffered"
+            label="Also sell with accommodation"
+            hint='Shows the package under "With accommodation" on the Tours page, and lets guests pick it when they book.'
+            defaultChecked={accommodationOffered}
+            onCheckedChange={setAccommodationOffered}
+          />
+          {accommodationOffered ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <TextField
+                name="accommodationPriceFromIdr"
+                label="With accommodation: price from (Rp)"
+                inputMode="numeric"
+                placeholder="3500000"
+                defaultValue={tour?.accommodationPriceFromIdr ?? ""}
+                disabled={accommodationOnRequest}
+                errors={errors}
+                hint="The cheapest car and hotel together."
+              />
+              <SwitchField
+                name="accommodationOnRequest"
+                label="Accommodation price on request"
+                hint='Shows "On request"; you send hotel options on WhatsApp.'
+                defaultChecked={accommodationOnRequest}
+                onCheckedChange={setAccommodationOnRequest}
+              />
+            </div>
+          ) : null}
         </div>
 
         <SwitchField
@@ -134,6 +167,15 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
                   defaultValue={text?.destinations.join("\n")}
                   errors={errors}
                   hint="One stop per line, in order."
+                  placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
+                />
+                <TextAreaField
+                  name={`${prefix}.dropOffs`}
+                  label="Drop-off points"
+                  rows={3}
+                  defaultValue={text?.dropOffs.join("\n")}
+                  errors={errors}
+                  hint='Where guests can be dropped at the end, one per line, e.g. "Bandara Juanda, Surabaya". The first is the usual one. Leave empty for "back to your hotel in Jogja".'
                   placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
                 />
                 <TextField

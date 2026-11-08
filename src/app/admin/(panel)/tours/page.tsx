@@ -58,6 +58,9 @@ export default async function ToursPage() {
                     <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
                       {tour.length === "multi-day" ? "Multi-day" : "Day trip"} ·{" "}
                       {tour.priceFromIdr === null ? "On request" : `from ${formatIdr(tour.priceFromIdr, "en")}`}
+                      {tour.accommodationOffered
+                        ? ` · with accommodation ${tour.accommodationPriceFromIdr === null ? "on request" : `from ${formatIdr(tour.accommodationPriceFromIdr, "en")}`}`
+                        : null}
                       {!tour.text.id || !tour.text.fr ? (
                         <Badge variant="outline" className="px-1.5 py-0 text-[10px] font-normal">
                           {!tour.text.id && !tour.text.fr ? "English only" : !tour.text.id ? "No Indonesian" : "No French"}

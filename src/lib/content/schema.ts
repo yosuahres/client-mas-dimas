@@ -8,6 +8,10 @@ export type TourLength = (typeof tourLengths)[number];
 export const tourInterests = ["temples", "culture", "nature", "adventure"] as const;
 export type TourInterest = (typeof tourInterests)[number];
 
+/** The two ways to book a package: the car and driver alone, or with the hotel arranged too. */
+export const tourStays = ["transport", "accommodation"] as const;
+export type TourStay = (typeof tourStays)[number];
+
 export const placeKinds = ["airport", "city", "around", "java", "sight"] as const;
 export type PlaceKind = (typeof placeKinds)[number];
 
@@ -27,6 +31,8 @@ export type TourText = {
   /** e.g. "Day trip, there and back" or "2 days, 1 night". */
   duration: string;
   destinations: string[];
+  /** Where the guest can be dropped at the end, e.g. "Juanda Airport, Surabaya"; the first is the usual one. Empty means back in Jogja. */
+  dropOffs: string[];
   photoAlt: string;
 };
 
@@ -38,6 +44,10 @@ export type TourRecord = {
   interests: TourInterest[];
   /** Cheapest price for the whole vehicle with driver, fuel and parking, in rupiah; null when quoted on request. */
   priceFromIdr: number | null;
+  /** Whether the package is also sold with the hotel arranged. */
+  accommodationOffered: boolean;
+  /** Cheapest price with the hotel included, in rupiah; null when quoted on request. */
+  accommodationPriceFromIdr: number | null;
   /** A Supabase Storage key ("tours/abc.webp"), or a path under /public for the bundled photos ("/photos/borobudur.jpg"). */
   photo: string | null;
   photoCredit: PhotoCredit | null;

@@ -70,6 +70,8 @@ export type TourRow = {
   length: TourRecord["length"];
   interests: TourRecord["interests"];
   price_from_idr: number | null;
+  accommodation_offered: boolean;
+  accommodation_price_from_idr: number | null;
   photo: string | null;
   photo_credit: TourRecord["photoCredit"];
   text: TourRecord["text"];
@@ -84,11 +86,21 @@ export function tourFromRow(row: TourRow): TourRecord {
     length: row.length,
     interests: row.interests,
     priceFromIdr: row.price_from_idr,
+    // Defaults cover a database that hasn't had the 20261108 migration yet.
+    accommodationOffered: row.accommodation_offered ?? true,
+    accommodationPriceFromIdr: row.accommodation_price_from_idr ?? null,
     photo: row.photo,
     photoCredit: row.photo_credit,
-    text: row.text,
+    text: withDropOffs(row.text),
     published: row.published,
   };
+}
+
+/** Packages saved before drop-off points existed have none in their text. */
+function withDropOffs(text: TourRecord["text"]): TourRecord["text"] {
+  return Object.fromEntries(
+    Object.entries(text).map(([locale, fields]) => [locale, fields && { ...fields, dropOffs: fields.dropOffs ?? [] }]),
+  ) as TourRecord["text"];
 }
 
 export function tourToRow(tour: TourRecord): Omit<TourRow, "position"> {
@@ -98,6 +110,8 @@ export function tourToRow(tour: TourRecord): Omit<TourRow, "position"> {
     length: tour.length,
     interests: tour.interests,
     price_from_idr: tour.priceFromIdr,
+    accommodation_offered: tour.accommodationOffered,
+    accommodation_price_from_idr: tour.accommodationPriceFromIdr,
     photo: tour.photo,
     photo_credit: tour.photoCredit,
     text: tour.text,

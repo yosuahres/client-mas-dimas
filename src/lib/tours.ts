@@ -1,9 +1,9 @@
 // Client-safe types and helpers for tour packages. The data comes from getTours() in @/lib/content/public.
 import { localePath, type Locale } from "@/i18n/config";
-import type { PhotoCredit, TourInterest, TourLength, TourText } from "@/lib/content/schema";
+import type { PhotoCredit, TourInterest, TourLength, TourStay, TourText } from "@/lib/content/schema";
 
-export { tourInterests, tourLengths } from "@/lib/content/schema";
-export type { TourInterest, TourLength, TourText };
+export { tourInterests, tourLengths, tourStays } from "@/lib/content/schema";
+export type { TourInterest, TourLength, TourStay, TourText };
 
 /** A published package in one language. Packages are edited in /admin/tours. */
 export type Tour = TourText & {
@@ -13,16 +13,31 @@ export type Tour = TourText & {
   interests: TourInterest[];
   /** Cheapest price for the whole vehicle with driver, fuel and parking, in rupiah; null when quoted on request. */
   priceFromIdr: number | null;
+  /** Whether the package is also sold with the hotel arranged. */
+  accommodationOffered: boolean;
+  /** Cheapest price with the hotel included, in rupiah; null when quoted on request. */
+  accommodationPriceFromIdr: number | null;
   /** Full URL or /public path; null when no photo has been added yet. */
   photo: string | null;
   photoCredit: PhotoCredit | null;
 };
 
-export function tourHref(locale: Locale, tour: Pick<Tour, "slug">) {
-  return localePath(locale, `/tours/${tour.slug}`);
+/** The package page; `stay` preselects the accommodation option in its booking card. */
+export function tourHref(locale: Locale, tour: Pick<Tour, "slug">, stay: TourStay = "transport") {
+  const path = localePath(locale, `/tours/${tour.slug}`);
+  return stay === "accommodation" ? `${path}?stay=accommodation` : path;
+}
+
+export function isTourStay(value: string | null): value is TourStay {
+  return value === "transport" || value === "accommodation";
+}
+
+/** The package's price for this option, or null when it's quoted on request. */
+export function stayPrice(tour: Pick<Tour, "priceFromIdr" | "accommodationPriceFromIdr">, stay: TourStay) {
+  return stay === "accommodation" ? tour.accommodationPriceFromIdr : tour.priceFromIdr;
 }
 
 /** Sort key for "lowest price": packages quoted on request go last. */
-export function priceSortKey(tour: Pick<Tour, "priceFromIdr">) {
-  return tour.priceFromIdr ?? Number.POSITIVE_INFINITY;
+export function priceSortKey(tour: Pick<Tour, "priceFromIdr" | "accommodationPriceFromIdr">, stay: TourStay = "transport") {
+  return stayPrice(tour, stay) ?? Number.POSITIVE_INFINITY;
 }

@@ -31,6 +31,8 @@ function localizeTour(record: TourRecord, locale: Locale): Tour {
     length: record.length,
     interests: record.interests,
     priceFromIdr: record.priceFromIdr,
+    accommodationOffered: record.accommodationOffered,
+    accommodationPriceFromIdr: record.accommodationPriceFromIdr,
     photo: photoUrl(record.photo),
     photoCredit: record.photoCredit,
   };

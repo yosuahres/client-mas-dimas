@@ -12,6 +12,7 @@ Content, admin logins and photos are all stored in **Supabase** (database, Auth 
 2. In the project, open **SQL Editor** and run, in this order:
    - `supabase/migrations/20261104000000_site_content.sql` (the tables and access rules)
    - `supabase/migrations/20261104010000_photos_bucket.sql` (the public `photos` bucket, which only admins can upload to)
+   - `supabase/migrations/20261108000000_tour_options.sql` (the "with accommodation" option and drop-off points on packages)
    - `supabase/seed.sql` (the 15 packages, 5 cars, 27 places, routes, reviews and questions the site launched with)
 3. **Authentication → Sign In / Providers → Email**: turn **off** "Allow new users to sign up". Admins are only added from `/admin/users` or by you.
 4. **Project Settings → API Keys**: copy the project URL, the publishable key (`sb_publishable_…`) and a secret key (`sb_secret_…`) into the environment (step 3 below).

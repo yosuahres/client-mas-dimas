@@ -78,6 +78,7 @@ export const completeTourText = z.object({
   summary: required,
   duration: required,
   destinations: lines.pipe(z.array(z.string()).min(1, "Add at least one stop, one per line.")),
+  dropOffs: lines,
   photoAlt: optionalText,
 });
 
@@ -86,6 +87,7 @@ const optionalTourText = z.object({
   summary: optionalText,
   duration: optionalText,
   destinations: lines,
+  dropOffs: lines,
   photoAlt: optionalText,
 });
 
@@ -97,6 +99,9 @@ export const tourInput = z
     interests: z.array(z.enum(tourInterests)).optional().default([]),
     onRequest: checkbox,
     priceFromIdr: z.string().optional(),
+    accommodationOffered: checkbox,
+    accommodationOnRequest: checkbox,
+    accommodationPriceFromIdr: z.string().optional(),
     photo: z.string().trim().optional().default(""),
     credit: z
       .object({ subject: optionalText, author: optionalText, license: optionalText, source: optionalText })
@@ -114,6 +119,15 @@ export const tourInput = z
       }
       priceFromIdr = price.data;
     }
+    let accommodationPriceFromIdr: number | null = null;
+    if (input.accommodationOffered && !input.accommodationOnRequest) {
+      const price = positiveRupiah.safeParse(input.accommodationPriceFromIdr ?? "");
+      if (!price.success) {
+        context.addIssue({ code: "custom", path: ["accommodationPriceFromIdr"], message: price.error.issues[0].message });
+        return z.NEVER;
+      }
+      accommodationPriceFromIdr = price.data;
+    }
     const credit = input.credit;
     return {
       slug: input.slug,
@@ -121,6 +135,8 @@ export const tourInput = z
       length: input.length,
       interests: input.interests,
       priceFromIdr,
+      accommodationOffered: input.accommodationOffered,
+      accommodationPriceFromIdr,
       photo: input.photo || null,
       photoCredit: credit?.author ? { subject: credit.subject || input.text.id.name, author: credit.author, license: credit.license, source: credit.source } : null,
       text: input.text,

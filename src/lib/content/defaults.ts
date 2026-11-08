@@ -28,6 +28,8 @@ export const defaultContent: SiteContent = {
         "temples"
       ],
       "priceFromIdr": 550000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/borobudur.jpg",
       "photoCredit": {
         "subject": "Borobudur",
@@ -44,6 +46,7 @@ export const defaultContent: SiteContent = {
             "Borobudur temple",
             "Prambanan temple"
           ],
+          "dropOffs": [],
           "photoAlt": "Stone stupas on the top terrace of Borobudur at sunrise, with mist over the forest below"
         },
         "id": {
@@ -54,6 +57,7 @@ export const defaultContent: SiteContent = {
             "Candi Borobudur",
             "Candi Prambanan"
           ],
+          "dropOffs": [],
           "photoAlt": "Stupa batu di teras atas Borobudur saat matahari terbit, dengan kabut di atas hutan di bawahnya"
         },
         "fr": {
@@ -64,6 +68,7 @@ export const defaultContent: SiteContent = {
             "Temple de Borobudur",
             "Temple de Prambanan"
           ],
+          "dropOffs": [],
           "photoAlt": "Stupas de pierre sur la terrasse supérieure de Borobudur au lever du soleil, avec la brume sur la forêt en contrebas"
         }
       },
@@ -78,6 +83,8 @@ export const defaultContent: SiteContent = {
         "culture"
       ],
       "priceFromIdr": 550000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/kraton.jpg",
       "photoCredit": {
         "subject": "Kraton",
@@ -95,6 +102,7 @@ export const defaultContent: SiteContent = {
             "Kraton Yogyakarta, the Sultan's palace",
             "Taman Sari water castle"
           ],
+          "dropOffs": [],
           "photoAlt": "An open pavilion with carved, painted pillars inside the Kraton of Yogyakarta"
         },
         "id": {
@@ -106,6 +114,7 @@ export const defaultContent: SiteContent = {
             "Kraton Yogyakarta, istana Sultan",
             "Taman Sari"
           ],
+          "dropOffs": [],
           "photoAlt": "Pendapa terbuka dengan tiang-tiang berukir dan berwarna di dalam Kraton Yogyakarta"
         },
         "fr": {
@@ -117,6 +126,7 @@ export const defaultContent: SiteContent = {
             "Kraton de Yogyakarta, le palais du Sultan",
             "Château d'eau de Taman Sari"
           ],
+          "dropOffs": [],
           "photoAlt": "Un pavillon ouvert aux piliers sculptés et peints dans le Kraton de Yogyakarta"
         }
       },
@@ -131,6 +141,8 @@ export const defaultContent: SiteContent = {
         "nature"
       ],
       "priceFromIdr": 500000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/jomblang.jpg",
       "photoCredit": {
         "subject": "Jomblang cave",
@@ -147,6 +159,7 @@ export const defaultContent: SiteContent = {
             "Jomblang cave",
             "Pindul cave"
           ],
+          "dropOffs": [],
           "photoAlt": "A beam of sunlight falling into Jomblang cave onto visitors in helmets"
         },
         "id": {
@@ -157,6 +170,7 @@ export const defaultContent: SiteContent = {
             "Goa Jomblang",
             "Goa Pindul"
           ],
+          "dropOffs": [],
           "photoAlt": "Seberkas cahaya matahari masuk ke Goa Jomblang menyinari pengunjung berhelm"
         },
         "fr": {
@@ -167,6 +181,7 @@ export const defaultContent: SiteContent = {
             "Grotte de Jomblang",
             "Grotte de Pindul"
           ],
+          "dropOffs": [],
           "photoAlt": "Un rayon de soleil tombe dans la grotte de Jomblang sur des visiteurs casqués"
         }
       },
@@ -182,6 +197,8 @@ export const defaultContent: SiteContent = {
         "adventure"
       ],
       "priceFromIdr": 750000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/prambanan.jpg",
       "photoCredit": {
         "subject": "Prambanan",
@@ -199,6 +216,7 @@ export const defaultContent: SiteContent = {
             "Prambanan temple",
             "Ramayana ballet"
           ],
+          "dropOffs": [],
           "photoAlt": "The carved stone towers of Prambanan temple under a cloudy sky"
         },
         "id": {
@@ -210,6 +228,7 @@ export const defaultContent: SiteContent = {
             "Candi Prambanan",
             "Sendratari Ramayana"
           ],
+          "dropOffs": [],
           "photoAlt": "Menara batu berukir Candi Prambanan di bawah langit berawan"
         },
         "fr": {
@@ -221,6 +240,7 @@ export const defaultContent: SiteContent = {
             "Temple de Prambanan",
             "Ballet du Ramayana"
           ],
+          "dropOffs": [],
           "photoAlt": "Les tours de pierre sculptées du temple de Prambanan sous un ciel nuageux"
         }
       },
@@ -235,6 +255,8 @@ export const defaultContent: SiteContent = {
         "adventure"
       ],
       "priceFromIdr": 2700000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/bromo.jpg",
       "photoCredit": {
         "subject": "Bromo",
@@ -251,6 +273,11 @@ export const defaultContent: SiteContent = {
             "Mount Bromo",
             "Madakaripura waterfall"
           ],
+          "dropOffs": [
+            "Back to your hotel in Jogja",
+            "Juanda Airport, Surabaya",
+            "Ketapang port, Banyuwangi, via Ijen crater, for the ferry to Bali"
+          ],
           "photoAlt": "Mount Bromo's smoking crater at sunrise, with Mount Semeru behind"
         },
         "id": {
@@ -261,6 +288,11 @@ export const defaultContent: SiteContent = {
             "Gunung Bromo",
             "Air Terjun Madakaripura"
           ],
+          "dropOffs": [
+            "Kembali ke hotel Anda di Jogja",
+            "Bandara Juanda, Surabaya",
+            "Pelabuhan Ketapang, Banyuwangi, lewat Kawah Ijen, lanjut kapal ke Bali"
+          ],
           "photoAlt": "Kawah Gunung Bromo yang berasap saat matahari terbit, dengan Gunung Semeru di belakangnya"
         },
         "fr": {
@@ -270,6 +302,11 @@ export const defaultContent: SiteContent = {
           "destinations": [
             "Mont Bromo",
             "Cascade de Madakaripura"
+          ],
+          "dropOffs": [
+            "Retour à votre hôtel à Jogja",
+            "Aéroport de Juanda, Surabaya",
+            "Port de Ketapang, Banyuwangi, via le cratère de l'Ijen, pour le ferry vers Bali"
           ],
           "photoAlt": "Le cratère fumant du mont Bromo au lever du soleil, avec le mont Semeru en arrière-plan"
         }
@@ -284,6 +321,8 @@ export const defaultContent: SiteContent = {
         "nature"
       ],
       "priceFromIdr": null,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/tumpak-sewu.jpg",
       "photoCredit": {
         "subject": "Tumpak Sewu",
@@ -301,6 +340,11 @@ export const defaultContent: SiteContent = {
             "Kabut Pelangi waterfall",
             "Kapas Biru waterfall"
           ],
+          "dropOffs": [
+            "Back to your hotel in Jogja",
+            "Juanda Airport, Surabaya",
+            "Ketapang port, Banyuwangi, via Ijen crater, for the ferry to Bali"
+          ],
           "photoAlt": "Dozens of thin waterfalls pouring into a green canyon at Tumpak Sewu"
         },
         "id": {
@@ -312,6 +356,11 @@ export const defaultContent: SiteContent = {
             "Air Terjun Kabut Pelangi",
             "Air Terjun Kapas Biru"
           ],
+          "dropOffs": [
+            "Kembali ke hotel Anda di Jogja",
+            "Bandara Juanda, Surabaya",
+            "Pelabuhan Ketapang, Banyuwangi, lewat Kawah Ijen, lanjut kapal ke Bali"
+          ],
           "photoAlt": "Puluhan air terjun kecil mengalir ke ngarai hijau di Tumpak Sewu"
         },
         "fr": {
@@ -322,6 +371,11 @@ export const defaultContent: SiteContent = {
             "Cascade de Tumpak Sewu",
             "Cascade de Kabut Pelangi",
             "Cascade de Kapas Biru"
+          ],
+          "dropOffs": [
+            "Retour à votre hôtel à Jogja",
+            "Aéroport de Juanda, Surabaya",
+            "Port de Ketapang, Banyuwangi, via le cratère de l'Ijen, pour le ferry vers Bali"
           ],
           "photoAlt": "Des dizaines de fines cascades se jetant dans un canyon verdoyant à Tumpak Sewu"
         }
@@ -337,6 +391,8 @@ export const defaultContent: SiteContent = {
         "adventure"
       ],
       "priceFromIdr": 3500000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/ijen.jpg",
       "photoCredit": {
         "subject": "Kawah Ijen",
@@ -353,6 +409,11 @@ export const defaultContent: SiteContent = {
             "Kawah Ijen crater",
             "Baluran national park"
           ],
+          "dropOffs": [
+            "Back to your hotel in Jogja",
+            "Juanda Airport, Surabaya",
+            "Ketapang port, Banyuwangi, for the ferry to Bali"
+          ],
           "photoAlt": "Steam rising over the turquoise acid lake inside the Ijen crater"
         },
         "id": {
@@ -363,6 +424,11 @@ export const defaultContent: SiteContent = {
             "Kawah Ijen",
             "Taman Nasional Baluran"
           ],
+          "dropOffs": [
+            "Kembali ke hotel Anda di Jogja",
+            "Bandara Juanda, Surabaya",
+            "Pelabuhan Ketapang, Banyuwangi, lanjut kapal ke Bali"
+          ],
           "photoAlt": "Uap mengepul di atas danau asam biru toska di dalam Kawah Ijen"
         },
         "fr": {
@@ -372,6 +438,11 @@ export const defaultContent: SiteContent = {
           "destinations": [
             "Cratère du Kawah Ijen",
             "Parc national de Baluran"
+          ],
+          "dropOffs": [
+            "Retour à votre hôtel à Jogja",
+            "Aéroport de Juanda, Surabaya",
+            "Port de Ketapang, Banyuwangi, pour le ferry vers Bali"
           ],
           "photoAlt": "De la vapeur s'élève au-dessus du lac acide turquoise dans le cratère de l'Ijen"
         }
@@ -387,6 +458,8 @@ export const defaultContent: SiteContent = {
         "temples"
       ],
       "priceFromIdr": 1500000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/dieng.jpg",
       "photoCredit": {
         "subject": "Telaga Warna, Dieng",
@@ -405,6 +478,7 @@ export const defaultContent: SiteContent = {
             "Telaga Warna lake",
             "Arjuna temples"
           ],
+          "dropOffs": [],
           "photoAlt": "The green Telaga Warna lake among forested hills on the Dieng plateau"
         },
         "id": {
@@ -417,6 +491,7 @@ export const defaultContent: SiteContent = {
             "Telaga Warna",
             "Candi Arjuna"
           ],
+          "dropOffs": [],
           "photoAlt": "Telaga Warna yang hijau di antara perbukitan berhutan di Dataran Tinggi Dieng"
         },
         "fr": {
@@ -429,6 +504,7 @@ export const defaultContent: SiteContent = {
             "Lac de Telaga Warna",
             "Temples d'Arjuna"
           ],
+          "dropOffs": [],
           "photoAlt": "Le lac vert de Telaga Warna entre des collines boisées sur le plateau de Dieng"
         }
       },
@@ -443,6 +519,8 @@ export const defaultContent: SiteContent = {
         "culture"
       ],
       "priceFromIdr": 500000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/parangtritis.jpg",
       "photoCredit": {
         "subject": "Parangtritis",
@@ -461,6 +539,7 @@ export const defaultContent: SiteContent = {
             "Obelix Sea View",
             "Malioboro street"
           ],
+          "dropOffs": [],
           "photoAlt": "A horse-drawn cart on the sand at Parangtritis beach"
         },
         "id": {
@@ -473,6 +552,7 @@ export const defaultContent: SiteContent = {
             "Obelix Sea View",
             "Jalan Malioboro"
           ],
+          "dropOffs": [],
           "photoAlt": "Andong yang ditarik kuda di atas pasir Pantai Parangtritis"
         },
         "fr": {
@@ -485,6 +565,7 @@ export const defaultContent: SiteContent = {
             "Obelix Sea View",
             "Rue Malioboro"
           ],
+          "dropOffs": [],
           "photoAlt": "Une charrette tirée par un cheval sur le sable de la plage de Parangtritis"
         }
       },
@@ -499,6 +580,8 @@ export const defaultContent: SiteContent = {
         "nature"
       ],
       "priceFromIdr": 450000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/merapi.jpg",
       "photoCredit": {
         "subject": "Merapi",
@@ -515,6 +598,7 @@ export const defaultContent: SiteContent = {
             "Merapi lava tour",
             "Kaliurang ATV adventure"
           ],
+          "dropOffs": [],
           "photoAlt": "The grey, bare cone of Mount Merapi seen from the forest below"
         },
         "id": {
@@ -525,6 +609,7 @@ export const defaultContent: SiteContent = {
             "Lava tour Merapi",
             "Petualangan ATV Kaliurang"
           ],
+          "dropOffs": [],
           "photoAlt": "Puncak Gunung Merapi yang gundul dan abu-abu, terlihat dari hutan di bawahnya"
         },
         "fr": {
@@ -535,6 +620,7 @@ export const defaultContent: SiteContent = {
             "Lava tour du Merapi",
             "Quad à Kaliurang"
           ],
+          "dropOffs": [],
           "photoAlt": "Le cône gris et nu du mont Merapi vu depuis la forêt en contrebas"
         }
       },
@@ -549,6 +635,8 @@ export const defaultContent: SiteContent = {
         "adventure"
       ],
       "priceFromIdr": 700000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/timang.jpg",
       "photoCredit": {
         "subject": "Timang beach",
@@ -566,6 +654,7 @@ export const defaultContent: SiteContent = {
             "Drini beach",
             "Sadranan beach"
           ],
+          "dropOffs": [],
           "photoAlt": "The wooden gondola that crosses to the rock island at Timang beach"
         },
         "id": {
@@ -577,6 +666,7 @@ export const defaultContent: SiteContent = {
             "Pantai Drini",
             "Pantai Sadranan"
           ],
+          "dropOffs": [],
           "photoAlt": "Gondola kayu yang menyeberang ke pulau karang di Pantai Timang"
         },
         "fr": {
@@ -588,6 +678,7 @@ export const defaultContent: SiteContent = {
             "Plage de Drini",
             "Plage de Sadranan"
           ],
+          "dropOffs": [],
           "photoAlt": "La nacelle en bois qui traverse jusqu'à l'îlot rocheux de la plage de Timang"
         }
       },
@@ -603,6 +694,8 @@ export const defaultContent: SiteContent = {
         "culture"
       ],
       "priceFromIdr": 550000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/setumbu.jpg",
       "photoCredit": {
         "subject": "Punthuk Setumbu",
@@ -620,6 +713,7 @@ export const defaultContent: SiteContent = {
             "Gereja Ayam",
             "Elo river rafting"
           ],
+          "dropOffs": [],
           "photoAlt": "Sunrise over the mountains seen from Punthuk Setumbu hill"
         },
         "id": {
@@ -631,6 +725,7 @@ export const defaultContent: SiteContent = {
             "Gereja Ayam",
             "Rafting Sungai Elo"
           ],
+          "dropOffs": [],
           "photoAlt": "Matahari terbit di atas pegunungan, dilihat dari Bukit Punthuk Setumbu"
         },
         "fr": {
@@ -642,6 +737,7 @@ export const defaultContent: SiteContent = {
             "Gereja Ayam",
             "Rafting sur la rivière Elo"
           ],
+          "dropOffs": [],
           "photoAlt": "Le lever du soleil sur les montagnes vu depuis la colline de Punthuk Setumbu"
         }
       },
@@ -655,6 +751,8 @@ export const defaultContent: SiteContent = {
         "nature"
       ],
       "priceFromIdr": 650000,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/breksi.jpg",
       "photoCredit": {
         "subject": "Tebing Breksi",
@@ -673,6 +771,7 @@ export const defaultContent: SiteContent = {
             "Puncak Segoro",
             "Tebing Breksi"
           ],
+          "dropOffs": [],
           "photoAlt": "The carved limestone cliff face of Tebing Breksi"
         },
         "id": {
@@ -685,6 +784,7 @@ export const defaultContent: SiteContent = {
             "Puncak Segoro",
             "Tebing Breksi"
           ],
+          "dropOffs": [],
           "photoAlt": "Dinding tebing kapur berukir di Tebing Breksi"
         },
         "fr": {
@@ -697,6 +797,7 @@ export const defaultContent: SiteContent = {
             "Puncak Segoro",
             "Tebing Breksi"
           ],
+          "dropOffs": [],
           "photoAlt": "La paroi de calcaire sculptée de Tebing Breksi"
         }
       },
@@ -711,6 +812,8 @@ export const defaultContent: SiteContent = {
         "nature"
       ],
       "priceFromIdr": null,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/kedung-pedut.jpg",
       "photoCredit": {
         "subject": "Kedung Pedut",
@@ -729,6 +832,7 @@ export const defaultContent: SiteContent = {
             "Sri Gethuk waterfall",
             "Elo river rafting"
           ],
+          "dropOffs": [],
           "photoAlt": "Water running over terraced rocks at Kedung Pedut waterfall"
         },
         "id": {
@@ -741,6 +845,7 @@ export const defaultContent: SiteContent = {
             "Air Terjun Sri Gethuk",
             "Rafting Sungai Elo"
           ],
+          "dropOffs": [],
           "photoAlt": "Air mengalir di atas bebatuan bertingkat di Air Terjun Kedung Pedut"
         },
         "fr": {
@@ -753,6 +858,7 @@ export const defaultContent: SiteContent = {
             "Cascade de Sri Gethuk",
             "Rafting sur la rivière Elo"
           ],
+          "dropOffs": [],
           "photoAlt": "L'eau ruisselle sur les rochers en terrasses de la cascade de Kedung Pedut"
         }
       },
@@ -766,6 +872,8 @@ export const defaultContent: SiteContent = {
         "nature"
       ],
       "priceFromIdr": null,
+      "accommodationOffered": true,
+      "accommodationPriceFromIdr": null,
       "photo": "/photos/menoreh.jpg",
       "photoCredit": {
         "subject": "Menoreh hills",
@@ -785,6 +893,7 @@ export const defaultContent: SiteContent = {
             "Negeri Sayur Sukomakmur",
             "Ketep Pass"
           ],
+          "dropOffs": [],
           "photoAlt": "Green valleys of the Menoreh hills seen from above"
         },
         "id": {
@@ -798,6 +907,7 @@ export const defaultContent: SiteContent = {
             "Negeri Sayur Sukomakmur",
             "Ketep Pass"
           ],
+          "dropOffs": [],
           "photoAlt": "Lembah hijau Perbukitan Menoreh dilihat dari atas"
         },
         "fr": {
@@ -811,6 +921,7 @@ export const defaultContent: SiteContent = {
             "Negeri Sayur Sukomakmur",
             "Ketep Pass"
           ],
+          "dropOffs": [],
           "photoAlt": "Les vallées verdoyantes des collines de Menoreh vues d'en haut"
         }
       },
