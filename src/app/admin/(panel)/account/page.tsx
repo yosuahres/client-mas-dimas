@@ -11,7 +11,7 @@ export default async function AccountPage() {
   return (
     <>
       <PageHeader title="My account" />
-      <PageBody width="max-w-xl">
+      <PageBody>
         <p className="mb-5 text-sm text-muted-foreground">
           Signed in as <span className="font-medium text-foreground">{user.email}</span>.
         </p>

@@ -187,10 +187,13 @@ export function FormSection({ title, description, children }: { title: string; d
   );
 }
 
-/** The save bar pinned to the bottom of a long form. */
+/**
+ * The save bar pinned to the bottom of a long form. Sticky stops at the scroller's padding edge,
+ * so the negative bottom and margin cancel PageBody's padding to sit flush with the panel's edge.
+ */
 export function SaveBar({ pending, label = "Save changes", children }: { pending: boolean; label?: string; children?: ReactNode }) {
   return (
-    <div className="sticky bottom-0 -mx-4 flex items-center justify-end gap-2 border-t bg-background/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+    <div className="sticky -bottom-4 z-10 -mx-4 -mb-4 flex items-center justify-end gap-2 border-t bg-background px-4 py-3 sm:-bottom-6 sm:-mx-6 sm:-mb-6 sm:px-6">
       {children}
       <Button type="submit" disabled={pending}>
         {pending ? "Saving…" : label}

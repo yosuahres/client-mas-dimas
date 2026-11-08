@@ -17,7 +17,7 @@ export default async function EditTourPage({ params }: PageProps<"/admin/tours/[
   return (
     <>
       <PageHeader title={translateFields(tour.text, "id").name} parent={{ href: "/admin/tours", title: "Tour packages" }} />
-      <PageBody width="max-w-3xl">
+      <PageBody>
         {/* Keyed so the form starts fresh after a save that renames the package */}
         <TourForm key={tour.slug} tour={tour} photoPreview={photoUrl(tour.photo)} />
       </PageBody>

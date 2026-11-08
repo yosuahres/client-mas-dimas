@@ -65,7 +65,7 @@ export default async function DashboardPage() {
     <>
       <PageHeader title="Dashboard" />
       <PageBody>
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
           {counts.map((count) => (
             <li key={count.href}>
               <Link href={count.href} className="flex items-center gap-3 rounded-xl border p-4 transition-colors hover:bg-accent">

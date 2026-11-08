@@ -9,7 +9,7 @@ export default function NewTourPage() {
   return (
     <>
       <PageHeader title="New package" parent={{ href: "/admin/tours", title: "Tour packages" }} />
-      <PageBody width="max-w-3xl">
+      <PageBody>
         <TourForm tour={null} photoPreview={null} />
       </PageBody>
     </>

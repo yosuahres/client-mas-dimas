@@ -11,7 +11,7 @@ export default async function SettingsPage() {
   return (
     <>
       <PageHeader title="Business details" />
-      <PageBody width="max-w-3xl">
+      <PageBody>
         <SettingsForm settings={settings} />
       </PageBody>
     </>

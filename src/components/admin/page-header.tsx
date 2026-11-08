@@ -33,11 +33,7 @@ export function PageHeader({ title, parent, actions }: PageHeaderProps) {
   );
 }
 
-/** The scrolling body under the header. */
-export function PageBody({ children, width = "max-w-5xl" }: { children: ReactNode; width?: string }) {
-  return (
-    <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-      <div className={width}>{children}</div>
-    </div>
-  );
+/** The scrolling body under the header, full width. */
+export function PageBody({ children }: { children: ReactNode }) {
+  return <div className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</div>;
 }

@@ -14,7 +14,7 @@ export default async function UsersPage() {
     return (
       <>
         <PageHeader title="Admin users" />
-        <PageBody width="max-w-2xl">
+        <PageBody>
           <p className="rounded-xl border px-4 py-6 text-sm text-muted-foreground">
             Managing admins needs the <code className="rounded bg-muted px-1">SUPABASE_SECRET_KEY</code> setting on the
             server. Until it&apos;s set, add admins in the Supabase dashboard (see docs/admin.md).
@@ -34,7 +34,7 @@ export default async function UsersPage() {
   return (
     <>
       <PageHeader title="Admin users" />
-      <PageBody width="max-w-2xl">
+      <PageBody>
         <p className="mb-4 text-sm text-muted-foreground">Everyone who can sign in to this admin panel.</p>
         <UsersManager admins={admins} currentUserId={user.id} />
       </PageBody>
