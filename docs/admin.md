@@ -53,7 +53,7 @@ How it works for the client:
 - On save, a field's English and French are translated when its Indonesian changed, or when they're empty. A translation corrected by hand on the English or French tab stays until that Indonesian text changes again.
 - Words in curly brackets like `{price}` are protected from translation.
 - If translation fails (no key, quota reached, Google down), the Indonesian still saves and a notice says English and French weren't updated. A brand-new item can't be saved without English, since it's the language the site falls back to: try again later or type the English.
-- In **Website text**, saving the Indonesian also updates English and French; "Reset to original" on the Indonesian puts all three back.
+- In **Website text**, saving the Indonesian also updates English and French; "Back to original" on the Indonesian puts all three back.
 
 ## 4. Environment variables
 
@@ -69,7 +69,7 @@ New packages get their page on first visit. Renaming a package's short name chan
 
 - The website needs at least one shown package and one shown car with a transfer price, so the admin won't hide or delete the last one.
 - Indonesian is required everywhere; English is filled by translation, and an empty French field shows the English.
-- In **Website text**, words in curly brackets such as `{price}` are filled in by the site; the editor refuses a save that drops or renames them. "Reset to original" puts back the text from `src/i18n/dictionaries`.
+- In **Website text**, words in curly brackets such as `{price}` are filled in by the site; the editor refuses a save that drops or renames them. "Back to original" puts back the text from `src/i18n/dictionaries`.
 
 ## Backups
 

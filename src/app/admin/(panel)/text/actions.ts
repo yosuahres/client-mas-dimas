@@ -19,16 +19,16 @@ const TRANSLATED: TranslationTarget[] = ["en", "fr"];
 type TextRow = { locale: string; key: string; value: string };
 
 /**
- * Saves one section of the page text in one language. A field left as (or reset to) the file's text
- * removes the saved edit, so later changes to the file show through.
+ * Saves the changed page text in one language (the form sends only the fields that changed, from any
+ * section). A field reset to the file's text removes the saved edit, so later changes to the file show through.
  *
  * The client writes in Indonesian: an Indonesian field that changed is translated into English and French
  * too, and one reset to the original also resets its English and French.
  */
-export async function saveText(locale: string, section: string, formData: FormData): Promise<ActionResult> {
+export async function saveText(locale: string, formData: FormData): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   if (!hasLocale(locale)) return failure("Unknown language.");
-  if (!textSections.some((candidate) => candidate.key === section)) return failure("Unknown section.");
+  const sections = new Set<string>(textSections.map((section) => section.key));
 
   const original = new Map(textEntries((await dictionaries[locale]()) as object).map((entry) => [entry.key, entry.value]));
   const upserts: TextRow[] = [];
@@ -39,11 +39,11 @@ export async function saveText(locale: string, section: string, formData: FormDa
     if (!name.startsWith(FIELD_PREFIX) || typeof raw !== "string") continue;
     const key = name.slice(FIELD_PREFIX.length);
     const fileValue = original.get(key);
-    if (fileValue === undefined || !key.startsWith(`${section}.`)) continue;
+    if (fileValue === undefined || !sections.has(key.split(".")[0])) continue;
 
     const value = raw.trim();
     if (value === "") {
-      fieldErrors[name] = "Can't be empty. Use Reset to go back to the original.";
+      fieldErrors[name] = "Can't be empty. Use “Back to original” instead.";
     } else if (placeholdersOf(value) !== placeholdersOf(fileValue)) {
       fieldErrors[name] = `Keep the words in curly brackets exactly: ${placeholdersOf(fileValue).replaceAll(",", " ")}`;
     } else if (value === fileValue) {
@@ -53,11 +53,13 @@ export async function saveText(locale: string, section: string, formData: FormDa
     }
   }
   if (Object.keys(fieldErrors).length > 0) return failure("Some fields need fixing.", fieldErrors);
+  if (upserts.length === 0 && removals.length === 0) return failure("Nothing changed.");
 
   let problem: string | null = null;
   if (locale === "id") {
     // Only fields whose Indonesian actually changed; untouched ones keep any hand-made English or French.
-    const { data: saved, error } = await supabase.from(tables.text).select("key, value").eq("locale", "id").like("key", `${section}.%`);
+    const { data: saved, error } = await supabase.from(tables.text).select("key, value").eq("locale", "id")
+      .in("key", [...upserts.map((row) => row.key), ...removals]);
     if (error) return failure(`Couldn't read the saved text: ${error.message}`);
     const savedValue = new Map((saved as { key: string; value: string }[]).map((row) => [row.key, row.value]));
     const before = (key: string) => savedValue.get(key) ?? original.get(key);
