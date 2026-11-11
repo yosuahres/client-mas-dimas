@@ -4,7 +4,7 @@ import { Trash2, UserPlus } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import { addAdmin, removeAdmin } from "@/app/admin/(panel)/users/actions";
+import { addAdmin, removeAdmin } from "@/app/admin/(settings)/settings/users/actions";
 import { ConfirmDelete } from "@/components/admin/confirm-delete";
 import { FormSection, TextField } from "@/components/admin/form-fields";
 import { useAdminForm } from "@/components/admin/use-admin-form";
@@ -60,7 +60,7 @@ export function UsersManager({ admins, currentUserId }: { admins: AdminAccount[]
         <FormSection title="Add an admin" description="They can sign in at /admin straight away. Send them the password privately.">
           <div className="grid gap-4 sm:grid-cols-2">
             <TextField name="email" label="Email" type="email" autoComplete="off" errors={errors} />
-            <TextField name="password" label="First password" type="text" autoComplete="off" errors={errors} hint="At least 10 characters. They can change it in My account." />
+            <TextField name="password" label="First password" type="text" autoComplete="off" errors={errors} hint="At least 10 characters. They can change it in Settings → Account." />
           </div>
           <div>
             <Button type="submit" disabled={pending}>

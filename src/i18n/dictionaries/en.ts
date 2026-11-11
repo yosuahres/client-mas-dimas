@@ -126,7 +126,7 @@ export const en = {
       },
     ],
   },
-  // The rating is the client's real Google rating (set in /admin/settings). The quotes are edited in the admin panel;
+  // The rating is the client's real Google rating (set in /admin/settings/business). The quotes are edited in the admin panel;
   // the ones the site launched with are PLACEHOLDERS until real reviews are copied in.
   reviews: {
     title: "What our guests are saying",

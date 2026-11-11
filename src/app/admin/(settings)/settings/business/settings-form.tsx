@@ -1,6 +1,6 @@
 "use client";
 
-import { saveSettings } from "@/app/admin/(panel)/settings/actions";
+import { saveSettings } from "@/app/admin/(settings)/settings/business/actions";
 import { FormSection, SaveBar, TextAreaField, TextField } from "@/components/admin/form-fields";
 import { useAdminForm } from "@/components/admin/use-admin-form";
 import type { SiteSettings } from "@/lib/content/schema";
@@ -48,7 +48,8 @@ export function SettingsForm({ settings }: { settings: SiteSettings | null }) {
         />
       </FormSection>
 
-      <SaveBar pending={pending} />
+      {/* Kept to the settings column instead of running to the panel's edges. */}
+      <SaveBar pending={pending} className="mx-0 px-0 sm:mx-0 sm:px-0" />
     </form>
   );
 }

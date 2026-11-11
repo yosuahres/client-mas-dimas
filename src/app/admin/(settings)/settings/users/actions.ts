@@ -9,10 +9,10 @@ import { createServiceClient } from "@/lib/supabase/clients";
 
 const newAdmin = z.object({
   email: z.email("Enter a valid email address."),
-  password: z.string().min(10, "Use at least 10 characters."),
+  password: z.string().min(10, "Use at least 10 characters.").max(72, "Use at most 72 characters."),
 });
 
-/** Creates a confirmed account with the admin role. Share the password with them; they can change it in My account. */
+/** Creates a confirmed account with the admin role. Share the password with them; they can change it in Settings → Account. */
 export async function addAdmin(formData: FormData): Promise<ActionResult> {
   await requireAdmin();
   const parsed = newAdmin.safeParse({ email: formData.get("email"), password: formData.get("password") });
@@ -34,6 +34,7 @@ export async function addAdmin(formData: FormData): Promise<ActionResult> {
 /** Deletes another admin's account. Their open session stops working in the admin panel straight away. */
 export async function removeAdmin(userId: string): Promise<ActionResult> {
   const { user } = await requireAdmin();
+  if (!z.uuid().safeParse(userId).success) return failure("That request wasn't valid.");
   if (userId === user.id) return failure("You can't remove your own account.");
 
   const { error } = await createServiceClient().auth.admin.deleteUser(userId);

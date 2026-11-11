@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { changePassword } from "@/app/admin/(panel)/account/actions";
+import { changePassword } from "@/app/admin/(settings)/settings/account/actions";
 import { FormSection, TextField } from "@/components/admin/form-fields";
 import { useAdminForm } from "@/components/admin/use-admin-form";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ export function PasswordForm() {
   return (
     <form key={formKey} onSubmit={onSubmit} noValidate>
       <FormSection title="Change password">
+        <TextField name="current" label="Current password" type="password" autoComplete="current-password" errors={errors} />
         <TextField name="password" label="New password" type="password" autoComplete="new-password" errors={errors} hint="At least 10 characters." />
         <TextField name="confirm" label="New password again" type="password" autoComplete="new-password" errors={errors} />
         <div>

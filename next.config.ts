@@ -45,6 +45,11 @@ const nextConfig: NextConfig = {
   ],
   cacheComponents: true,
   partialPrefetching: true,
+  // Settings moved into their own area; old bookmarks still land on the right page.
+  redirects: async () => [
+    { source: "/admin/users", destination: "/admin/settings/users", permanent: false },
+    { source: "/admin/account", destination: "/admin/settings/account", permanent: false },
+  ],
   ...(supabaseUrl && {
     images: {
       remotePatterns: [new URL(`${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/photos/**`)],

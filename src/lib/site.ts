@@ -1,4 +1,4 @@
-// Business details are edited in /admin/settings and read with getSite() from @/lib/content/public.
+// Business details are edited in /admin/settings/business and read with getSite() from @/lib/content/public.
 // Translated copy lives in src/i18n.
 import type { SiteSettings } from "@/lib/content/schema";
 

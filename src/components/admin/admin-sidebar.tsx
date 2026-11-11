@@ -6,20 +6,19 @@ import {
   CircleHelp,
   ExternalLink,
   House,
-  KeyRound,
   LogOut,
   Map as MapIcon,
   MapPinned,
   MessageSquareQuote,
-  SlidersHorizontal,
+  Settings,
   Type,
-  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ElementType } from "react";
+import { useEffect, useState, type ElementType } from "react";
 
 import { signOut } from "@/app/admin/login/actions";
+import { LAST_PANEL_PATH_KEY, SETTINGS_HOME } from "@/components/admin/settings-nav";
 import { LogoMark } from "@/components/icons";
 import {
   Sidebar,
@@ -49,6 +48,7 @@ type NavGroup = {
 const modules: NavItem[] = [{ href: "/admin", title: "Dashboard", icon: House }];
 
 // Laid out like the CRM sidebar in majorsales-binapatria: plain modules first, then collapsible groups.
+// Settings are a separate area with their own sidebar (settings-shell.tsx), reached from the footer.
 const groups: NavGroup[] = [
   {
     key: "content",
@@ -68,21 +68,19 @@ const groups: NavGroup[] = [
       { href: "/admin/transfers", title: "Places & routes", icon: MapPinned },
     ],
   },
-  {
-    key: "settings",
-    title: "Settings",
-    items: [
-      { href: "/admin/settings", title: "Business details", icon: SlidersHorizontal },
-      { href: "/admin/users", title: "Admin users", icon: Users },
-      { href: "/admin/account", title: "My account", icon: KeyRound },
-    ],
-  },
 ];
 
 export function AdminSidebar({ email }: { email: string }) {
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({ content: true, transport: true, settings: true });
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({ content: true, transport: true });
+
+  // Remembered so "Back to admin" in the settings area returns to this page.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(LAST_PANEL_PATH_KEY, pathname);
+    } catch {}
+  }, [pathname]);
 
   const closeMobileSidebar = () => {
     if (isMobile) setOpenMobile(false);
@@ -166,6 +164,16 @@ export function AdminSidebar({ email }: { email: string }) {
         <p className="truncate px-1 text-[11px] text-muted-foreground" title={email}>
           {email}
         </p>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild size="sm" tooltip="Settings" className="pl-1 [&_svg]:text-muted-foreground/80">
+              <Link href={SETTINGS_HOME} onClick={closeMobileSidebar}>
+                <Settings />
+                <span className="text-[13px] font-medium">Settings</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <form action={signOut}>
           <SidebarMenu>
             <SidebarMenuItem>

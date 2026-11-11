@@ -10,7 +10,7 @@ export function formatIdr(amount: number, locale: Locale) {
   }).format(amount);
 }
 
-/** Rough US dollar equivalent, for display next to rupiah prices. The rate is set in /admin/settings. */
+/** Rough US dollar equivalent, for display next to rupiah prices. The rate is set in /admin/settings/business. */
 export function formatApproxUsd(amountIdr: number, locale: Locale, idrPerUsd: number) {
   return new Intl.NumberFormat(intlLocale[locale], {
     style: "currency",
