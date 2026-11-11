@@ -11,6 +11,16 @@ export const slug = z
   .max(80, "Keep it under 80 characters.")
   .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Use lowercase letters, numbers and dashes, e.g. borobudur-sunrise.");
 
+/** A web link. z.url() alone also accepts "javascript:" and "data:", which must never reach an href. */
+const webUrl = (message: string) => z.httpUrl(message);
+
+/** A photo bundled with the site ("/photos/borobudur.jpg") or one uploaded from the admin ("tours/<uuid>.webp"). */
+const photo = z
+  .string()
+  .trim()
+  .regex(/^(\/photos\/[A-Za-z0-9][A-Za-z0-9._-]*|tours\/[0-9a-f-]{36}\.webp)$/, "Upload the photo again.")
+  .or(z.literal(""));
+
 const required = z.string().trim().min(1, "Required.");
 
 /** Rupiah typed as "550000", "550.000" or "Rp 550,000". */
@@ -102,7 +112,7 @@ export const tourInput = z
     accommodationOffered: checkbox,
     accommodationOnRequest: checkbox,
     accommodationPriceFromIdr: z.string().optional(),
-    photo: z.string().trim().optional().default(""),
+    photo: photo.optional().default(""),
     credit: z
       .object({ subject: optionalText, author: optionalText, license: optionalText, source: optionalText })
       .optional(),
@@ -204,7 +214,7 @@ export const faqInput = z.object({
 
 export const settingsInput = z.object({
   businessName: required,
-  siteUrl: z.url("Enter the full address, starting with https://"),
+  siteUrl: webUrl("Enter the full address, starting with https://"),
   whatsappNumber: z
     .string()
     .transform((value) => value.replace(/\D/g, ""))
@@ -216,7 +226,7 @@ export const settingsInput = z.object({
     .string()
     .trim()
     .regex(/^[0-5](\.\d)?$/, "A number from 0 to 5, e.g. 4.9."),
-  googleReviewsUrl: z.url("Enter the full link, starting with https://"),
-  instagramUrl: z.url("Enter the full link, starting with https://"),
+  googleReviewsUrl: webUrl("Enter the full link, starting with https://"),
+  instagramUrl: webUrl("Enter the full link, starting with https://"),
   idrPerUsd: positiveRupiah,
 });

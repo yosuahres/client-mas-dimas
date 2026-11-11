@@ -1,5 +1,7 @@
 "use server";
 
+import { z } from "zod";
+
 import { failure, type ActionResult } from "@/lib/admin/action-result";
 import { contentChanged, discardPhoto, lastShownTourProblem, lastTransferCarProblem } from "@/lib/admin/mutations";
 import { requireAdmin } from "@/lib/admin/session";
@@ -19,10 +21,15 @@ const lists = {
 
 export type ListName = keyof typeof lists;
 
+// Server actions are public endpoints: the TypeScript types on their arguments aren't checked at run time,
+// so a signed-in browser could send anything. These are.
+const itemKey = z.string().min(1).max(100);
+const itemKeys = z.array(itemKey).max(500);
+
 function listFor(name: ListName) {
-  const list = lists[name];
-  if (!list) throw new Error(`Unknown list "${name}"`);
-  return list;
+  // hasOwn: "constructor" or "__proto__" must not find something on Object.prototype.
+  if (typeof name !== "string" || !Object.hasOwn(lists, name)) throw new Error("Unknown list");
+  return lists[name];
 }
 
 /** Why removing this item from the website would break it, if it would. */
@@ -35,6 +42,7 @@ async function removalProblem(name: ListName, key: string) {
 export async function setPublished(name: ListName, key: string, published: boolean): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   const list = listFor(name);
+  if (!itemKey.safeParse(key).success || typeof published !== "boolean") return failure("That request wasn't valid.");
   const problem = published ? null : await removalProblem(name, key);
   if (problem) return failure(problem);
   const { error } = await supabase.from(list.table).update({ published }).eq(list.key, key);
@@ -47,6 +55,7 @@ export async function setPublished(name: ListName, key: string, published: boole
 export async function reorder(name: ListName, keys: string[]): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   const list = listFor(name);
+  if (!itemKeys.safeParse(keys).success) return failure("That request wasn't valid.");
   const results = await Promise.all(
     keys.map((key, position) => supabase.from(list.table).update({ position }).eq(list.key, key)),
   );
@@ -59,6 +68,7 @@ export async function reorder(name: ListName, keys: string[]): Promise<ActionRes
 export async function deleteItem(name: ListName, key: string): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   const list = listFor(name);
+  if (!itemKey.safeParse(key).success) return failure("That request wasn't valid.");
   const problem = await removalProblem(name, key);
   if (problem) return failure(problem);
   const { data, error } = await supabase.from(list.table).delete().eq(list.key, key).select();
