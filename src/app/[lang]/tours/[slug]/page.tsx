@@ -13,6 +13,7 @@ import { fill } from "@/i18n/format";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getFleet, getSite, getTour, getTours } from "@/lib/content/public";
 import { formatIdr } from "@/lib/money";
+import { jsonLdScript, tourJsonLd } from "@/lib/structured-data";
 import { tourHref } from "@/lib/tours";
 
 // Prerenders the packages published at build time. Packages added later in the admin panel render on their
@@ -79,8 +80,11 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
     site: { whatsappNumber: site.whatsappNumber, idrPerUsd: site.idrPerUsd },
   };
 
+  const jsonLd = tourJsonLd({ site, locale, tour, catalogName: dict.toursPage.title });
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <SiteHeader path={`/tours/${tour.slug}`} />
       <main>
         <section aria-labelledby="tour-title" className="px-3 pt-3">
