@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # A newer push replaces an older check, but a deploy to the server is never cut off halfway.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+env:
+  HUSKY: 0
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  check:
+    name: Lint, typecheck, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+
+      - run: pnpm typecheck
+
+      - uses: actions/cache@v6
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**', 'next.config.ts') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            next-${{ runner.os }}-
+
+      # The public Supabase values are baked into the browser bundle. Without them (for example on a
+      # pull request from a fork) the site still builds, with its built-in content.
+      - run: pnpm build
+        env:
+          NEXT_OUTPUT: standalone
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+
+      - name: Pack the standalone server
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          cp -r public .next/standalone/
+          cp -r .next/static .next/standalone/.next/
+          rm -f .next/standalone/.env*
+          # tar keeps the pnpm symlinks inside node_modules, which upload-artifact would not.
+          tar -czf app.tar.gz -C .next/standalone .
+
+      - uses: actions/upload-artifact@v7
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          name: app
+          path: app.tar.gz
+          retention-days: 14
+
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t tour-travel:ci .
+
+  deploy:
+    name: Deploy to cPanel
+    needs: check
+    # Turn on with the repository variable DEPLOY_ENABLED=true once the hosting exists. See docs/deploy.md.
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: app
+
+      - name: Unpack
+        run: mkdir app && tar -xzf app.tar.gz -C app
+
+      - name: Set up SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          # The server's identity is pinned. Trusting whatever key answers at deploy time (ssh-keyscan here)
+          # would hand the build and the SSH session to anyone who can sit between GitHub and the host.
+          test -n "$SSH_KNOWN_HOSTS" || { echo "::error::Set the secret SSH_KNOWN_HOSTS (see docs/deploy.md)"; exit 1; }
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Upload and restart
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+        run: |
+          test -n "$DEPLOY_PATH" || { echo "::error::Set the repository variable DEPLOY_PATH"; exit 1; }
+          SSH="ssh -i $HOME/.ssh/id_deploy -p $SSH_PORT -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes"
+          # --delete clears files from the previous build; the excludes are what cPanel and Passenger keep in the app folder.
+          rsync -az --delete \
+            --exclude '/tmp/' --exclude '/.env*' --exclude '/.htaccess' --exclude '/stderr.log' \
+            -e "$SSH" app/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+          # Passenger (cPanel's "Setup Node.js App") restarts the app when this file changes.
+          $SSH "$SSH_USER@$SSH_HOST" "mkdir -p '$DEPLOY_PATH/tmp' && touch '$DEPLOY_PATH/tmp/restart.txt'"

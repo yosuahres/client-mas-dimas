@@ -43,6 +43,8 @@ const nextConfig: NextConfig = {
     // robots.txt already asks crawlers to stay out; this also covers links from elsewhere.
     { source: "/admin/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
   ],
+  // Self-contained server in .next/standalone, for the Docker image and the cPanel upload. Off for plain `next build`.
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   cacheComponents: true,
   partialPrefetching: true,
   // Settings moved into their own area; old bookmarks still land on the right page.

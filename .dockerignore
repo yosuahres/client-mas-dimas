@@ -1,0 +1,15 @@
+.git
+.github
+.husky
+.next
+node_modules
+.env*
+!.env.example
+docs
+supabase
+*.md
+*.tsbuildinfo
+next-env.d.ts
+Dockerfile
+.dockerignore
+.DS_Store
