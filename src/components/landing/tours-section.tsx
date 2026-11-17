@@ -15,7 +15,7 @@ export async function ToursSection() {
   const tours = await getTours(locale);
 
   return (
-    <section id="tours" aria-labelledby="tours-title" className="scroll-mt-6 py-20 sm:py-28">
+    <section id="tours" aria-labelledby="tours-title" className="scroll-mt-6 pt-8 pb-20 sm:py-28">
       <Carousel
         titleId="tours-title"
         title={t.title}
