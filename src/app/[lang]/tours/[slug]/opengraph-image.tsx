@@ -27,12 +27,10 @@ export default async function OpenGraphImage({ params }: { params: Promise<Param
   const [tour, site] = await Promise.all([findTour(await params), getSite()]);
   if (!tour) notFound();
 
-  const credit = tour.photoCredit ? `Photo: ${tour.photoCredit.author}, ${tour.photoCredit.license}` : undefined;
   return shareCardResponse({
     businessName: site.businessName,
     kicker: tour.duration,
     headline: tour.name,
     photo: tour.photo ?? defaultSharePhoto.src,
-    credit: tour.photo ? credit : defaultSharePhoto.credit,
   });
 }

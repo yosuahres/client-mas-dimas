@@ -12,7 +12,7 @@ import {
   loadTours,
   loadVehicles,
 } from "@/lib/content/store";
-import type { PhotoCredit, SiteSettings, TourRecord } from "@/lib/content/schema";
+import type { SiteSettings, TourRecord } from "@/lib/content/schema";
 import { translate, translateFields } from "@/lib/content/translate";
 import type { Vehicle } from "@/lib/fleet";
 import { photoUrl } from "@/lib/photos";
@@ -115,45 +115,4 @@ export async function getFaqs(locale: Locale): Promise<Faq[]> {
     question: translate(faq.question, locale),
     answer: translate(faq.answer, locale),
   }));
-}
-
-// Fixed section photos in src/assets; package photos carry their own credit, set in /admin/tours.
-const sectionPhotoCredits: PhotoCredit[] = [
-  {
-    subject: "Prambanan",
-    author: "CEphoto, Uwe Aranas",
-    license: "CC BY-SA 3.0",
-    source: "https://commons.wikimedia.org/wiki/File:Yogyakarta_Indonesia_Prambanan-temple-complex-23.jpg",
-  },
-  {
-    subject: "Kraton",
-    author: "Jorge Franganillo",
-    license: "CC BY 2.0",
-    source: "https://commons.wikimedia.org/wiki/File:Kraton_Ngayogyakarta_Hadiningrat_(49797461187).jpg",
-  },
-  {
-    subject: "Jomblang cave",
-    author: "Arie Basuki",
-    license: "CC BY-SA 4.0",
-    source: "https://commons.wikimedia.org/wiki/File:Cahaya_Goa_Jomblang.jpg",
-  },
-  {
-    subject: "Merapi",
-    author: "Kang Henry Irawan",
-    license: "CC BY-SA 4.0",
-    source: "https://commons.wikimedia.org/wiki/File:Gagahnya_Merapi.jpg",
-  },
-  {
-    subject: "Batik in Imogiri",
-    author: "Aconkyeah",
-    license: "CC BY-SA 4.0",
-    source: "https://commons.wikimedia.org/wiki/File:Maestro_Batik_Tulis_di_Imogiri.jpg",
-  },
-];
-
-/** Every credit the site must show (CC BY / BY-SA): section photos, then each published package photo, without repeats. */
-export async function getPhotoCredits(): Promise<PhotoCredit[]> {
-  const tourCredits = (await loadTours()).flatMap((tour) => (tour.photoCredit ? [tour.photoCredit] : []));
-  const bySource = new Map([...sectionPhotoCredits, ...tourCredits].map((credit) => [credit.source, credit]));
-  return [...bySource.values()];
 }

@@ -21,6 +21,5 @@ export default async function OpenGraphImage({ params }: { params: Promise<{ lan
     kicker: t.city,
     headline: t.title,
     photo: defaultSharePhoto.src,
-    credit: defaultSharePhoto.credit,
   });
 }

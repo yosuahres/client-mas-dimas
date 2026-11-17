@@ -150,9 +150,6 @@ export const fr: Dictionary = {
     cta: "Écrivez-nous sur WhatsApp",
     message: "Bonjour Jogja Travel ! Nous venons à Jogja. Nos dates : ",
     orEmail: "Ou par e-mail",
-    photoCredits: "Crédits photo",
-    photos: "Photos de Wikimedia Commons :",
-    by: "par",
     floatingLabel: "Discuter avec nous sur WhatsApp",
   },
   toursPage: {

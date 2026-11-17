@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { LogoMark, WhatsappIcon } from "@/components/icons";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
-import { getPhotoCredits, getSite, getTours } from "@/lib/content/public";
+import { getSite, getTours } from "@/lib/content/public";
 import { whatsappLink } from "@/lib/site";
 import { tourHref } from "@/lib/tours";
 
@@ -18,7 +18,7 @@ export async function SiteFooter() {
   const dict = await getDictionary();
   const t = dict.footer;
   const nav = dict.header.nav;
-  const [site, tours, photoCredits] = await Promise.all([getSite(), getTours(locale), getPhotoCredits()]);
+  const [site, tours] = await Promise.all([getSite(), getTours(locale)]);
   const pages = [
     { path: "/transfer", label: nav.transfers },
     { path: "/plan-your-visit", label: nav.plan },
@@ -109,20 +109,6 @@ export async function SiteFooter() {
           </div>
 
           <div className="mt-16 space-y-3 border-t border-ink/10 pt-8 text-[0.85rem] text-ink-muted">
-            <details>
-              <summary className="cursor-pointer hover:text-ink">{t.photoCredits}</summary>
-              <p className="mt-2">
-                {t.photos}{" "}
-                {photoCredits.map((credit, index) => (
-                  <span key={credit.source}>
-                    <a href={credit.source} className="underline underline-offset-2 hover:text-ink">
-                      {credit.subject}
-                    </a>{" "}
-                    {t.by} {credit.author} ({credit.license}){index < photoCredits.length - 1 ? ", " : "."}
-                  </span>
-                ))}
-              </p>
-            </details>
             <p>
               © <CurrentYear /> {site.businessName}. {dict.meta.city}.
             </p>

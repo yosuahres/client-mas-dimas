@@ -10,11 +10,10 @@ import { isBundledPhoto } from "@/lib/photos";
 export const shareCardSize = { width: 1200, height: 630 };
 export const shareCardContentType = "image/jpeg";
 
-/** The photo used when a page has none of its own. CC BY 2.0 asks for the credit wherever the photo appears. */
+/** The photo used when a page has none of its own. */
 export const defaultSharePhoto = {
   src: "/photos/borobudur.jpg",
   alt: "Borobudur temple at sunrise, Yogyakarta",
-  credit: "Photo: Justine Hong / Wikimedia Commons, CC BY 2.0",
 };
 
 type ShareCard = {
@@ -24,8 +23,6 @@ type ShareCard = {
   headline: string;
   /** A path under /public or a full URL. */
   photo: string;
-  /** Printed on the card when the photo's licence asks for it. */
-  credit?: string;
 };
 
 async function loadPhoto(photo: string) {
@@ -35,7 +32,7 @@ async function loadPhoto(photo: string) {
   return Buffer.from(await response.arrayBuffer());
 }
 
-export async function shareCardResponse({ businessName, kicker, headline, photo, credit }: ShareCard) {
+export async function shareCardResponse({ businessName, kicker, headline, photo }: ShareCard) {
   // Cropped to the card and re-encoded first: the card renderer reads JPEG and PNG only, and uploads may be WebP.
   const background = await sharp(await loadPhoto(photo))
     .resize({ ...shareCardSize, fit: "cover" })
@@ -84,7 +81,6 @@ export async function shareCardResponse({ businessName, kicker, headline, photo,
             </div>
           </div>
         </div>
-        {credit ? <div style={{ position: "absolute", top: 60, right: 64, fontSize: 18, opacity: 0.8 }}>{credit}</div> : null}
       </div>
     ),
     shareCardSize,

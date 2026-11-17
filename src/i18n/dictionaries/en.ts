@@ -155,9 +155,6 @@ export const en = {
     cta: "Message us on WhatsApp",
     message: "Hi Jogja Travel! We're coming to Jogja. Our dates are: ",
     orEmail: "Or email",
-    photoCredits: "Photo credits",
-    photos: "Photos from Wikimedia Commons:",
-    by: "by",
     floatingLabel: "Chat with us on WhatsApp",
   },
   toursPage: {
