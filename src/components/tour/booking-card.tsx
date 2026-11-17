@@ -5,11 +5,14 @@ import { useId, useState } from "react";
 
 import { Dropdown } from "@/components/dropdown";
 import { WhatsappIcon } from "@/components/icons";
+import { DatePicker } from "@/components/pickers/date-picker";
+import { PartyPicker } from "@/components/pickers/party-picker";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { fill } from "@/i18n/format";
 import type { Vehicle } from "@/lib/fleet";
 import { formatApproxUsd, formatIdr } from "@/lib/money";
+import { defaultParty, describeParty, parseParty, type Party } from "@/lib/party";
 import { whatsappLink, type SiteSettings } from "@/lib/site";
 import { isTourStay, tourStays, type TourStay } from "@/lib/tours";
 
@@ -23,6 +26,7 @@ type BookingCardProps = {
   dropOffs: string[];
   locale: Locale;
   text: Dictionary["bookingCard"];
+  pickerText: Dictionary["pickers"];
   stayText: Dictionary["catalog"]["stays"];
   priceText: Pick<Dictionary["tourPage"], "fromPrice" | "fromPriceAccommodation" | "onRequest">;
   /** The cars to choose from, in the order set in the admin panel; the first is preselected. */
@@ -30,12 +34,16 @@ type BookingCardProps = {
   site: Pick<SiteSettings, "whatsappNumber" | "idrPerUsd">;
   initialDate?: string;
   initialStay?: TourStay;
+  initialParty?: Party;
 };
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
-/** The booking card, starting from the date picked in the site search (?date=YYYY-MM-DD) and the package type picked on the Tours page (?stay=accommodation). Render inside Suspense. */
-export function BookingCardFromSearch(props: Omit<BookingCardProps, "initialDate" | "initialStay">) {
+/**
+ * The booking card, starting from the date and passengers picked in the site search (?date=YYYY-MM-DD&adults=2…)
+ * and the package type picked on the Tours page (?stay=accommodation). Render inside Suspense.
+ */
+export function BookingCardFromSearch(props: Omit<BookingCardProps, "initialDate" | "initialStay" | "initialParty">) {
   const params = useSearchParams();
   const date = params.get("date");
   const stay = params.get("stay");
@@ -44,6 +52,7 @@ export function BookingCardFromSearch(props: Omit<BookingCardProps, "initialDate
       {...props}
       initialDate={date && DATE_PATTERN.test(date) ? date : undefined}
       initialStay={isTourStay(stay) ? stay : undefined}
+      initialParty={parseParty((key) => params.get(key))}
     />
   );
 }
@@ -56,19 +65,23 @@ export function BookingCard({
   dropOffs,
   locale,
   text,
+  pickerText,
   stayText,
   priceText,
   fleet,
   site,
   initialDate = "",
   initialStay = "transport",
+  initialParty = defaultParty,
 }: BookingCardProps) {
   const offersAccommodation = accommodationPriceFromIdr !== undefined;
   const [stay, setStay] = useState<TourStay>(offersAccommodation ? initialStay : "transport");
   const [date, setDate] = useState(initialDate);
+  const [party, setParty] = useState(initialParty);
   const [vehicle, setVehicle] = useState(fleet[0]?.id ?? "");
   const [dropOff, setDropOff] = useState(dropOffs[0] ?? "");
-  const dateId = useId();
+  const dateLabelId = useId();
+  const partyLabelId = useId();
   const vehicleLabelId = useId();
   const dropOffLabelId = useId();
 
@@ -80,6 +93,8 @@ export function BookingCard({
     fill(text.messageIntro, { tour: tourName }),
     ...(offersAccommodation ? [fill(text.messageStay, { stay: stayText[stay] })] : []),
     fill(text.messageDate, { date: date || text.messageDateUnknown }),
+    fill(pickerText.party.messagePassengers, { party: describeParty(party, pickerText.party, locale) }),
+    party.luggage ? pickerText.party.messageLuggage : pickerText.party.messageNoLuggage,
     fill(text.messageVehicle, { vehicle: vehicleName }),
     ...(dropOffs.length > 1 ? [fill(text.messageDropOff, { place: dropOff })] : []),
     ...(formattedPrice === null
@@ -119,17 +134,23 @@ export function BookingCard({
       {withHotel ? <p className="mt-2 text-[0.95rem] text-ink-muted">{text.accommodationNote}</p> : null}
 
       <div className="mt-6 grid gap-3">
-        <div className="relative rounded-2xl bg-cream px-4 py-2.5 hover:bg-sand focus-within:ring-2 focus-within:ring-jade/35">
-          <label htmlFor={dateId} className="label block text-[0.78rem] text-ink-muted">
-            {text.date}
-          </label>
-          <input
-            id={dateId}
-            type="date"
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
-            className="mt-0.5 w-full bg-transparent font-medium outline-none"
-          />
+        <div className="grid gap-3">
+          <div className="@container relative min-w-0 rounded-2xl bg-cream px-4 py-2.5 hover:bg-sand focus-within:ring-2 focus-within:ring-jade/35">
+            <span id={dateLabelId} className="label block text-[0.78rem] text-ink-muted">
+              {text.date}
+            </span>
+            <div className="mt-1">
+              <DatePicker labelledBy={dateLabelId} value={date} onChange={setDate} locale={locale} text={pickerText} />
+            </div>
+          </div>
+          <div className="@container relative min-w-0 rounded-2xl bg-cream px-4 py-2.5 hover:bg-sand focus-within:ring-2 focus-within:ring-jade/35">
+            <span id={partyLabelId} className="label block text-[0.78rem] text-ink-muted">
+              {pickerText.party.title}
+            </span>
+            <div className="mt-1">
+              <PartyPicker labelledBy={partyLabelId} value={party} onChange={setParty} locale={locale} text={pickerText} />
+            </div>
+          </div>
         </div>
         <div className="relative rounded-2xl bg-cream px-4 py-2.5 hover:bg-sand focus-within:ring-2 focus-within:ring-jade/35">
           <span id={vehicleLabelId} className="label block text-[0.78rem] text-ink-muted">

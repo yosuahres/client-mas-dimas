@@ -1,6 +1,7 @@
 // Source dictionary. Other languages must match this shape (enforced by the Dictionary type).
 // Placeholders like {price} are filled with fill() from "@/i18n/format".
 // Facts follow jogja-transport.com: private car and driver, priced per vehicle; entrance tickets are not included.
+import type { PartyGroup, PluralForms } from "@/lib/party";
 import type { TourInterest, TourLength, TourStay } from "@/lib/tours";
 import type { PlaceKind } from "@/lib/transfers";
 
@@ -238,26 +239,66 @@ export const en = {
     title: "Ready to choose a trip?",
     button: "See all packages",
   },
+  pickers: {
+    close: "Close",
+    done: "Done",
+    clear: "Clear",
+    date: {
+      title: "Choose a date",
+      placeholder: "Add date",
+      previousMonth: "Previous month",
+      nextMonth: "Next month",
+    },
+    time: {
+      title: "Choose a pickup time",
+      placeholder: "Time",
+      hour: "Hour",
+      minute: "Minutes",
+      minuteHint: "pick the hour first",
+    },
+    party: {
+      title: "Passengers",
+      groups: {
+        adults: { label: "Adults", hint: "12+ years" },
+        kids: { label: "Children", hint: "2–11 years" },
+        infants: { label: "Infants", hint: "Under 2" },
+      } satisfies Record<PartyGroup, { label: string; hint: string }>,
+      fewer: "{group}: remove one",
+      more: "{group}: add one",
+      luggage: "Luggage",
+      luggageHint: "Suitcases or large bags",
+      withLuggage: "with luggage",
+      counts: {
+        adults: { one: "{n} adult", other: "{n} adults" },
+        kids: { one: "{n} child", other: "{n} children" },
+        infants: { one: "{n} infant", other: "{n} infants" },
+      } satisfies Record<PartyGroup, PluralForms>,
+      total: { one: "{n} person", other: "{n} people" },
+      messagePassengers: "Passengers: {party}",
+      messageLuggage: "Luggage: yes, suitcases or large bags",
+      messageNoLuggage: "Luggage: no",
+    },
+  },
   search: {
-    bandLeft: "Find your trip.",
-    bandRight: "Tour or transfer.",
     label: "Find a tour or a transfer",
     tabs: { tours: "Tour packages", transfer: "Airport & transfers" },
+    tabHints: { tours: "Day trips and multi-day tours", transfer: "Airport pickup and rides from A to B" },
+    back: "Back",
+    allPackages: "All packages",
+    recentTitle: "Recently searched",
+    clearRecent: "Clear",
+    anyDate: "Any date",
     tour: "Tour",
     date: "Date",
-    tourHint: "Price per car on the next page",
     searchTour: "See this tour",
-    browseAll: "Or browse all packages",
     from: "From",
     to: "To",
     choose: "Choose a place",
     swap: "Swap from and to",
     time: "Pickup time",
-    routeEstimate: "About {km} km, {duration} on the road. From {price} per vehicle.",
     pickTwo: "Pick a start and a destination to see a price.",
     samePlace: "Choose two different places.",
     searchTransfer: "See prices",
-    estimateNote: "Estimate. Final price confirmed on WhatsApp.",
   },
   transfer: {
     placeGroups: {

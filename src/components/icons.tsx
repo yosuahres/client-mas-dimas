@@ -61,3 +61,71 @@ export function ArrowLeftIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+// Leading icons for the search fields on phones, where the field labels are hidden
+
+export function DepartIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" {...props}>
+      <circle cx="8" cy="8" r="5.25" />
+      <circle cx="8" cy="8" r="1.75" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function PinIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" {...props}>
+      <path d="M8 14.25s4.75-4.1 4.75-7.75a4.75 4.75 0 0 0-9.5 0c0 3.65 4.75 7.75 4.75 7.75Z" />
+      <circle cx="8" cy="6.5" r="1.6" />
+    </svg>
+  );
+}
+
+export function MapIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" {...props}>
+      <path d="M1.75 3.75 5.5 2.25l5 1.5 3.75-1.5v10l-3.75 1.5-5-1.5-3.75 1.5v-10Z" />
+      <path d="M5.5 2.25v10M10.5 3.75v10" />
+    </svg>
+  );
+}
+
+export function CalendarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" {...props}>
+      <rect x="2.25" y="3.25" width="11.5" height="10.5" rx="2" />
+      <path d="M2.25 6.75h11.5M5.5 1.75v2.5M10.5 1.75v2.5" />
+    </svg>
+  );
+}
+
+export function ClockIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" {...props}>
+      <circle cx="8" cy="8" r="6" />
+      <path d="M8 4.75V8l2.25 1.5" />
+    </svg>
+  );
+}
+
+export function PersonIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor" {...props}>
+      <circle cx="8" cy="5" r="3" />
+      <path d="M2.25 14c.4-3 2.75-4.75 5.75-4.75S13.35 11 13.75 14H2.25Z" />
+    </svg>
+  );
+}
+
+export function CarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" {...props}>
+      <path d="M2.25 10.75V8.6c0-.4.12-.8.34-1.13L4.1 5.2c.28-.42.75-.7 1.25-.7h5.3c.5 0 .97.28 1.25.7l1.5 2.27c.23.34.35.73.35 1.13v2.15" />
+      <path d="M1.75 10.75h12.5v1.5h-12.5zM2.6 7.75h10.8" />
+      <circle cx="4.75" cy="12.75" r="1" fill="currentColor" stroke="none" />
+      <circle cx="11.25" cy="12.75" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+

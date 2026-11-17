@@ -74,6 +74,7 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
     dropOffs,
     locale,
     text: dict.bookingCard,
+    pickerText: dict.pickers,
     stayText: dict.catalog.stays,
     priceText: { fromPrice: t.fromPrice, fromPriceAccommodation: t.fromPriceAccommodation, onRequest: t.onRequest },
     fleet: fleet.map(({ id, name, seats }) => ({ id, name, seats })),

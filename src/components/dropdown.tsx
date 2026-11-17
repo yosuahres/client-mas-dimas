@@ -17,13 +17,15 @@ type DropdownProps = {
   options?: DropdownOption[];
   groups?: DropdownGroup[];
   placeholder?: string;
+  /** Show the down arrow; on by default. */
+  chevron?: boolean;
 };
 
 // A styled replacement for <select>, following the WAI-ARIA "select-only combobox" pattern:
 // focus stays on the button, arrow keys move through the options, Enter picks, Escape closes,
 // and typing a letter jumps to the next option that starts with it.
 // Place it inside a positioned box: the button stretches over that box and the list opens below it.
-export function Dropdown({ labelledBy, id, name, value, onChange, options, groups, placeholder }: DropdownProps) {
+export function Dropdown({ labelledBy, id, name, value, onChange, options, groups, placeholder, chevron = true }: DropdownProps) {
   const sections: DropdownGroup[] = groups ?? [{ label: "", options: options ?? [] }];
   const flat = sections.flatMap((section) => section.options);
   const selectedIndex = flat.findIndex((option) => option.value === value);
@@ -134,13 +136,15 @@ export function Dropdown({ labelledBy, id, name, value, onChange, options, group
         className="flex w-full min-w-0 cursor-pointer items-center justify-between gap-2 text-left font-medium outline-none after:absolute after:inset-0"
       >
         <span className={`truncate ${selected ? "" : "font-normal text-ink-muted"}`}>{selected?.label ?? placeholder}</span>
-        <svg
-          viewBox="0 0 16 16"
-          aria-hidden="true"
-          className={`size-4 shrink-0 text-ink-muted transition-transform ${open ? "rotate-180" : ""}`}
-        >
-          <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" />
-        </svg>
+        {chevron ? (
+          <svg
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            className={`size-4 shrink-0 text-ink-muted transition-transform ${open ? "rotate-180" : ""}`}
+          >
+            <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" />
+          </svg>
+        ) : null}
       </button>
       {name ? <input type="hidden" name={name} value={value} /> : null}
 

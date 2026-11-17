@@ -136,11 +136,21 @@
 @utility animate-appear {
   animation: appear 500ms ease-out both;
 }
+/* Bottom sheets for the date, time and passenger pickers on phones */
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@utility animate-sheet {
+  animation: sheet-up 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .animate-rise,
   .animate-draw,
-  .animate-appear {
+  .animate-appear,
+  .animate-sheet {
     animation: none;
   }
 }

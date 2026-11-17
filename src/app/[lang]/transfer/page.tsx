@@ -13,6 +13,7 @@ import { fill, formatDuration } from "@/i18n/format";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getPlaces, getPopularRoutes, getSite, getTours, getTransferVehicles } from "@/lib/content/public";
 import { formatApproxUsd, formatIdr } from "@/lib/money";
+import { describeParty, parsePartyParams, type Party } from "@/lib/party";
 import { whatsappLink, type SiteSettings } from "@/lib/site";
 import {
   estimateRoute,
@@ -52,9 +53,9 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
     locale,
     text: dict.search,
     transferText: dict.transfer,
-    tours: tours.map(({ slug, name, destinations }) => ({ slug, name, destinations })),
+    pickerText: dict.pickers,
+    tours: tours.map(({ slug, name }) => ({ slug, name })),
     places,
-    vehicles,
     defaultMode: "transfer" as const,
   };
 
@@ -69,15 +70,29 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
           <Suspense fallback={<SearchOnEdge><TripSearch {...searchProps} /></SearchOnEdge>}>
             {searchParams.then((params) => {
               const search = parseTransferSearch(params, places);
+              const party = parsePartyParams(params);
               return (
                 <>
                   <SearchOnEdge>
                     {/* key resets the form when a new search arrives */}
-                    <TripSearch key={JSON.stringify(search)} {...searchProps} defaultTransfer={search} />
+                    <TripSearch
+                      key={JSON.stringify([search, party])}
+                      {...searchProps}
+                      defaultTransfer={search}
+                      defaultParty={party}
+                    />
                   </SearchOnEdge>
                   <div className="px-2 sm:px-0">
                     {search ? (
-                      <TransferResults search={search} places={places} vehicles={vehicles} site={site} locale={locale} dict={dict} />
+                      <TransferResults
+                        search={search}
+                        party={party}
+                        places={places}
+                        vehicles={vehicles}
+                        site={site}
+                        locale={locale}
+                        dict={dict}
+                      />
                     ) : (
                       <div className="mt-14">
                         <h2 className="text-2xl font-medium">{t.emptyTitle}</h2>
@@ -106,6 +121,7 @@ function SearchOnEdge({ children }: { children: ReactNode }) {
 
 type ResultsProps = {
   search: TransferSearch;
+  party: Party;
   places: Place[];
   vehicles: TransferVehicle[];
   site: SiteSettings;
@@ -114,12 +130,12 @@ type ResultsProps = {
 };
 
 /** A searched transfer with both ends looked up. */
-type Trip = { search: TransferSearch; from: Place; to: Place };
+type Trip = { search: TransferSearch; party: Party; from: Place; to: Place };
 
-function TransferResults({ search, places, vehicles, site, locale, dict }: ResultsProps) {
+function TransferResults({ search, party, places, vehicles, site, locale, dict }: ResultsProps) {
   const t = dict.transferPage;
   // parseTransferSearch only accepts ids from this list, so both ends are found
-  const trip: Trip = { search, from: findPlace(places, search.from)!, to: findPlace(places, search.to)! };
+  const trip: Trip = { search, party, from: findPlace(places, search.from)!, to: findPlace(places, search.to)! };
   const route = estimateRoute(trip.from, trip.to);
   const quotes = quoteTransfer(vehicles, route.distanceKm);
 
@@ -128,6 +144,7 @@ function TransferResults({ search, places, vehicles, site, locale, dict }: Resul
     fill(t.distance, { km: route.distanceKm }),
     fill(t.duration, { duration: formatDuration(route.minutes, dict.transfer.duration) }),
     when || null,
+    describeParty(party, dict.pickers.party, locale) + (party.luggage ? `, ${dict.pickers.party.withLuggage}` : ""),
   ].filter(Boolean);
 
   return (
@@ -253,14 +270,17 @@ function PopularRoutes({ routes, places, vehicles, site, locale, dict }: Popular
   );
 }
 
-function transferMessage({ search, from, to }: Trip, quote: VehicleQuote, locale: Locale, dict: Dictionary) {
+function transferMessage({ search, party, from, to }: Trip, quote: VehicleQuote, locale: Locale, dict: Dictionary) {
   const t = dict.transferPage;
+  const p = dict.pickers.party;
   return [
     t.messageIntro,
     fill(t.messageFrom, { place: from.name }),
     fill(t.messageTo, { place: to.name }),
     fill(t.messageDate, { date: search.date ? formatDate(search.date, locale) : t.messageUnknown }),
     fill(t.messageTime, { time: search.time ?? t.messageUnknown }),
+    fill(p.messagePassengers, { party: describeParty(party, p, locale) }),
+    party.luggage ? p.messageLuggage : p.messageNoLuggage,
     fill(t.messageVehicle, { vehicle: quote.name }),
     fill(t.messagePrice, { price: formatIdr(quote.totalIdr, locale) }),
   ].join("\n");
