@@ -1,7 +1,8 @@
 export const locales = ["en", "id", "fr"] as const;
 export type Locale = (typeof locales)[number];
 
-export const defaultLocale: Locale = "en";
+/** The client's own language: "/" opens in it unless the visitor picked another one in the menu. */
+export const defaultLocale: Locale = "id";
 
 export function hasLocale(value: string): value is Locale {
   return (locales as readonly string[]).includes(value);

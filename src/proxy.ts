@@ -1,23 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { defaultLocale, hasLocale, locales, type Locale } from "@/i18n/config";
+import { defaultLocale, hasLocale, locales } from "@/i18n/config";
 import { supabaseConfig } from "@/lib/supabase/config";
 
-const LOCALE_COOKIE = "locale";
-
-// Picks the first supported language from the browser's Accept-Language header, e.g. "fr-FR,fr;q=0.9,en;q=0.8".
-function preferredLocale(acceptLanguage: string | null): Locale {
-  const ranked = (acceptLanguage ?? "")
-    .split(",")
-    .map((part) => {
-      const [tag, quality] = part.trim().split(";q=");
-      return { language: tag.split("-")[0].toLowerCase(), weight: quality ? Number(quality) : 1 };
-    })
-    .sort((a, b) => b.weight - a.weight);
-  const match = ranked.map(({ language }) => language).find(hasLocale);
-  return match ?? defaultLocale;
-}
+// Renamed from "locale" when Indonesian became the default, so languages remembered before then don't carry over.
+const LOCALE_COOKIE = "lang";
 
 const ADMIN_LOGIN = "/admin/login";
 
@@ -72,7 +60,8 @@ export async function proxy(request: NextRequest) {
   }
 
   const saved = request.cookies.get(LOCALE_COOKIE)?.value;
-  const locale = saved && hasLocale(saved) ? saved : preferredLocale(request.headers.get("accept-language"));
+  // Indonesian first, whatever the browser's language; the menu's Language row switches and is remembered
+  const locale = saved && hasLocale(saved) ? saved : defaultLocale;
   request.nextUrl.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;
   return NextResponse.redirect(request.nextUrl);
 }
