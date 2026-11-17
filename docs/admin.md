@@ -56,7 +56,22 @@ How it works for the client:
 - If translation fails (no key, quota reached, Google down), the Indonesian still saves and a notice says English and French weren't updated. A brand-new item can't be saved without English, since it's the language the site falls back to: try again later or type the English.
 - In **Website text**, saving the Indonesian also updates English and French; "Back to original" on the Indonesian puts all three back.
 
-## 4. Environment variables
+## 4. Google reviews (optional)
+
+The home page can show the business's live Google rating, review count and its best recent reviews, straight from its Google Maps listing. Without this, it shows the rating typed in **Settings → Business** and the quotes from **Reviews** in the admin.
+
+1. In the same Google Cloud project as translation (billing is already on), **APIs & Services → Library**: enable **Places API (New)**.
+2. **Credentials → Create credentials → API key**. Restrict it to **Places API (New)** and copy it into `GOOGLE_PLACES_API_KEY`. (A separate key from translation, so each can be turned off on its own.)
+3. Find the listing's Place ID: open developers.google.com/maps/documentation/places/web-service/place-id, search for the business as it's named on Google Maps, and copy the ID (starts with `ChIJ…`) into `GOOGLE_PLACE_ID`.
+4. **Make it impossible to pay anything**: **APIs & Services → Places API (New) → Quotas & System Limits**, find the request limit for **GetPlace** (Place Details) and set it as low as Google allows (filter for "per day" if it's listed; otherwise the per-minute one). The site asks once a day per language (3 a day, about 90 a month); Google's free allowance for this kind of request is 1,000 a month.
+
+How it behaves:
+
+- Google gives the five reviews it ranks most relevant, not all of them, and translates them into the visitor's language (marked "Translated by Google"). The home page shows up to three of those with 4 or 5 stars.
+- It refreshes once a day. If Google can't be reached, the page falls back to the admin's rating and quotes and tries again a few minutes later.
+- The client can't pick which Google reviews appear. To show hand-picked quotes instead, remove the two variables.
+
+## 5. Environment variables
 
 Copy `.env.example` to `.env.local` for development. In production, enter the same names in **cPanel → Setup Node.js App → Environment variables**, then restart the app. `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are read at build time too, so set them where the site is built (GitHub Actions secrets, or your machine) as well.
 

@@ -128,6 +128,10 @@ export const fr: Dictionary = {
   reviews: {
     title: "Ce que disent nos voyageurs",
     rating: "{rating} / 5 sur Google",
+    ratingCount: "{rating} / 5 sur {count} avis Google",
+    stars: "{rating} étoiles sur 5",
+    onGoogle: "sur Google",
+    translated: "Traduit par Google",
     readReviews: "Lire les avis",
   },
   faq: {

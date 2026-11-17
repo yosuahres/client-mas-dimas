@@ -1,13 +1,25 @@
+import type { Locale } from "@/i18n/config";
 import { fill } from "@/i18n/format";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getReviews, getSite } from "@/lib/content/public";
+import { loadGoogleReviews, type GoogleReview } from "@/lib/google-reviews";
 
-// The rating is the client's real Google rating. The quotes are edited in the admin panel; the ones the site
-// launched with are PLACEHOLDERS: replace them with real Google reviews before the site goes live.
+const SHOWN = 3;
+// Google returns its five "most relevant" reviews; the home page shows the good ones among them.
+const MIN_STARS = 4;
+
+// Shows the live rating and reviews from the Google Maps listing when GOOGLE_PLACES_API_KEY and GOOGLE_PLACE_ID
+// are set. Without them, or if Google can't be reached, it falls back to the rating in the business settings
+// and the quotes edited in the admin panel (PLACEHOLDERS until real ones are copied in).
 export async function ReviewsSection() {
   const locale = await getLocale();
   const t = (await getDictionary()).reviews;
-  const [reviews, site] = await Promise.all([getReviews(locale), getSite()]);
+  const [google, site] = await Promise.all([loadGoogleReviews(locale), getSite()]);
+  const googleReviews = google?.reviews.filter((review) => review.rating >= MIN_STARS).slice(0, SHOWN) ?? [];
+  const live = google && googleReviews.length > 0 ? google : null;
+
+  const formatNumber = (value: number, fractionDigits = 0) =>
+    new Intl.NumberFormat(locale, { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits }).format(value);
 
   return (
     <section aria-labelledby="reviews-title">
@@ -20,29 +32,74 @@ export async function ReviewsSection() {
             <span aria-hidden="true" className="text-gold">
               ★★★★★
             </span>{" "}
-            {fill(t.rating, { rating: site.googleRating })}
+            {live
+              ? fill(t.ratingCount, { rating: formatNumber(live.rating, 1), count: formatNumber(live.count) })
+              : fill(t.rating, { rating: site.googleRating })}
           </span>
-          <a href={site.googleReviewsUrl} className="label text-[0.95rem] underline underline-offset-4 hover:no-underline">
+          <a
+            href={live?.mapsUrl ?? site.googleReviewsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="label text-[0.95rem] underline underline-offset-4 hover:no-underline"
+          >
             {t.readReviews}
           </a>
         </p>
 
         <ul className="mt-14 grid gap-4 md:grid-cols-3">
-          {reviews.map((review) => (
-            <li key={review.id} className="rounded-3xl bg-cream p-7 sm:p-8">
-              <figure className="flex h-full flex-col justify-between gap-8">
-                <blockquote className="text-[1.2rem] leading-[1.5] tracking-[-0.01em]">&ldquo;{review.quote}&rdquo;</blockquote>
-                <figcaption>
-                  <span className="block font-medium">
-                    {review.guestName}, {review.origin}
-                  </span>
-                  {review.tourName ? <span className="label mt-1 block text-ink-muted">{review.tourName}</span> : null}
-                </figcaption>
-              </figure>
-            </li>
-          ))}
+          {live ? googleReviews.map((review) => <GoogleReviewCard key={review.id} review={review} t={t} />) : <AdminReviewCards locale={locale} />}
         </ul>
       </div>
     </section>
   );
+}
+
+type ReviewsText = Awaited<ReturnType<typeof getDictionary>>["reviews"];
+
+function GoogleReviewCard({ review, t }: { review: GoogleReview; t: ReviewsText }) {
+  return (
+    <li className="rounded-3xl bg-cream p-7 sm:p-8">
+      <figure className="flex h-full flex-col justify-between gap-8">
+        <div>
+          <p className="text-gold" role="img" aria-label={fill(t.stars, { rating: review.rating })}>
+            {"★".repeat(review.rating)}
+          </p>
+          <blockquote className="mt-4 line-clamp-8 text-[1.2rem] leading-[1.5] tracking-[-0.01em]">
+            &ldquo;{review.text}&rdquo;
+          </blockquote>
+        </div>
+        <figcaption>
+          <span className="block font-medium">
+            {review.authorUrl ? (
+              <a href={review.authorUrl} target="_blank" rel="noreferrer" className="hover:underline hover:underline-offset-4">
+                {review.authorName}
+              </a>
+            ) : (
+              review.authorName
+            )}
+          </span>
+          <span className="label mt-1 block text-ink-muted">
+            {[review.when, t.onGoogle, review.translated ? t.translated : null].filter(Boolean).join(" · ")}
+          </span>
+        </figcaption>
+      </figure>
+    </li>
+  );
+}
+
+async function AdminReviewCards({ locale }: { locale: Locale }) {
+  const reviews = await getReviews(locale);
+  return reviews.slice(0, SHOWN).map((review) => (
+    <li key={review.id} className="rounded-3xl bg-cream p-7 sm:p-8">
+      <figure className="flex h-full flex-col justify-between gap-8">
+        <blockquote className="text-[1.2rem] leading-[1.5] tracking-[-0.01em]">&ldquo;{review.quote}&rdquo;</blockquote>
+        <figcaption>
+          <span className="block font-medium">
+            {review.guestName}, {review.origin}
+          </span>
+          {review.tourName ? <span className="label mt-1 block text-ink-muted">{review.tourName}</span> : null}
+        </figcaption>
+      </figure>
+    </li>
+  ));
 }

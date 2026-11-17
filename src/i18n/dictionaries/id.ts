@@ -128,6 +128,10 @@ export const id: Dictionary = {
   reviews: {
     title: "Kata tamu kami",
     rating: "{rating} / 5 di Google",
+    ratingCount: "{rating} / 5 dari {count} ulasan di Google",
+    stars: "{rating} dari 5 bintang",
+    onGoogle: "di Google",
+    translated: "Diterjemahkan oleh Google",
     readReviews: "Baca ulasannya",
   },
   faq: {

@@ -30,7 +30,8 @@ export function ReviewsManager({ reviews, tours, googleReviewsUrl }: ReviewsMana
           <a href={googleReviewsUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">
             Google reviews
           </a>
-          , with the guest&apos;s permission. The home page shows the first three that are shown.
+          , with the guest&apos;s permission. The home page shows the first three that are shown, unless it&apos;s connected to
+          Google reviews: then it shows those instead, and these are the backup.
         </p>
         <Button size="sm" onClick={() => setEditing("new")}>
           <Plus />

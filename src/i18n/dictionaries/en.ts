@@ -126,11 +126,15 @@ export const en = {
       },
     ],
   },
-  // The rating is the client's real Google rating (set in /admin/settings/business). The quotes are edited in the admin panel;
-  // the ones the site launched with are PLACEHOLDERS until real reviews are copied in.
+  // With GOOGLE_PLACES_API_KEY and GOOGLE_PLACE_ID set, the rating, count and reviews come live from Google Maps.
+  // Otherwise: the rating from /admin/settings/business and the quotes from the admin panel (PLACEHOLDERS at launch).
   reviews: {
     title: "What our guests are saying",
     rating: "{rating} / 5 on Google",
+    ratingCount: "{rating} / 5 from {count} reviews on Google",
+    stars: "{rating} out of 5 stars",
+    onGoogle: "on Google",
+    translated: "Translated by Google",
     readReviews: "Read the reviews",
   },
   // The questions and answers are edited in the admin panel. Some launch answers are PLACEHOLDERS where the client's site
