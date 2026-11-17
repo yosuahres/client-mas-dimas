@@ -28,7 +28,7 @@ export default async function Home() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
-      <SiteHeader path="/" />
+      <SiteHeader path="/" overPhoto />
       <main>
         <Hero />
         <ToursSection />
