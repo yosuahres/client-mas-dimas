@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { useState } from "react";
 
 import { saveTour } from "@/app/admin/(panel)/tours/actions";
+import { PartsEditor } from "@/app/admin/(panel)/tours/parts-editor";
 import { autoTranslatedPlaceholder, Field, FormSection, LocaleTabs, SaveBar, SwitchField, TextAreaField, TextField } from "@/components/admin/form-fields";
 import { PhotoField } from "@/components/admin/photo-field";
 import { useAdminForm } from "@/components/admin/use-admin-form";
@@ -112,6 +113,8 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
           ) : null}
         </div>
 
+        <PartsEditor names={tour?.text.id?.parts ?? []} prices={tour?.partPrices ?? []} errors={errors} />
+
         <SwitchField
           name="published"
           label="Show on the website"
@@ -178,6 +181,17 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
                   hint='Where guests can be dropped at the end, one per line, e.g. "Bandara Juanda, Surabaya". The first is the usual one. Leave empty for "back to your hotel in Jogja".'
                   placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
                 />
+                {locale === "id" ? null : (
+                  <TextAreaField
+                    name={`${prefix}.parts`}
+                    label="Split options"
+                    rows={2}
+                    defaultValue={text?.parts.join("\n")}
+                    errors={errors}
+                    hint="Translated from the split options in the Package section. One per line, in the same order."
+                    placeholder={autoTranslatedPlaceholder}
+                  />
+                )}
                 <TextField
                   name={`${prefix}.photoAlt`}
                   label="Photo description"

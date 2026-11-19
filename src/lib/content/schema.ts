@@ -33,6 +33,11 @@ export type TourText = {
   destinations: string[];
   /** Where the guest can be dropped at the end, e.g. "Juanda Airport, Surabaya"; the first is the usual one. Empty means back in Jogja. */
   dropOffs: string[];
+  /**
+   * Smaller versions of the package a guest can book instead, e.g. "Borobudur only" for "Borobudur & Prambanan".
+   * Same order in every language; each has its price at the same position in TourRecord.partPrices. Empty: not split.
+   */
+  parts: string[];
   photoAlt: string;
 };
 
@@ -48,6 +53,8 @@ export type TourRecord = {
   accommodationOffered: boolean;
   /** Cheapest price with the hotel included, in rupiah; null when quoted on request. */
   accommodationPriceFromIdr: number | null;
+  /** Transport-only price of each part in text.<locale>.parts, for the cheapest car; null when quoted on request. */
+  partPrices: (number | null)[];
   /** A Supabase Storage key ("tours/abc.webp"), or a path under /public for the bundled photos ("/photos/borobudur.jpg"). */
   photo: string | null;
   photoCredit: PhotoCredit | null;
@@ -67,7 +74,12 @@ export type VehicleRecord = {
   name: string;
   /** Seats as listed by the client, e.g. "7" or "10–12". */
   seats: string;
+  /** Most adults and children without big luggage. Babies on a lap don't count. */
   maxPassengers: number;
+  /** Most adults and children when they bring suitcases or large bags. */
+  maxPassengersWithLuggage: number;
+  /** A package's price in this car, as a percentage of its price in the cheapest car (100). */
+  tourPricePercent: number;
   dayWithDriverIdr: number;
   dayWithDriverAndFuelIdr: number;
   /** Null when the car isn't offered for transfers. */

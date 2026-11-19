@@ -22,6 +22,8 @@ export type TransferVehicle = {
   id: string;
   name: string;
   seats: string;
+  maxPassengers: number;
+  maxPassengersWithLuggage: number;
   rate: FareRate;
 };
 
@@ -63,13 +65,22 @@ export type VehicleQuote = {
   vehicle: string;
   name: string;
   seats: string;
+  maxPassengers: number;
+  maxPassengersWithLuggage: number;
   totalIdr: number;
 };
 
 /** A price for every transfer car over this distance, cheapest first. */
 export function quoteTransfer(vehicles: TransferVehicle[], distanceKm: number): VehicleQuote[] {
   return vehicles
-    .map(({ id, name, seats, rate }) => ({ vehicle: id, name, seats, totalIdr: transferFare(rate, distanceKm) }))
+    .map(({ id, name, seats, maxPassengers, maxPassengersWithLuggage, rate }) => ({
+      vehicle: id,
+      name,
+      seats,
+      maxPassengers,
+      maxPassengersWithLuggage,
+      totalIdr: transferFare(rate, distanceKm),
+    }))
     .toSorted((a, b) => a.totalIdr - b.totalIdr);
 }
 

@@ -6,6 +6,7 @@ import { WhatsappIcon } from "@/components/icons";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { PageHeader } from "@/components/page-header";
+import { fitsParty } from "@/lib/fleet";
 import { TripSearch } from "@/components/search/trip-search";
 import { intlLocale, languageAlternates, localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
@@ -116,7 +117,7 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
 }
 
 function SearchOnEdge({ children }: { children: ReactNode }) {
-  return <div className="relative z-10 -mt-10 sm:-mt-12">{children}</div>;
+  return <div className="relative z-10 -mx-3 sm:mx-0 sm:-mt-12">{children}</div>;
 }
 
 type ResultsProps = {
@@ -137,7 +138,10 @@ function TransferResults({ search, party, places, vehicles, site, locale, dict }
   // parseTransferSearch only accepts ids from this list, so both ends are found
   const trip: Trip = { search, party, from: findPlace(places, search.from)!, to: findPlace(places, search.to)! };
   const route = estimateRoute(trip.from, trip.to);
-  const quotes = quoteTransfer(vehicles, route.distanceKm);
+  // Cars the group fits in first, cheapest first; the cheapest of those is the one to suggest
+  const allQuotes = quoteTransfer(vehicles, route.distanceKm);
+  const quotes = [...allQuotes.filter((quote) => fitsParty(quote, party)), ...allQuotes.filter((quote) => !fitsParty(quote, party))];
+  const recommended = quotes.find((quote) => fitsParty(quote, party));
 
   const when = [search.date ? formatDate(search.date, locale) : null, search.time].filter(Boolean).join(", ");
   const facts = [
@@ -157,7 +161,15 @@ function TransferResults({ search, party, places, vehicles, site, locale, dict }
       <ul className="mt-8 divide-y divide-sand border-y border-sand">
         {quotes.map((quote) => (
           <li key={quote.vehicle}>
-            <VehicleRow quote={quote} trip={trip} site={site} locale={locale} dict={dict} />
+            <VehicleRow
+              quote={quote}
+              trip={trip}
+              site={site}
+              locale={locale}
+              dict={dict}
+              fits={fitsParty(quote, party)}
+              recommended={quote.vehicle === recommended?.vehicle}
+            />
           </li>
         ))}
       </ul>
@@ -172,14 +184,26 @@ function TransferResults({ search, party, places, vehicles, site, locale, dict }
   );
 }
 
-type VehicleRowProps = Pick<ResultsProps, "site" | "locale" | "dict"> & { quote: VehicleQuote; trip: Trip };
+type VehicleRowProps = Pick<ResultsProps, "site" | "locale" | "dict"> & {
+  quote: VehicleQuote;
+  trip: Trip;
+  /** Whether the searched group fits in this car; if not, it's shown greyed out without a request button. */
+  fits: boolean;
+  recommended: boolean;
+};
 
-function VehicleRow({ quote, trip, site, locale, dict }: VehicleRowProps) {
+function VehicleRow({ quote, trip, site, locale, dict, fits, recommended }: VehicleRowProps) {
   const t = dict.transferPage;
+  const partyText =
+    describeParty(trip.party, dict.pickers.party, locale) + (trip.party.luggage ? `, ${dict.pickers.party.withLuggage}` : "");
   return (
-    <article className="grid gap-4 py-6 sm:grid-cols-[1fr_auto] sm:items-center lg:grid-cols-[1.2fr_1fr_auto_auto] lg:gap-10">
+    <article
+      className={`grid gap-4 py-6 sm:grid-cols-[1fr_auto] sm:items-center lg:grid-cols-[1.2fr_1fr_auto_auto] lg:gap-10 ${fits ? "" : "opacity-55"}`}
+    >
       <div>
         <h3 className="text-xl font-medium">{quote.name}</h3>
+        {recommended ? <p className="mt-1 text-[0.9rem] font-medium text-jade">{t.recommended}</p> : null}
+        {fits ? null : <p className="mt-1 text-[0.9rem] text-ink-muted">{fill(t.tooSmall, { party: partyText })}</p>}
       </div>
       <p className="text-[0.95rem] text-ink-muted sm:col-start-1 lg:col-start-auto">
         {fill(dict.transfer.seats, { seats: quote.seats })}
@@ -190,13 +214,15 @@ function VehicleRow({ quote, trip, site, locale, dict }: VehicleRowProps) {
           {t.perCar}, ≈ {formatApproxUsd(quote.totalIdr, locale, site.idrPerUsd)}
         </span>
       </p>
-      <a
-        href={whatsappLink(site, transferMessage(trip, quote, locale, dict))}
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 font-medium whitespace-nowrap text-white hover:bg-ink/90 sm:col-span-2 sm:justify-self-start lg:col-span-1"
-      >
-        <WhatsappIcon className="size-[1.1em] shrink-0" />
-        {t.request}
-      </a>
+      {fits ? (
+        <a
+          href={whatsappLink(site, transferMessage(trip, quote, locale, dict))}
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 font-medium whitespace-nowrap text-white hover:bg-ink/90 sm:col-span-2 sm:justify-self-start lg:col-span-1"
+        >
+          <WhatsappIcon className="size-[1.1em] shrink-0" />
+          {t.request}
+        </a>
+      ) : null}
     </article>
   );
 }

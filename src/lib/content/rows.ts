@@ -1,4 +1,5 @@
 // Converts between Supabase rows (snake_case) and the content records in ./schema.
+import { defaultContent } from "@/lib/content/defaults";
 import type {
   FaqRecord,
   PlaceRecord,
@@ -72,6 +73,7 @@ export type TourRow = {
   price_from_idr: number | null;
   accommodation_offered: boolean;
   accommodation_price_from_idr: number | null;
+  part_prices: TourRecord["partPrices"] | null;
   photo: string | null;
   photo_credit: TourRecord["photoCredit"];
   text: TourRecord["text"];
@@ -89,17 +91,37 @@ export function tourFromRow(row: TourRow): TourRecord {
     // Defaults cover a database that hasn't had the 20261108 migration yet.
     accommodationOffered: row.accommodation_offered ?? true,
     accommodationPriceFromIdr: row.accommodation_price_from_idr ?? null,
+    partPrices: row.part_prices ?? builtInTour(row.slug)?.partPrices ?? [],
     photo: row.photo,
     photoCredit: row.photo_credit,
-    text: withDropOffs(row.text),
+    text: withBuiltInParts(withDropOffs(row.text), row),
     published: row.published,
   };
 }
 
-/** Packages saved before drop-off points existed have none in their text. */
+// Until the 20261120 migration has run, the database has no split options or car capacities (the columns come
+// back undefined). Meanwhile the site shows the built-in dummies for the packages and cars it launched with.
+const builtInTour = (slug: string) => defaultContent.tours.find((tour) => tour.slug === slug);
+const builtInVehicle = (id: string) => defaultContent.vehicles.find((vehicle) => vehicle.id === id);
+
+function withBuiltInParts(text: TourRecord["text"], row: TourRow): TourRecord["text"] {
+  const builtIn = builtInTour(row.slug);
+  if (row.part_prices !== undefined || !builtIn) return text;
+  return Object.fromEntries(
+    Object.entries(text).map(([locale, fields]) => [
+      locale,
+      fields && { ...fields, parts: builtIn.text[locale as keyof TourRecord["text"]]?.parts ?? builtIn.text.en.parts },
+    ]),
+  ) as TourRecord["text"];
+}
+
+/** Packages saved before drop-off points or parts existed have none in their text. */
 function withDropOffs(text: TourRecord["text"]): TourRecord["text"] {
   return Object.fromEntries(
-    Object.entries(text).map(([locale, fields]) => [locale, fields && { ...fields, dropOffs: fields.dropOffs ?? [] }]),
+    Object.entries(text).map(([locale, fields]) => [
+      locale,
+      fields && { ...fields, dropOffs: fields.dropOffs ?? [], parts: fields.parts ?? [] },
+    ]),
   ) as TourRecord["text"];
 }
 
@@ -112,6 +134,7 @@ export function tourToRow(tour: TourRecord): Omit<TourRow, "position"> {
     price_from_idr: tour.priceFromIdr,
     accommodation_offered: tour.accommodationOffered,
     accommodation_price_from_idr: tour.accommodationPriceFromIdr,
+    part_prices: tour.partPrices,
     photo: tour.photo,
     photo_credit: tour.photoCredit,
     text: tour.text,
@@ -124,6 +147,8 @@ export type VehicleRow = {
   name: string;
   seats: string;
   max_passengers: number;
+  max_passengers_with_luggage: number | null;
+  tour_price_percent: number | null;
   day_with_driver_idr: number;
   day_with_driver_and_fuel_idr: number;
   transfer_base_idr: number | null;
@@ -141,6 +166,9 @@ export function vehicleFromRow(row: VehicleRow): VehicleRecord {
     name: row.name,
     seats: row.seats,
     maxPassengers: row.max_passengers,
+    maxPassengersWithLuggage:
+      row.max_passengers_with_luggage ?? Math.min(builtInVehicle(row.id)?.maxPassengersWithLuggage ?? row.max_passengers, row.max_passengers),
+    tourPricePercent: row.tour_price_percent ?? builtInVehicle(row.id)?.tourPricePercent ?? 100,
     dayWithDriverIdr: row.day_with_driver_idr,
     dayWithDriverAndFuelIdr: row.day_with_driver_and_fuel_idr,
     transferRate: offersTransfers
@@ -156,6 +184,8 @@ export function vehicleToRow(vehicle: VehicleRecord): Omit<VehicleRow, "position
     name: vehicle.name,
     seats: vehicle.seats,
     max_passengers: vehicle.maxPassengers,
+    max_passengers_with_luggage: vehicle.maxPassengersWithLuggage,
+    tour_price_percent: vehicle.tourPricePercent,
     day_with_driver_idr: vehicle.dayWithDriverIdr,
     day_with_driver_and_fuel_idr: vehicle.dayWithDriverAndFuelIdr,
     transfer_base_idr: vehicle.transferRate?.baseIdr ?? null,

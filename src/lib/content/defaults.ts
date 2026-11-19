@@ -4,6 +4,8 @@
 //
 // Still PLACEHOLDERS to confirm with the client: per-km transfer rates, the three sample reviews,
 // the Ijen price (read as Rp 3,500,000), and whether the Bali/Karimunjawa price includes the ferry.
+// DUMMY until the client sends real numbers: the split-package prices (partPrices, e.g. "Borobudur only"),
+// each car's passengers with luggage, and its tourPricePercent (from the day rates with fuel).
 import type { SiteContent } from "./schema";
 
 export const defaultContent: SiteContent = {
@@ -30,6 +32,10 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 550000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [
+        450000,
+        400000
+      ],
       "photo": "/photos/borobudur.jpg",
       "photoCredit": {
         "subject": "Borobudur",
@@ -47,7 +53,11 @@ export const defaultContent: SiteContent = {
             "Prambanan temple"
           ],
           "dropOffs": [],
-          "photoAlt": "Stone stupas on the top terrace of Borobudur at sunrise, with mist over the forest below"
+          "photoAlt": "Stone stupas on the top terrace of Borobudur at sunrise, with mist over the forest below",
+          "parts": [
+            "Borobudur only",
+            "Prambanan only"
+          ]
         },
         "id": {
           "name": "Borobudur & Prambanan",
@@ -58,7 +68,11 @@ export const defaultContent: SiteContent = {
             "Candi Prambanan"
           ],
           "dropOffs": [],
-          "photoAlt": "Stupa batu di teras atas Borobudur saat matahari terbit, dengan kabut di atas hutan di bawahnya"
+          "photoAlt": "Stupa batu di teras atas Borobudur saat matahari terbit, dengan kabut di atas hutan di bawahnya",
+          "parts": [
+            "Borobudur saja",
+            "Prambanan saja"
+          ]
         },
         "fr": {
           "name": "Borobudur & Prambanan",
@@ -69,7 +83,11 @@ export const defaultContent: SiteContent = {
             "Temple de Prambanan"
           ],
           "dropOffs": [],
-          "photoAlt": "Stupas de pierre sur la terrasse supérieure de Borobudur au lever du soleil, avec la brume sur la forêt en contrebas"
+          "photoAlt": "Stupas de pierre sur la terrasse supérieure de Borobudur au lever du soleil, avec la brume sur la forêt en contrebas",
+          "parts": [
+            "Borobudur seulement",
+            "Prambanan seulement"
+          ]
         }
       },
       "published": true
@@ -85,6 +103,10 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 550000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [
+        450000,
+        400000
+      ],
       "photo": "/photos/kraton.jpg",
       "photoCredit": {
         "subject": "Kraton",
@@ -103,7 +125,11 @@ export const defaultContent: SiteContent = {
             "Taman Sari water castle"
           ],
           "dropOffs": [],
-          "photoAlt": "An open pavilion with carved, painted pillars inside the Kraton of Yogyakarta"
+          "photoAlt": "An open pavilion with carved, painted pillars inside the Kraton of Yogyakarta",
+          "parts": [
+            "Borobudur only",
+            "Yogyakarta heritage only"
+          ]
         },
         "id": {
           "name": "Borobudur & Wisata Sejarah Yogyakarta",
@@ -115,7 +141,11 @@ export const defaultContent: SiteContent = {
             "Taman Sari"
           ],
           "dropOffs": [],
-          "photoAlt": "Pendapa terbuka dengan tiang-tiang berukir dan berwarna di dalam Kraton Yogyakarta"
+          "photoAlt": "Pendapa terbuka dengan tiang-tiang berukir dan berwarna di dalam Kraton Yogyakarta",
+          "parts": [
+            "Borobudur saja",
+            "Wisata sejarah Yogyakarta saja"
+          ]
         },
         "fr": {
           "name": "Borobudur & patrimoine de Yogyakarta",
@@ -127,7 +157,11 @@ export const defaultContent: SiteContent = {
             "Château d'eau de Taman Sari"
           ],
           "dropOffs": [],
-          "photoAlt": "Un pavillon ouvert aux piliers sculptés et peints dans le Kraton de Yogyakarta"
+          "photoAlt": "Un pavillon ouvert aux piliers sculptés et peints dans le Kraton de Yogyakarta",
+          "parts": [
+            "Borobudur seulement",
+            "Patrimoine de Yogyakarta seulement"
+          ]
         }
       },
       "published": true
@@ -143,6 +177,10 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 500000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [
+        400000,
+        400000
+      ],
       "photo": "/photos/jomblang.jpg",
       "photoCredit": {
         "subject": "Jomblang cave",
@@ -160,7 +198,11 @@ export const defaultContent: SiteContent = {
             "Pindul cave"
           ],
           "dropOffs": [],
-          "photoAlt": "A beam of sunlight falling into Jomblang cave onto visitors in helmets"
+          "photoAlt": "A beam of sunlight falling into Jomblang cave onto visitors in helmets",
+          "parts": [
+            "Jomblang Cave only",
+            "Pindul Cave only"
+          ]
         },
         "id": {
           "name": "Goa Jomblang & Goa Pindul",
@@ -171,7 +213,11 @@ export const defaultContent: SiteContent = {
             "Goa Pindul"
           ],
           "dropOffs": [],
-          "photoAlt": "Seberkas cahaya matahari masuk ke Goa Jomblang menyinari pengunjung berhelm"
+          "photoAlt": "Seberkas cahaya matahari masuk ke Goa Jomblang menyinari pengunjung berhelm",
+          "parts": [
+            "Goa Jomblang saja",
+            "Goa Pindul saja"
+          ]
         },
         "fr": {
           "name": "Grottes de Jomblang & Pindul",
@@ -182,7 +228,11 @@ export const defaultContent: SiteContent = {
             "Grotte de Pindul"
           ],
           "dropOffs": [],
-          "photoAlt": "Un rayon de soleil tombe dans la grotte de Jomblang sur des visiteurs casqués"
+          "photoAlt": "Un rayon de soleil tombe dans la grotte de Jomblang sur des visiteurs casqués",
+          "parts": [
+            "Grotte de Jomblang seulement",
+            "Grotte de Pindul seulement"
+          ]
         }
       },
       "published": true
@@ -199,6 +249,10 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 750000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [
+        500000,
+        500000
+      ],
       "photo": "/photos/prambanan.jpg",
       "photoCredit": {
         "subject": "Prambanan",
@@ -217,7 +271,11 @@ export const defaultContent: SiteContent = {
             "Ramayana ballet"
           ],
           "dropOffs": [],
-          "photoAlt": "The carved stone towers of Prambanan temple under a cloudy sky"
+          "photoAlt": "The carved stone towers of Prambanan temple under a cloudy sky",
+          "parts": [
+            "Merapi Lava Tour only",
+            "Prambanan & Ramayana Ballet only"
+          ]
         },
         "id": {
           "name": "Lava Tour Merapi, Prambanan & Sendratari Ramayana",
@@ -229,7 +287,11 @@ export const defaultContent: SiteContent = {
             "Sendratari Ramayana"
           ],
           "dropOffs": [],
-          "photoAlt": "Menara batu berukir Candi Prambanan di bawah langit berawan"
+          "photoAlt": "Menara batu berukir Candi Prambanan di bawah langit berawan",
+          "parts": [
+            "Lava Tour Merapi saja",
+            "Prambanan & Sendratari Ramayana saja"
+          ]
         },
         "fr": {
           "name": "Lava tour du Merapi, Prambanan & ballet du Ramayana",
@@ -241,7 +303,11 @@ export const defaultContent: SiteContent = {
             "Ballet du Ramayana"
           ],
           "dropOffs": [],
-          "photoAlt": "Les tours de pierre sculptées du temple de Prambanan sous un ciel nuageux"
+          "photoAlt": "Les tours de pierre sculptées du temple de Prambanan sous un ciel nuageux",
+          "parts": [
+            "Lava tour du Merapi seulement",
+            "Prambanan & ballet du Ramayana seulement"
+          ]
         }
       },
       "published": true
@@ -257,6 +323,9 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 2700000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [
+        2400000
+      ],
       "photo": "/photos/bromo.jpg",
       "photoCredit": {
         "subject": "Bromo",
@@ -278,7 +347,10 @@ export const defaultContent: SiteContent = {
             "Juanda Airport, Surabaya",
             "Ketapang port, Banyuwangi, via Ijen crater, for the ferry to Bali"
           ],
-          "photoAlt": "Mount Bromo's smoking crater at sunrise, with Mount Semeru behind"
+          "photoAlt": "Mount Bromo's smoking crater at sunrise, with Mount Semeru behind",
+          "parts": [
+            "Bromo only"
+          ]
         },
         "id": {
           "name": "Bromo & Madakaripura",
@@ -293,7 +365,10 @@ export const defaultContent: SiteContent = {
             "Bandara Juanda, Surabaya",
             "Pelabuhan Ketapang, Banyuwangi, lewat Kawah Ijen, lanjut kapal ke Bali"
           ],
-          "photoAlt": "Kawah Gunung Bromo yang berasap saat matahari terbit, dengan Gunung Semeru di belakangnya"
+          "photoAlt": "Kawah Gunung Bromo yang berasap saat matahari terbit, dengan Gunung Semeru di belakangnya",
+          "parts": [
+            "Bromo saja"
+          ]
         },
         "fr": {
           "name": "Bromo & Madakaripura",
@@ -308,7 +383,10 @@ export const defaultContent: SiteContent = {
             "Aéroport de Juanda, Surabaya",
             "Port de Ketapang, Banyuwangi, via le cratère de l'Ijen, pour le ferry vers Bali"
           ],
-          "photoAlt": "Le cratère fumant du mont Bromo au lever du soleil, avec le mont Semeru en arrière-plan"
+          "photoAlt": "Le cratère fumant du mont Bromo au lever du soleil, avec le mont Semeru en arrière-plan",
+          "parts": [
+            "Bromo seulement"
+          ]
         }
       },
       "published": true
@@ -323,6 +401,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": null,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/tumpak-sewu.jpg",
       "photoCredit": {
         "subject": "Tumpak Sewu",
@@ -345,7 +424,8 @@ export const defaultContent: SiteContent = {
             "Juanda Airport, Surabaya",
             "Ketapang port, Banyuwangi, via Ijen crater, for the ferry to Bali"
           ],
-          "photoAlt": "Dozens of thin waterfalls pouring into a green canyon at Tumpak Sewu"
+          "photoAlt": "Dozens of thin waterfalls pouring into a green canyon at Tumpak Sewu",
+          "parts": []
         },
         "id": {
           "name": "Air Terjun Tumpak Sewu",
@@ -361,7 +441,8 @@ export const defaultContent: SiteContent = {
             "Bandara Juanda, Surabaya",
             "Pelabuhan Ketapang, Banyuwangi, lewat Kawah Ijen, lanjut kapal ke Bali"
           ],
-          "photoAlt": "Puluhan air terjun kecil mengalir ke ngarai hijau di Tumpak Sewu"
+          "photoAlt": "Puluhan air terjun kecil mengalir ke ngarai hijau di Tumpak Sewu",
+          "parts": []
         },
         "fr": {
           "name": "Cascades de Tumpak Sewu",
@@ -377,7 +458,8 @@ export const defaultContent: SiteContent = {
             "Aéroport de Juanda, Surabaya",
             "Port de Ketapang, Banyuwangi, via le cratère de l'Ijen, pour le ferry vers Bali"
           ],
-          "photoAlt": "Des dizaines de fines cascades se jetant dans un canyon verdoyant à Tumpak Sewu"
+          "photoAlt": "Des dizaines de fines cascades se jetant dans un canyon verdoyant à Tumpak Sewu",
+          "parts": []
         }
       },
       "published": true
@@ -393,6 +475,9 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 3500000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [
+        3000000
+      ],
       "photo": "/photos/ijen.jpg",
       "photoCredit": {
         "subject": "Kawah Ijen",
@@ -414,7 +499,10 @@ export const defaultContent: SiteContent = {
             "Juanda Airport, Surabaya",
             "Ketapang port, Banyuwangi, for the ferry to Bali"
           ],
-          "photoAlt": "Steam rising over the turquoise acid lake inside the Ijen crater"
+          "photoAlt": "Steam rising over the turquoise acid lake inside the Ijen crater",
+          "parts": [
+            "Ijen only"
+          ]
         },
         "id": {
           "name": "Ijen & Baluran",
@@ -429,7 +517,10 @@ export const defaultContent: SiteContent = {
             "Bandara Juanda, Surabaya",
             "Pelabuhan Ketapang, Banyuwangi, lanjut kapal ke Bali"
           ],
-          "photoAlt": "Uap mengepul di atas danau asam biru toska di dalam Kawah Ijen"
+          "photoAlt": "Uap mengepul di atas danau asam biru toska di dalam Kawah Ijen",
+          "parts": [
+            "Ijen saja"
+          ]
         },
         "fr": {
           "name": "Ijen & Baluran",
@@ -444,7 +535,10 @@ export const defaultContent: SiteContent = {
             "Aéroport de Juanda, Surabaya",
             "Port de Ketapang, Banyuwangi, pour le ferry vers Bali"
           ],
-          "photoAlt": "De la vapeur s'élève au-dessus du lac acide turquoise dans le cratère de l'Ijen"
+          "photoAlt": "De la vapeur s'élève au-dessus du lac acide turquoise dans le cratère de l'Ijen",
+          "parts": [
+            "Ijen seulement"
+          ]
         }
       },
       "published": true
@@ -460,6 +554,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 1500000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/dieng.jpg",
       "photoCredit": {
         "subject": "Telaga Warna, Dieng",
@@ -479,7 +574,8 @@ export const defaultContent: SiteContent = {
             "Arjuna temples"
           ],
           "dropOffs": [],
-          "photoAlt": "The green Telaga Warna lake among forested hills on the Dieng plateau"
+          "photoAlt": "The green Telaga Warna lake among forested hills on the Dieng plateau",
+          "parts": []
         },
         "id": {
           "name": "Dieng Highland Escape",
@@ -492,7 +588,8 @@ export const defaultContent: SiteContent = {
             "Candi Arjuna"
           ],
           "dropOffs": [],
-          "photoAlt": "Telaga Warna yang hijau di antara perbukitan berhutan di Dataran Tinggi Dieng"
+          "photoAlt": "Telaga Warna yang hijau di antara perbukitan berhutan di Dataran Tinggi Dieng",
+          "parts": []
         },
         "fr": {
           "name": "Escapade sur le plateau de Dieng",
@@ -505,7 +602,8 @@ export const defaultContent: SiteContent = {
             "Temples d'Arjuna"
           ],
           "dropOffs": [],
-          "photoAlt": "Le lac vert de Telaga Warna entre des collines boisées sur le plateau de Dieng"
+          "photoAlt": "Le lac vert de Telaga Warna entre des collines boisées sur le plateau de Dieng",
+          "parts": []
         }
       },
       "published": true
@@ -521,6 +619,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 500000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/parangtritis.jpg",
       "photoCredit": {
         "subject": "Parangtritis",
@@ -540,7 +639,8 @@ export const defaultContent: SiteContent = {
             "Malioboro street"
           ],
           "dropOffs": [],
-          "photoAlt": "A horse-drawn cart on the sand at Parangtritis beach"
+          "photoAlt": "A horse-drawn cart on the sand at Parangtritis beach",
+          "parts": []
         },
         "id": {
           "name": "Jogja Beach & City Escape",
@@ -553,7 +653,8 @@ export const defaultContent: SiteContent = {
             "Jalan Malioboro"
           ],
           "dropOffs": [],
-          "photoAlt": "Andong yang ditarik kuda di atas pasir Pantai Parangtritis"
+          "photoAlt": "Andong yang ditarik kuda di atas pasir Pantai Parangtritis",
+          "parts": []
         },
         "fr": {
           "name": "Escapade plage et ville à Jogja",
@@ -566,7 +667,8 @@ export const defaultContent: SiteContent = {
             "Rue Malioboro"
           ],
           "dropOffs": [],
-          "photoAlt": "Une charrette tirée par un cheval sur le sable de la plage de Parangtritis"
+          "photoAlt": "Une charrette tirée par un cheval sur le sable de la plage de Parangtritis",
+          "parts": []
         }
       },
       "published": true
@@ -582,6 +684,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 450000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/merapi.jpg",
       "photoCredit": {
         "subject": "Merapi",
@@ -599,7 +702,8 @@ export const defaultContent: SiteContent = {
             "Kaliurang ATV adventure"
           ],
           "dropOffs": [],
-          "photoAlt": "The grey, bare cone of Mount Merapi seen from the forest below"
+          "photoAlt": "The grey, bare cone of Mount Merapi seen from the forest below",
+          "parts": []
         },
         "id": {
           "name": "Merapi Adventure",
@@ -610,7 +714,8 @@ export const defaultContent: SiteContent = {
             "Petualangan ATV Kaliurang"
           ],
           "dropOffs": [],
-          "photoAlt": "Puncak Gunung Merapi yang gundul dan abu-abu, terlihat dari hutan di bawahnya"
+          "photoAlt": "Puncak Gunung Merapi yang gundul dan abu-abu, terlihat dari hutan di bawahnya",
+          "parts": []
         },
         "fr": {
           "name": "Aventure au Merapi",
@@ -621,7 +726,8 @@ export const defaultContent: SiteContent = {
             "Quad à Kaliurang"
           ],
           "dropOffs": [],
-          "photoAlt": "Le cône gris et nu du mont Merapi vu depuis la forêt en contrebas"
+          "photoAlt": "Le cône gris et nu du mont Merapi vu depuis la forêt en contrebas",
+          "parts": []
         }
       },
       "published": true
@@ -637,6 +743,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 700000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/timang.jpg",
       "photoCredit": {
         "subject": "Timang beach",
@@ -655,7 +762,8 @@ export const defaultContent: SiteContent = {
             "Sadranan beach"
           ],
           "dropOffs": [],
-          "photoAlt": "The wooden gondola that crosses to the rock island at Timang beach"
+          "photoAlt": "The wooden gondola that crosses to the rock island at Timang beach",
+          "parts": []
         },
         "id": {
           "name": "Petualangan Pantai Gunungkidul",
@@ -667,7 +775,8 @@ export const defaultContent: SiteContent = {
             "Pantai Sadranan"
           ],
           "dropOffs": [],
-          "photoAlt": "Gondola kayu yang menyeberang ke pulau karang di Pantai Timang"
+          "photoAlt": "Gondola kayu yang menyeberang ke pulau karang di Pantai Timang",
+          "parts": []
         },
         "fr": {
           "name": "Aventure sur la côte de Gunungkidul",
@@ -679,7 +788,8 @@ export const defaultContent: SiteContent = {
             "Plage de Sadranan"
           ],
           "dropOffs": [],
-          "photoAlt": "La nacelle en bois qui traverse jusqu'à l'îlot rocheux de la plage de Timang"
+          "photoAlt": "La nacelle en bois qui traverse jusqu'à l'îlot rocheux de la plage de Timang",
+          "parts": []
         }
       },
       "published": true
@@ -696,6 +806,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 550000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/setumbu.jpg",
       "photoCredit": {
         "subject": "Punthuk Setumbu",
@@ -714,7 +825,8 @@ export const defaultContent: SiteContent = {
             "Elo river rafting"
           ],
           "dropOffs": [],
-          "photoAlt": "Sunrise over the mountains seen from Punthuk Setumbu hill"
+          "photoAlt": "Sunrise over the mountains seen from Punthuk Setumbu hill",
+          "parts": []
         },
         "id": {
           "name": "Sunrise & Petualangan Magelang",
@@ -726,7 +838,8 @@ export const defaultContent: SiteContent = {
             "Rafting Sungai Elo"
           ],
           "dropOffs": [],
-          "photoAlt": "Matahari terbit di atas pegunungan, dilihat dari Bukit Punthuk Setumbu"
+          "photoAlt": "Matahari terbit di atas pegunungan, dilihat dari Bukit Punthuk Setumbu",
+          "parts": []
         },
         "fr": {
           "name": "Lever de soleil et aventure à Magelang",
@@ -738,7 +851,8 @@ export const defaultContent: SiteContent = {
             "Rafting sur la rivière Elo"
           ],
           "dropOffs": [],
-          "photoAlt": "Le lever du soleil sur les montagnes vu depuis la colline de Punthuk Setumbu"
+          "photoAlt": "Le lever du soleil sur les montagnes vu depuis la colline de Punthuk Setumbu",
+          "parts": []
         }
       },
       "published": true
@@ -753,6 +867,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": 650000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/breksi.jpg",
       "photoCredit": {
         "subject": "Tebing Breksi",
@@ -772,7 +887,8 @@ export const defaultContent: SiteContent = {
             "Tebing Breksi"
           ],
           "dropOffs": [],
-          "photoAlt": "The carved limestone cliff face of Tebing Breksi"
+          "photoAlt": "The carved limestone cliff face of Tebing Breksi",
+          "parts": []
         },
         "id": {
           "name": "Yogyakarta Scenic & Sunset",
@@ -785,7 +901,8 @@ export const defaultContent: SiteContent = {
             "Tebing Breksi"
           ],
           "dropOffs": [],
-          "photoAlt": "Dinding tebing kapur berukir di Tebing Breksi"
+          "photoAlt": "Dinding tebing kapur berukir di Tebing Breksi",
+          "parts": []
         },
         "fr": {
           "name": "Panoramas et coucher de soleil à Yogyakarta",
@@ -798,7 +915,8 @@ export const defaultContent: SiteContent = {
             "Tebing Breksi"
           ],
           "dropOffs": [],
-          "photoAlt": "La paroi de calcaire sculptée de Tebing Breksi"
+          "photoAlt": "La paroi de calcaire sculptée de Tebing Breksi",
+          "parts": []
         }
       },
       "published": true
@@ -814,6 +932,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": null,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/kedung-pedut.jpg",
       "photoCredit": {
         "subject": "Kedung Pedut",
@@ -833,7 +952,8 @@ export const defaultContent: SiteContent = {
             "Elo river rafting"
           ],
           "dropOffs": [],
-          "photoAlt": "Water running over terraced rocks at Kedung Pedut waterfall"
+          "photoAlt": "Water running over terraced rocks at Kedung Pedut waterfall",
+          "parts": []
         },
         "id": {
           "name": "Water & Adventure",
@@ -846,7 +966,8 @@ export const defaultContent: SiteContent = {
             "Rafting Sungai Elo"
           ],
           "dropOffs": [],
-          "photoAlt": "Air mengalir di atas bebatuan bertingkat di Air Terjun Kedung Pedut"
+          "photoAlt": "Air mengalir di atas bebatuan bertingkat di Air Terjun Kedung Pedut",
+          "parts": []
         },
         "fr": {
           "name": "Eau & aventure",
@@ -859,7 +980,8 @@ export const defaultContent: SiteContent = {
             "Rafting sur la rivière Elo"
           ],
           "dropOffs": [],
-          "photoAlt": "L'eau ruisselle sur les rochers en terrasses de la cascade de Kedung Pedut"
+          "photoAlt": "L'eau ruisselle sur les rochers en terrasses de la cascade de Kedung Pedut",
+          "parts": []
         }
       },
       "published": true
@@ -874,6 +996,7 @@ export const defaultContent: SiteContent = {
       "priceFromIdr": null,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "partPrices": [],
       "photo": "/photos/menoreh.jpg",
       "photoCredit": {
         "subject": "Menoreh hills",
@@ -894,7 +1017,8 @@ export const defaultContent: SiteContent = {
             "Ketep Pass"
           ],
           "dropOffs": [],
-          "photoAlt": "Green valleys of the Menoreh hills seen from above"
+          "photoAlt": "Green valleys of the Menoreh hills seen from above",
+          "parts": []
         },
         "id": {
           "name": "Nature & Scenic",
@@ -908,7 +1032,8 @@ export const defaultContent: SiteContent = {
             "Ketep Pass"
           ],
           "dropOffs": [],
-          "photoAlt": "Lembah hijau Perbukitan Menoreh dilihat dari atas"
+          "photoAlt": "Lembah hijau Perbukitan Menoreh dilihat dari atas",
+          "parts": []
         },
         "fr": {
           "name": "Nature & panoramas",
@@ -922,7 +1047,8 @@ export const defaultContent: SiteContent = {
             "Ketep Pass"
           ],
           "dropOffs": [],
-          "photoAlt": "Les vallées verdoyantes des collines de Menoreh vues d'en haut"
+          "photoAlt": "Les vallées verdoyantes des collines de Menoreh vues d'en haut",
+          "parts": []
         }
       },
       "published": true
@@ -934,6 +1060,8 @@ export const defaultContent: SiteContent = {
       "name": "Toyota Avanza",
       "seats": "7",
       "maxPassengers": 7,
+      "maxPassengersWithLuggage": 5,
+      "tourPricePercent": 100,
       "dayWithDriverIdr": 450000,
       "dayWithDriverAndFuelIdr": 600000,
       "transferRate": {
@@ -948,6 +1076,8 @@ export const defaultContent: SiteContent = {
       "name": "Daihatsu Xenia",
       "seats": "7",
       "maxPassengers": 7,
+      "maxPassengersWithLuggage": 5,
+      "tourPricePercent": 100,
       "dayWithDriverIdr": 450000,
       "dayWithDriverAndFuelIdr": 600000,
       "transferRate": null,
@@ -958,6 +1088,8 @@ export const defaultContent: SiteContent = {
       "name": "Toyota Innova Reborn",
       "seats": "7",
       "maxPassengers": 7,
+      "maxPassengersWithLuggage": 6,
+      "tourPricePercent": 135,
       "dayWithDriverIdr": 600000,
       "dayWithDriverAndFuelIdr": 800000,
       "transferRate": {
@@ -972,6 +1104,8 @@ export const defaultContent: SiteContent = {
       "name": "Toyota Innova Zenix",
       "seats": "7",
       "maxPassengers": 7,
+      "maxPassengersWithLuggage": 6,
+      "tourPricePercent": 150,
       "dayWithDriverIdr": 650000,
       "dayWithDriverAndFuelIdr": 900000,
       "transferRate": {
@@ -986,6 +1120,8 @@ export const defaultContent: SiteContent = {
       "name": "Toyota HiAce",
       "seats": "10–12",
       "maxPassengers": 12,
+      "maxPassengersWithLuggage": 9,
+      "tourPricePercent": 215,
       "dayWithDriverIdr": 1000000,
       "dayWithDriverAndFuelIdr": 1300000,
       "transferRate": {

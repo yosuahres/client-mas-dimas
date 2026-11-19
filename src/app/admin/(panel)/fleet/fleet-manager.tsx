@@ -21,8 +21,8 @@ export function FleetManager({ vehicles }: { vehicles: VehicleRecord[] }) {
     <>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <p className="max-w-xl text-sm text-muted-foreground">
-          Day rates are listed on each package&apos;s booking card. Cars with a transfer rate are priced on the Airport &amp;
-          transfers page.
+          Guests pick a car on each package&apos;s booking card; the site suggests the cheapest one their group fits in.
+          Cars with a transfer rate are priced on the Airport &amp; transfers page.
         </p>
         <Button size="sm" onClick={() => setEditing("new")}>
           <Plus />
@@ -41,7 +41,8 @@ export function FleetManager({ vehicles }: { vehicles: VehicleRecord[] }) {
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{car.name}</p>
               <p className="text-xs text-muted-foreground">
-                {car.seats} seats · {formatIdr(car.dayWithDriverIdr, "en")} / day with driver ·{" "}
+                {car.seats} seats · {car.maxPassengers} people, {car.maxPassengersWithLuggage} with luggage · packages at{" "}
+                {car.tourPricePercent}% · {formatIdr(car.dayWithDriverIdr, "en")} / day with driver ·{" "}
                 {formatIdr(car.dayWithDriverAndFuelIdr, "en")} with fuel
                 {car.transferRate ? ` · transfers from ${formatIdr(car.transferRate.minimumIdr, "en")}` : " · no transfers"}
               </p>
@@ -76,7 +77,31 @@ function VehicleDialog({ vehicle, onClose }: { vehicle: VehicleRecord | null; on
         <TextField name="name" label="Name" placeholder="Toyota Avanza" defaultValue={vehicle?.name} errors={errors} />
         <TextField name="id" label="Short name" placeholder="avanza" defaultValue={vehicle?.id} errors={errors} hint="Lowercase, used in links." />
         <TextField name="seats" label="Seats (as shown)" placeholder="7 or 10–12" defaultValue={vehicle?.seats} errors={errors} />
-        <TextField name="maxPassengers" label="Most passengers" inputMode="numeric" defaultValue={vehicle?.maxPassengers} errors={errors} />
+        <TextField
+          name="maxPassengers"
+          label="Most people, no big luggage"
+          inputMode="numeric"
+          defaultValue={vehicle?.maxPassengers}
+          errors={errors}
+          hint="Adults and children. Babies on a lap don't count."
+        />
+        <TextField
+          name="maxPassengersWithLuggage"
+          label="Most people with luggage"
+          inputMode="numeric"
+          defaultValue={vehicle?.maxPassengersWithLuggage}
+          errors={errors}
+          hint="When they bring suitcases or large bags."
+        />
+        <TextField
+          name="tourPricePercent"
+          label="Package price level (%)"
+          inputMode="numeric"
+          placeholder="100"
+          defaultValue={vehicle?.tourPricePercent ?? 100}
+          errors={errors}
+          hint="100 = the price listed on each package. 150 = half as much again in this car."
+        />
         <TextField name="dayWithDriverIdr" label="Day rate with driver" inputMode="numeric" defaultValue={vehicle?.dayWithDriverIdr} errors={errors} />
         <TextField
           name="dayWithDriverAndFuelIdr"

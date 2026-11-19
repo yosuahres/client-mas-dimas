@@ -37,7 +37,7 @@ const sql = [
   ),
   insert(
     "tours",
-    ["slug", "code", "length", "interests", "price_from_idr", "accommodation_offered", "accommodation_price_from_idr", "photo", "photo_credit", "text", "position", "published"],
+    ["slug", "code", "length", "interests", "price_from_idr", "accommodation_offered", "accommodation_price_from_idr", "part_prices", "photo", "photo_credit", "text", "position", "published"],
     tours.map((tour, index) => [
       text(tour.slug),
       text(tour.code),
@@ -46,6 +46,7 @@ const sql = [
       num(tour.priceFromIdr),
       bool(tour.accommodationOffered),
       num(tour.accommodationPriceFromIdr),
+      json(tour.partPrices),
       text(tour.photo),
       json(tour.photoCredit),
       json(tour.text),
@@ -55,12 +56,14 @@ const sql = [
   ),
   insert(
     "vehicles",
-    ["id", "name", "seats", "max_passengers", "day_with_driver_idr", "day_with_driver_and_fuel_idr", "transfer_base_idr", "transfer_per_km_idr", "transfer_minimum_idr", "position", "published"],
+    ["id", "name", "seats", "max_passengers", "max_passengers_with_luggage", "tour_price_percent", "day_with_driver_idr", "day_with_driver_and_fuel_idr", "transfer_base_idr", "transfer_per_km_idr", "transfer_minimum_idr", "position", "published"],
     vehicles.map((car, index) => [
       text(car.id),
       text(car.name),
       text(car.seats),
       num(car.maxPassengers),
+      num(car.maxPassengersWithLuggage),
+      num(car.tourPricePercent),
       num(car.dayWithDriverIdr),
       num(car.dayWithDriverAndFuelIdr),
       num(car.transferRate?.baseIdr),

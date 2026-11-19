@@ -55,6 +55,17 @@ const lines = z.preprocess(
 );
 
 /**
+ * A package's split options: rows in the Package section for Indonesian ("text.id.parts[]", blanks kept so
+ * each name stays next to its price), a textarea of lines for English and French. None sent: not split.
+ */
+const partNames = z.preprocess((value) => {
+  if (value === undefined) return [];
+  if (typeof value === "string") return value.split("\n").map((line) => line.trim()).filter(Boolean);
+  if (Array.isArray(value)) return value.map((line) => (typeof line === "string" ? line.trim() : line));
+  return value;
+}, z.array(z.string()));
+
+/**
  * The client writes in Indonesian, so it's required. English and French may be left empty: the save action
  * translates them (src/lib/admin/auto-translate.ts), and then checks the English against the "complete" schema.
  */
@@ -89,6 +100,7 @@ export const completeTourText = z.object({
   duration: required,
   destinations: lines.pipe(z.array(z.string()).min(1, "Add at least one stop, one per line.")),
   dropOffs: lines,
+  parts: partNames,
   photoAlt: optionalText,
 });
 
@@ -98,6 +110,7 @@ const optionalTourText = z.object({
   duration: optionalText,
   destinations: lines,
   dropOffs: lines,
+  parts: partNames,
   photoAlt: optionalText,
 });
 
@@ -112,6 +125,7 @@ export const tourInput = z
     accommodationOffered: checkbox,
     accommodationOnRequest: checkbox,
     accommodationPriceFromIdr: z.string().optional(),
+    partPrices: z.array(z.string()).optional().default([]),
     photo: photo.optional().default(""),
     credit: z
       .object({ subject: optionalText, author: optionalText, license: optionalText, source: optionalText })
@@ -138,6 +152,24 @@ export const tourInput = z
       }
       accommodationPriceFromIdr = price.data;
     }
+    // Split options: drop rows left without a name, and keep each price next to its name. Empty price: on request.
+    const names = input.text.id.parts;
+    const kept = names.flatMap((name, index) => (name ? [index] : []));
+    const partPrices: (number | null)[] = [];
+    for (const index of kept) {
+      const typed = (input.partPrices[index] ?? "").replace(/\D/g, "");
+      if (!typed) {
+        partPrices.push(null);
+        continue;
+      }
+      const price = positiveRupiah.safeParse(typed);
+      if (!price.success) {
+        context.addIssue({ code: "custom", path: ["partPrices", String(index)], message: price.error.issues[0].message });
+        return z.NEVER;
+      }
+      partPrices.push(price.data);
+    }
+    const text = { ...input.text, id: { ...input.text.id, parts: kept.map((index) => names[index]) } };
     const credit = input.credit;
     return {
       slug: input.slug,
@@ -147,9 +179,10 @@ export const tourInput = z
       priceFromIdr,
       accommodationOffered: input.accommodationOffered,
       accommodationPriceFromIdr,
+      partPrices,
       photo: input.photo || null,
       photoCredit: credit?.author ? { subject: credit.subject || input.text.id.name, author: credit.author, license: credit.license, source: credit.source } : null,
-      text: input.text,
+      text,
       published: input.published,
     };
   });
@@ -160,11 +193,17 @@ export const vehicleInput = z
     name: required,
     seats: required,
     maxPassengers: z.coerce.number().int("Whole number.").min(1, "At least 1.").max(60, "Up to 60."),
+    maxPassengersWithLuggage: z.coerce.number().int("Whole number.").min(1, "At least 1.").max(60, "Up to 60."),
+    tourPricePercent: z.coerce.number().int("Whole number.").min(50, "At least 50.").max(1000, "Up to 1000."),
     dayWithDriverIdr: positiveRupiah,
     dayWithDriverAndFuelIdr: positiveRupiah,
     offersTransfers: checkbox,
     transferRate: z.object({ baseIdr: z.string(), perKmIdr: z.string(), minimumIdr: z.string() }).partial().optional(),
     published: checkbox,
+  })
+  .refine((input) => input.maxPassengersWithLuggage <= input.maxPassengers, {
+    path: ["maxPassengersWithLuggage"],
+    message: "Can't be more than without luggage.",
   })
   .transform((input, context) => {
     const { offersTransfers, transferRate, ...vehicle } = input;
