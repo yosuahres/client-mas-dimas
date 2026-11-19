@@ -90,8 +90,9 @@ export function MobileMenu({ links, languages, whatsappHref, text }: MobileMenuP
 
       {open
         ? createPortal(
-            <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden">
-              <div aria-hidden="true" onClick={close} className="absolute inset-0 bg-black/40 motion-safe:animate-appear" />
+            <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col justify-end lg:hidden">
+              {/* The backdrop reaches past the screen: on iPhones the screen grows when the toolbar hides */}
+              <div aria-hidden="true" onClick={close} className="fixed inset-x-0 -top-[50vh] -bottom-[50vh] bg-black/40 motion-safe:animate-appear" />
               <div
                 ref={sheetRef}
                 role="dialog"

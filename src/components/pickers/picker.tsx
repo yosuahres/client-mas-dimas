@@ -181,8 +181,10 @@ export function Picker({
       {open && wide ? panel : null}
       {open && !wide
         ? createPortal(
-            <div className="fixed inset-0 z-50 flex flex-col justify-end">
-              <div aria-hidden="true" onClick={close} className="absolute inset-0 bg-black/40 motion-safe:animate-appear" />
+            <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col justify-end">
+              {/* Pinned to the bottom edge, with a backdrop reaching well past the screen: on iPhones the
+                  screen grows when the toolbar hides, and an inset-0 overlay would stop short of it */}
+              <div aria-hidden="true" onClick={close} className="fixed inset-x-0 -top-[50vh] -bottom-[50vh] bg-black/40 motion-safe:animate-appear" />
               {panel}
             </div>,
             document.body,

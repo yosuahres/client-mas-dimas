@@ -228,6 +228,13 @@ export const fr: Dictionary = {
     messagePriceAccommodation: "Prix affiché : à partir de {price}, hôtel compris",
     messageStay: "Formule : {stay}",
     messageDropOff: "Dépose : {place}",
+    visit: "Ce que vous visitez",
+    wholePackage: "Le circuit complet",
+    recommended: "conseillé",
+    carNote: "Pour {party} en {vehicle}. Les grands véhicules coûtent plus cher.",
+    tooBig: "Votre groupe a besoin de plus d'un véhicule. Écrivez-nous sur WhatsApp, nous l'organisons.",
+    messagePart: "Visite : {part}",
+    messageTooBig: "Véhicule : plus d'un véhicule nécessaire",
   },
   pageCta: {
     title: "Prêt à choisir un voyage ?",
@@ -276,9 +283,8 @@ export const fr: Dictionary = {
   search: {
     label: "Trouver un circuit ou un transfert",
     tabs: { tours: "Circuits", transfer: "Aéroport et transferts" },
-    tabHints: { tours: "Excursions d’un ou plusieurs jours", transfer: "Accueil à l’aéroport et trajets de A à B" },
     back: "Retour",
-    allPackages: "Tous les circuits",
+    viewAllPackages: "Voir tous les circuits",
     recentTitle: "Recherches récentes",
     clearRecent: "Effacer",
     anyDate: "Date libre",
@@ -333,6 +339,8 @@ export const fr: Dictionary = {
     messageUnknown: "pas encore sûr",
     messageVehicle: "Voiture : {vehicle}",
     messagePrice: "Prix affiché : {price}",
+    recommended: "Idéal pour votre groupe",
+    tooSmall: "Trop petit pour {party}",
   },
   notFound: {
     title: "Page introuvable",

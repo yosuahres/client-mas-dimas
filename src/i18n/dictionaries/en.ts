@@ -234,6 +234,13 @@ export const en = {
     messagePriceAccommodation: "Price shown: from {price}, hotel included",
     messageStay: "Package: {stay}",
     messageDropOff: "Drop-off: {place}",
+    visit: "What to visit",
+    wholePackage: "The whole package",
+    recommended: "recommended",
+    carNote: "For {party} in a {vehicle}. Bigger cars cost more.",
+    tooBig: "Your group needs more than one car. Ask us on WhatsApp and we'll arrange it.",
+    messagePart: "Visit: {part}",
+    messageTooBig: "Vehicle: more than one car needed",
   },
   pageCta: {
     title: "Ready to choose a trip?",
@@ -282,9 +289,8 @@ export const en = {
   search: {
     label: "Find a tour or a transfer",
     tabs: { tours: "Tour packages", transfer: "Airport & transfers" },
-    tabHints: { tours: "Day trips and multi-day tours", transfer: "Airport pickup and rides from A to B" },
     back: "Back",
-    allPackages: "All packages",
+    viewAllPackages: "View all packages",
     recentTitle: "Recently searched",
     clearRecent: "Clear",
     anyDate: "Any date",
@@ -339,6 +345,8 @@ export const en = {
     messageUnknown: "not sure yet",
     messageVehicle: "Car: {vehicle}",
     messagePrice: "Price shown: {price}",
+    recommended: "Best for your group",
+    tooSmall: "Too small for {party}",
   },
   notFound: {
     title: "We couldn't find that page",

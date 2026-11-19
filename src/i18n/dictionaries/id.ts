@@ -228,6 +228,13 @@ export const id: Dictionary = {
     messagePriceAccommodation: "Harga yang tertera: mulai dari {price}, sudah termasuk hotel",
     messageStay: "Paket: {stay}",
     messageDropOff: "Titik antar: {place}",
+    visit: "Yang dikunjungi",
+    wholePackage: "Paket lengkap",
+    recommended: "disarankan",
+    carNote: "Untuk {party} dengan {vehicle}. Mobil lebih besar, harga lebih tinggi.",
+    tooBig: "Rombongan Anda perlu lebih dari satu mobil. Tanyakan lewat WhatsApp, kami atur.",
+    messagePart: "Kunjungan: {part}",
+    messageTooBig: "Kendaraan: perlu lebih dari satu mobil",
   },
   pageCta: {
     title: "Siap memilih perjalanan?",
@@ -276,9 +283,8 @@ export const id: Dictionary = {
   search: {
     label: "Cari paket tur atau transfer",
     tabs: { tours: "Paket tur", transfer: "Bandara & antar jemput" },
-    tabHints: { tours: "Tur harian dan beberapa hari", transfer: "Jemput bandara dan antar dari A ke B" },
     back: "Kembali",
-    allPackages: "Semua paket",
+    viewAllPackages: "Lihat semua paket",
     recentTitle: "Pencarian terakhir",
     clearRecent: "Hapus",
     anyDate: "Tanggal bebas",
@@ -333,6 +339,8 @@ export const id: Dictionary = {
     messageUnknown: "belum pasti",
     messageVehicle: "Mobil: {vehicle}",
     messagePrice: "Harga yang tertera: {price}",
+    recommended: "Paling pas untuk rombongan Anda",
+    tooSmall: "Terlalu kecil untuk {party}",
   },
   notFound: {
     title: "Halaman tidak ditemukan",

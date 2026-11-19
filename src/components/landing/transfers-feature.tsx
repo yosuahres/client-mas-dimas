@@ -25,8 +25,8 @@ export async function TransfersFeature() {
   });
 
   return (
-    <section aria-labelledby="transfers-title" className="px-3">
-      <div className="mx-auto grid max-w-[90rem] items-center gap-14 rounded-3xl bg-cream px-6 py-20 sm:px-12 sm:py-24 lg:grid-cols-2 lg:px-20">
+    <section aria-labelledby="transfers-title" className="sm:px-3">
+      <div className="mx-auto grid max-w-[90rem] items-center gap-14 bg-cream px-5 py-16 sm:rounded-3xl sm:px-12 sm:py-24 lg:grid-cols-2 lg:px-20">
         <div>
           <p className="kicker text-ink-muted">{t.label}</p>
           <h2 id="transfers-title" className="display mt-3 text-[clamp(2.5rem,5vw,4rem)]">
@@ -40,7 +40,7 @@ export async function TransfersFeature() {
         </div>
 
         <div className="relative">
-          <div className="rounded-3xl bg-white p-6 shadow-[0_24px_60px_-30px_rgb(0_0_0/0.25)] sm:p-9">
+          <div className="bg-white p-5 sm:rounded-3xl sm:p-9 sm:shadow-[0_24px_60px_-30px_rgb(0_0_0/0.25)]">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-lg font-medium">{t.cardTitle}</p>
               <p className="label rounded-full bg-wheat px-3 py-1 text-[0.8rem]">{t.sticky}</p>
