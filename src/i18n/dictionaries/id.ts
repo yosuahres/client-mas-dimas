@@ -2,14 +2,14 @@ import type { Dictionary } from "@/i18n/dictionaries/en";
 
 export const id: Dictionary = {
   meta: {
-    title: "Sewa mobil, sopir, dan paket tur di Yogyakarta",
+    title: "Sewa mobil, sopir, dan paket tour di Yogyakarta",
     description:
-      "Mobil dan sopir pribadi di Yogyakarta: jemput Bandara YIA 24 jam, tur sehari ke Borobudur, Prambanan, dan Merapi, sampai ke Bromo dan Ijen. Harga per kendaraan.",
+      "Mobil dan sopir pribadi di Yogyakarta: jemput Bandara YIA 24 jam, tour sehari ke Borobudur, Prambanan, dan Merapi, sampai ke Bromo dan Ijen. Harga per kendaraan.",
     city: "Yogyakarta, Indonesia",
   },
   header: {
     nav: {
-      tours: "Paket tur",
+      tours: "Paket tour",
       plan: "Rencanakan kunjungan",
       booking: "Cara memesan",
       faq: "Pertanyaan",
@@ -23,27 +23,25 @@ export const id: Dictionary = {
   hero: {
     kicker: "Mobil dan sopir pribadi di",
     title: "Yogyakarta",
-    lede: "Jemput bandara, tur sehari ke candi dan gunung api, sampai ke Bromo dan Ijen. Mobil pribadi dan sopir lokal, harga per kendaraan.",
-    seeTours: "Lihat paket tur",
+    lede: "Jemput bandara, tour sehari ke candi dan gunung api, sampai ke Bromo dan Ijen. Mobil pribadi dan sopir lokal, harga per kendaraan.",
+    seeTours: "Lihat paket tour",
     planOnWhatsapp: "Rencanakan lewat WhatsApp",
     planMessage: "Halo Jogja Travel! Saya ingin merencanakan perjalanan.",
   },
   toursSection: {
-    title: "Tur transportasi pribadi",
+    title: "Tour transportasi pribadi",
     intro:
       "Satu harga per mobil, sudah termasuk sopir, BBM, parkir, dan air mineral. Tiket masuk tidak termasuk.",
     viewAll: "Lihat semua",
-    previous: "Sebelumnya",
-    next: "Berikutnya",
   },
   firstStep: {
     left: "Jogja Anda dimulai di sini.",
     right: "Pilih tujuan pertama.",
     tiles: {
-      temples: { kicker: "Borobudur dan Prambanan", title: "Candi", cta: "Tur candi" },
-      culture: { kicker: "Keraton, sendratari, dan kota lama", title: "Warisan budaya", cta: "Tur budaya" },
-      nature: { kicker: "Sunrise di atas kawah", title: "Gunung api", cta: "Tur alam" },
-      adventure: { kicker: "Goa, sungai, dan jip", title: "Petualangan", cta: "Tur petualangan" },
+      temples: { kicker: "Borobudur dan Prambanan", title: "Candi", cta: "Tour candi" },
+      culture: { kicker: "Keraton, sendratari, dan kota lama", title: "Warisan budaya", cta: "Tour budaya" },
+      nature: { kicker: "Sunrise di atas kawah", title: "Gunung api", cta: "Tour alam" },
+      adventure: { kicker: "Goa, sungai, dan jip", title: "Petualangan", cta: "Tour petualangan" },
     },
   },
   transfersFeature: {
@@ -145,7 +143,7 @@ export const id: Dictionary = {
   footer: {
     sticker: ["Mobil Anda.", "Rencana Anda."],
     lede: "Kirim tanggal dan tujuan Anda. Kami balas cepat, 24 jam.",
-    columns: { tours: "Paket tur", plan: "Rencanakan perjalanan", contact: "Kontak" },
+    columns: { tours: "Paket tour", plan: "Rencanakan perjalanan", contact: "Kontak" },
     title: "Beri tahu tanggal Anda. Sisanya kami yang atur.",
     cta: "Kirim pesan di WhatsApp",
     message: "Halo Jogja Travel! Kami akan ke Jogja. Tanggal kami: ",
@@ -153,7 +151,7 @@ export const id: Dictionary = {
     floatingLabel: "Chat dengan kami di WhatsApp",
   },
   toursPage: {
-    title: "Tur transportasi pribadi",
+    title: "Tour transportasi pribadi",
     metaDescription:
       "Paket transportasi privat dari Yogyakarta: Borobudur, Prambanan, Merapi, goa dan pantai Gunungkidul, Dieng, Bromo, dan Ijen. Harga per kendaraan.",
     lede: "Mobil dan sopir pribadi dari Jogja, dengan atau tanpa hotel. Harga per mobil; tiket masuk tidak termasuk.",
@@ -281,16 +279,16 @@ export const id: Dictionary = {
     },
   },
   search: {
-    label: "Cari paket tur atau transfer",
-    tabs: { tours: "Tur transportasi pribadi", transfer: "Bandara & antar jemput" },
+    label: "Cari paket tour atau transfer",
+    tabs: { tours: "Tour transportasi pribadi", transfer: "Bandara & antar jemput" },
     back: "Kembali",
     viewAllPackages: "Lihat semua paket",
     recentTitle: "Pencarian terakhir",
     clearRecent: "Hapus",
     anyDate: "Tanggal bebas",
-    tour: "Tur",
+    tour: "Tour",
     date: "Tanggal",
-    searchTour: "Lihat tur ini",
+    searchTour: "Lihat tour ini",
     from: "Dari",
     to: "Ke",
     choose: "Pilih tempat",
