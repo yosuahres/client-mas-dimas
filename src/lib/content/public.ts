@@ -52,9 +52,10 @@ export async function getTour(locale: Locale, slug: string): Promise<Tour | unde
 /** Published cars, in the order set in the admin panel. */
 export async function getFleet(): Promise<Vehicle[]> {
   return (await loadVehicles()).map(
-    ({ id, name, seats, maxPassengers, maxPassengersWithLuggage, tourPricePercent, dayWithDriverIdr, dayWithDriverAndFuelIdr, transferRate }) => ({
+    ({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, tourPricePercent, dayWithDriverIdr, dayWithDriverAndFuelIdr, transferRate }) => ({
       id,
       name,
+      seatClass,
       seats,
       maxPassengers,
       maxPassengersWithLuggage,
@@ -68,8 +69,8 @@ export async function getFleet(): Promise<Vehicle[]> {
 
 /** Cars offered for transfers, with their per-car rate and how many people they take. */
 export async function getTransferVehicles(): Promise<TransferVehicle[]> {
-  return (await loadVehicles()).flatMap(({ id, name, seats, maxPassengers, maxPassengersWithLuggage, transferRate }) =>
-    transferRate ? [{ id, name, seats, maxPassengers, maxPassengersWithLuggage, rate: transferRate }] : [],
+  return (await loadVehicles()).flatMap(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, transferRate }) =>
+    transferRate ? [{ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, rate: transferRate }] : [],
   );
 }
 

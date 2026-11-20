@@ -5,7 +5,8 @@
 // Still PLACEHOLDERS to confirm with the client: per-km transfer rates, the three sample reviews,
 // the Ijen price (read as Rp 3,500,000), and whether the Bali/Karimunjawa price includes the ferry.
 // DUMMY until the client sends real numbers: the split-package prices (partPrices, e.g. "Borobudur only"),
-// each car's passengers with luggage, and its tourPricePercent (from the day rates with fuel).
+// each car's passengers with luggage, its tourPricePercent (from the day rates with fuel), and its seat group
+// (Avanza and Xenia counted as the 5 seater, as the user decided on 2026-11-20).
 import type { SiteContent } from "./schema";
 
 export const defaultContent: SiteContent = {
@@ -1057,6 +1058,7 @@ export const defaultContent: SiteContent = {
   "vehicles": [
     {
       "id": "avanza",
+      "seatClass": "five",
       "name": "Toyota Avanza",
       "seats": "7",
       "maxPassengers": 7,
@@ -1073,6 +1075,7 @@ export const defaultContent: SiteContent = {
     },
     {
       "id": "xenia",
+      "seatClass": "five",
       "name": "Daihatsu Xenia",
       "seats": "7",
       "maxPassengers": 7,
@@ -1085,6 +1088,7 @@ export const defaultContent: SiteContent = {
     },
     {
       "id": "innova-reborn",
+      "seatClass": "seven",
       "name": "Toyota Innova Reborn",
       "seats": "7",
       "maxPassengers": 7,
@@ -1101,6 +1105,7 @@ export const defaultContent: SiteContent = {
     },
     {
       "id": "innova-zenix",
+      "seatClass": "seven",
       "name": "Toyota Innova Zenix",
       "seats": "7",
       "maxPassengers": 7,
@@ -1117,6 +1122,7 @@ export const defaultContent: SiteContent = {
     },
     {
       "id": "hiace",
+      "seatClass": "large",
       "name": "Toyota HiAce",
       "seats": "10–12",
       "maxPassengers": 12,

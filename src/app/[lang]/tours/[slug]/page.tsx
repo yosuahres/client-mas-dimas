@@ -77,10 +77,12 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
     text: dict.bookingCard,
     pickerText: dict.pickers,
     stayText: dict.catalog.stays,
+    seatClassText: dict.transfer.seatClasses,
     priceText: { fromPrice: t.fromPrice, fromPriceAccommodation: t.fromPriceAccommodation, onRequest: t.onRequest },
-    fleet: fleet.map(({ id, name, seats, maxPassengers, maxPassengersWithLuggage, tourPricePercent }) => ({
+    fleet: fleet.map(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, tourPricePercent }) => ({
       id,
       name,
+      seatClass,
       seats,
       maxPassengers,
       maxPassengersWithLuggage,

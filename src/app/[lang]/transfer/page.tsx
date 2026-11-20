@@ -6,7 +6,6 @@ import { WhatsappIcon } from "@/components/icons";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { PageHeader } from "@/components/page-header";
-import { fitsParty } from "@/lib/fleet";
 import { TripSearch } from "@/components/search/trip-search";
 import { intlLocale, languageAlternates, localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
@@ -14,7 +13,8 @@ import { fill, formatDuration } from "@/i18n/format";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getPlaces, getPopularRoutes, getSite, getTours, getTransferVehicles } from "@/lib/content/public";
 import { formatApproxUsd, formatIdr } from "@/lib/money";
-import { describeParty, parsePartyParams, type Party } from "@/lib/party";
+import { seatClasses, seatOptions, type SeatOption } from "@/lib/fleet";
+import { defaultParty, describeParty, parsePartyParams, type Party } from "@/lib/party";
 import { whatsappLink, type SiteSettings } from "@/lib/site";
 import {
   estimateRoute,
@@ -60,55 +60,51 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
     defaultMode: "transfer" as const,
   };
 
+  // A search in the link (from the home page or a popular route) goes straight to the prices: a short summary
+  // of the trip with a Change button replaces the big header and the open form.
+  const defaultView = (
+    <>
+      <PageHeader title={t.title} lede={t.lede} />
+      <div className="mx-auto max-w-7xl px-3 sm:px-8">
+        <SearchOnEdge>
+          <TripSearch {...searchProps} />
+        </SearchOnEdge>
+        <div className="mt-14 px-2 sm:px-0">
+          <h2 className="text-2xl font-medium">{t.emptyTitle}</h2>
+          <p className="mt-2 max-w-prose text-ink-muted">{t.emptyBody}</p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <>
       <SiteHeader path="/transfer" />
       <main>
-        <PageHeader title={t.title} lede={t.lede} />
+        {/* The URL holds the search, so only this part waits for the request; the rest is prerendered */}
+        <Suspense fallback={defaultView}>
+          {searchParams.then((params) => {
+            const search = parseTransferSearch(params, places);
+            if (!search) return defaultView;
+            const party = parsePartyParams(params);
+            // parseTransferSearch only accepts ids from this list, so both ends are found
+            const trip: Trip = { search, party, from: findPlace(places, search.from)!, to: findPlace(places, search.to)! };
+            return (
+              <>
+                <TripSummary trip={trip} locale={locale} dict={dict}>
+                  {/* key resets the form when a new search arrives */}
+                  <TripSearch key={JSON.stringify([search, party])} {...searchProps} defaultTransfer={search} defaultParty={party} />
+                </TripSummary>
+                <div className="mx-auto max-w-7xl px-5 sm:px-8">
+                  <TransferResults trip={trip} vehicles={vehicles} site={site} locale={locale} dict={dict} />
+                </div>
+              </>
+            );
+          })}
+        </Suspense>
 
-        <div className="mx-auto max-w-7xl px-3 pb-16 sm:px-8 sm:pb-20">
-          {/* The URL holds the search, so only this part waits for the request; the rest is prerendered */}
-          <Suspense fallback={<SearchOnEdge><TripSearch {...searchProps} /></SearchOnEdge>}>
-            {searchParams.then((params) => {
-              const search = parseTransferSearch(params, places);
-              const party = parsePartyParams(params);
-              return (
-                <>
-                  <SearchOnEdge>
-                    {/* key resets the form when a new search arrives */}
-                    <TripSearch
-                      key={JSON.stringify([search, party])}
-                      {...searchProps}
-                      defaultTransfer={search}
-                      defaultParty={party}
-                    />
-                  </SearchOnEdge>
-                  <div className="px-2 sm:px-0">
-                    {search ? (
-                      <TransferResults
-                        search={search}
-                        party={party}
-                        places={places}
-                        vehicles={vehicles}
-                        site={site}
-                        locale={locale}
-                        dict={dict}
-                      />
-                    ) : (
-                      <div className="mt-14">
-                        <h2 className="text-2xl font-medium">{t.emptyTitle}</h2>
-                        <p className="mt-2 max-w-prose text-ink-muted">{t.emptyBody}</p>
-                      </div>
-                    )}
-                  </div>
-                </>
-              );
-            })}
-          </Suspense>
-
-          <div className="px-2 sm:px-0">
-            <PopularRoutes routes={routes} places={places} vehicles={vehicles} site={site} locale={locale} dict={dict} />
-          </div>
+        <div className="mx-auto max-w-7xl px-5 pb-16 sm:px-8 sm:pb-20">
+          <PopularRoutes routes={routes} places={places} vehicles={vehicles} site={site} locale={locale} dict={dict} />
         </div>
       </main>
       <SiteFooter />
@@ -120,59 +116,69 @@ function SearchOnEdge({ children }: { children: ReactNode }) {
   return <div className="relative z-10 -mx-3 sm:mx-0 sm:-mt-12">{children}</div>;
 }
 
-type ResultsProps = {
-  search: TransferSearch;
-  party: Party;
-  places: Place[];
-  vehicles: TransferVehicle[];
+/** A searched transfer with both ends looked up. */
+type Trip = { search: TransferSearch; party: Party; from: Place; to: Place };
+
+type SharedProps = {
   site: SiteSettings;
   locale: Locale;
   dict: Dictionary;
 };
 
-/** A searched transfer with both ends looked up. */
-type Trip = { search: TransferSearch; party: Party; from: Place; to: Place };
+function partyLine(party: Party, locale: Locale, dict: Dictionary) {
+  return describeParty(party, dict.pickers.party, locale) + (party.luggage ? `, ${dict.pickers.party.withLuggage}` : "");
+}
 
-function TransferResults({ search, party, places, vehicles, site, locale, dict }: ResultsProps) {
+// The searched trip in two lines, with the form folded behind Change, so the prices come first.
+function TripSummary({ trip, locale, dict, children }: Omit<SharedProps, "site"> & { trip: Trip; children: ReactNode }) {
   const t = dict.transferPage;
-  // parseTransferSearch only accepts ids from this list, so both ends are found
-  const trip: Trip = { search, party, from: findPlace(places, search.from)!, to: findPlace(places, search.to)! };
-  const route = estimateRoute(trip.from, trip.to);
-  // Cars the group fits in first, cheapest first; the cheapest of those is the one to suggest
-  const allQuotes = quoteTransfer(vehicles, route.distanceKm);
-  const quotes = [...allQuotes.filter((quote) => fitsParty(quote, party)), ...allQuotes.filter((quote) => !fitsParty(quote, party))];
-  const recommended = quotes.find((quote) => fitsParty(quote, party));
+  const { search, party } = trip;
+  const when = [search.date ? formatDate(search.date, locale) : null, search.time].filter(Boolean);
+  return (
+    <section aria-labelledby="results-title" className="border-b border-ink/10 bg-cream">
+      <div className="relative mx-auto max-w-7xl px-5 py-5 sm:px-8 sm:py-7 max-sm:has-[details[open]]:pb-0">
+        <div className="pr-28">
+          <h1 id="results-title" className="text-[clamp(1.35rem,3vw,2.2rem)] leading-tight font-medium tracking-[-0.02em]">
+            {fill(t.resultsTitle, { from: trip.from.name, to: trip.to.name })}
+          </h1>
+          <p className="mt-1 text-[0.95rem] text-ink-muted">{[...when, partyLine(party, locale, dict)].join(" · ")}</p>
+        </div>
+        <details className="group">
+          <summary className="pill absolute top-5 right-5 cursor-pointer list-none border border-ink/15 bg-white px-4 py-2.5 text-[0.9rem] hover:border-ink/40 sm:top-7 sm:right-8 [&::-webkit-details-marker]:hidden">
+            <span className="group-open:hidden">{t.change}</span>
+            <span className="hidden group-open:inline">{t.closeChange}</span>
+          </summary>
+          <div className="-mx-5 mt-5 sm:mx-0">{children}</div>
+        </details>
+      </div>
+    </section>
+  );
+}
 
-  const when = [search.date ? formatDate(search.date, locale) : null, search.time].filter(Boolean).join(", ");
-  const facts = [
-    fill(t.distance, { km: route.distanceKm }),
-    fill(t.duration, { duration: formatDuration(route.minutes, dict.transfer.duration) }),
-    when || null,
-    describeParty(party, dict.pickers.party, locale) + (party.luggage ? `, ${dict.pickers.party.withLuggage}` : ""),
-  ].filter(Boolean);
+type ResultsProps = SharedProps & { trip: Trip; vehicles: TransferVehicle[] };
+
+// One row per seat group: the smallest the party fits in and the next one up, each at its cheapest car.
+function TransferResults({ trip, vehicles, site, locale, dict }: ResultsProps) {
+  const t = dict.transferPage;
+  const route = estimateRoute(trip.from, trip.to);
+  const options = seatOptions(quoteTransfer(vehicles, route.distanceKm), trip.party, (quote) => quote.totalIdr);
+  const facts = [fill(t.distance, { km: route.distanceKm }), fill(t.duration, { duration: formatDuration(route.minutes, dict.transfer.duration) })];
 
   return (
-    <section aria-labelledby="results-title" className="mt-14">
-      <h2 id="results-title" className="text-[clamp(1.8rem,3.5vw,2.6rem)] leading-tight font-medium tracking-[-0.03em]">
-        {fill(t.resultsTitle, { from: trip.from.name, to: trip.to.name })}
-      </h2>
-      <p className="mt-2 text-ink-muted">{facts.join(" · ")}</p>
+    <div className="pt-6 sm:pt-10">
+      <p className="text-ink-muted">{facts.join(" · ")}</p>
 
-      <ul className="mt-8 divide-y divide-sand border-y border-sand">
-        {quotes.map((quote) => (
-          <li key={quote.vehicle}>
-            <VehicleRow
-              quote={quote}
-              trip={trip}
-              site={site}
-              locale={locale}
-              dict={dict}
-              fits={fitsParty(quote, party)}
-              recommended={quote.vehicle === recommended?.vehicle}
-            />
-          </li>
-        ))}
-      </ul>
+      {options.length > 0 ? (
+        <ul className="mt-4 divide-y divide-sand border-y border-sand">
+          {options.map((option, index) => (
+            <li key={option.seatClass}>
+              <SeatGroupRow option={option} recommended={index === 0} trip={trip} site={site} locale={locale} dict={dict} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-6 font-medium text-clay">{dict.bookingCard.tooBig}</p>
+      )}
 
       <BiggerVehicleNote site={site} dict={dict} />
 
@@ -180,55 +186,45 @@ function TransferResults({ search, party, places, vehicles, site, locale, dict }
         <p className="font-medium">{t.estimateTitle}</p>
         <p className="mt-1 text-[0.95rem] text-ink-muted">{t.estimateBody}</p>
       </div>
-    </section>
+    </div>
   );
 }
 
-type VehicleRowProps = Pick<ResultsProps, "site" | "locale" | "dict"> & {
-  quote: VehicleQuote;
-  trip: Trip;
-  /** Whether the searched group fits in this car; if not, it's shown greyed out without a request button. */
-  fits: boolean;
-  recommended: boolean;
-};
+type SeatGroupRowProps = SharedProps & { option: SeatOption<VehicleQuote>; recommended: boolean; trip: Trip };
 
-function VehicleRow({ quote, trip, site, locale, dict, fits, recommended }: VehicleRowProps) {
+function SeatGroupRow({ option, recommended, trip, site, locale, dict }: SeatGroupRowProps) {
   const t = dict.transferPage;
-  const partyText =
-    describeParty(trip.party, dict.pickers.party, locale) + (trip.party.luggage ? `, ${dict.pickers.party.withLuggage}` : "");
+  const label = dict.transfer.seatClasses[option.seatClass];
+  const names = option.vehicles.map((quote) => quote.name).join(" / ");
+  const price = option.vehicle.totalIdr;
   return (
-    <article
-      className={`grid gap-4 py-6 sm:grid-cols-[1fr_auto] sm:items-center lg:grid-cols-[1.2fr_1fr_auto_auto] lg:gap-10 ${fits ? "" : "opacity-55"}`}
-    >
-      <div>
-        <h3 className="text-xl font-medium">{quote.name}</h3>
-        {recommended ? <p className="mt-1 text-[0.9rem] font-medium text-jade">{t.recommended}</p> : null}
-        {fits ? null : <p className="mt-1 text-[0.9rem] text-ink-muted">{fill(t.tooSmall, { party: partyText })}</p>}
+    <article className="grid gap-4 py-6 sm:grid-cols-[1fr_auto] sm:items-center lg:grid-cols-[1.5fr_auto_auto] lg:gap-10">
+      <div className="min-w-0">
+        <h2 className="text-xl font-medium">
+          {label}
+          {recommended ? <span className="ml-2.5 align-middle text-[0.9rem] font-medium text-jade">{t.recommended}</span> : null}
+        </h2>
+        <p className="mt-1 text-[0.95rem] text-ink-muted">{names}</p>
       </div>
-      <p className="text-[0.95rem] text-ink-muted sm:col-start-1 lg:col-start-auto">
-        {fill(dict.transfer.seats, { seats: quote.seats })}
-      </p>
       <p className="sm:row-span-2 sm:row-start-1 sm:col-start-2 sm:text-right lg:row-auto lg:col-start-auto">
-        <span className="block text-2xl font-medium tabular-nums">{formatIdr(quote.totalIdr, locale)}</span>
+        <span className="block text-2xl font-medium tabular-nums">{formatIdr(price, locale)}</span>
         <span className="text-[0.95rem] text-ink-muted">
-          {t.perCar}, ≈ {formatApproxUsd(quote.totalIdr, locale, site.idrPerUsd)}
+          {t.perCar}, ≈ {formatApproxUsd(price, locale, site.idrPerUsd)}
         </span>
       </p>
-      {fits ? (
-        <a
-          href={whatsappLink(site, transferMessage(trip, quote, locale, dict))}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 font-medium whitespace-nowrap text-white hover:bg-ink/90 sm:col-span-2 sm:justify-self-start lg:col-span-1"
-        >
-          <WhatsappIcon className="size-[1.1em] shrink-0" />
-          {t.request}
-        </a>
-      ) : null}
+      <a
+        href={whatsappLink(site, transferMessage(trip, `${label} (${names})`, price, locale, dict))}
+        className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 font-medium whitespace-nowrap text-white hover:bg-ink/90 sm:col-span-2 sm:justify-self-start lg:col-span-1"
+      >
+        <WhatsappIcon className="size-[1.1em] shrink-0" />
+        {t.request}
+      </a>
     </article>
   );
 }
 
 /** The fleet stops at the cars set up for transfers; bigger groups ask for a price. */
-function BiggerVehicleNote({ site, dict }: Pick<ResultsProps, "site" | "dict">) {
+function BiggerVehicleNote({ site, dict }: Pick<SharedProps, "site" | "dict">) {
   const t = dict.transferPage;
   return (
     <p className="mt-6 text-ink-muted">
@@ -240,9 +236,9 @@ function BiggerVehicleNote({ site, dict }: Pick<ResultsProps, "site" | "dict">) 
   );
 }
 
-type PopularRoutesProps = Pick<ResultsProps, "places" | "vehicles" | "site" | "locale" | "dict"> & { routes: PopularRoute[] };
+type PopularRoutesProps = SharedProps & { routes: PopularRoute[]; places: Place[]; vehicles: TransferVehicle[] };
 
-// Each route shows every transfer car, so a guest needing a HiAce sees its price without searching.
+// Each route shows every seat group at its cheapest car, so a guest needing a HiAce sees its price without searching.
 function PopularRoutes({ routes, places, vehicles, site, locale, dict }: PopularRoutesProps) {
   const t = dict.transferPage;
   return (
@@ -256,7 +252,7 @@ function PopularRoutes({ routes, places, vehicles, site, locale, dict }: Popular
           const from = findPlace(places, route.from)!;
           const to = findPlace(places, route.to)!;
           const { distanceKm, minutes } = estimateRoute(from, to);
-          const quotes = quoteTransfer(vehicles, distanceKm);
+          const groups = seatOptions(quoteTransfer(vehicles, distanceKm), defaultParty, (quote) => quote.totalIdr, seatClasses.length);
           return (
             <li key={`${route.from}-${route.to}`}>
               <Link
@@ -275,13 +271,10 @@ function PopularRoutes({ routes, places, vehicles, site, locale, dict }: Popular
                 <span className="block">
                   <span className="label block text-[0.75rem] text-ink-muted">{t.popularPrices}</span>
                   <span className="mt-1.5 block divide-y divide-ink/10 text-[0.95rem]">
-                    {quotes.map((quote) => (
-                      <span key={quote.vehicle} className="flex items-baseline justify-between gap-3 py-1.5">
-                        <span>
-                          {quote.name}{" "}
-                          <span className="text-ink-muted">· {fill(dict.transfer.seats, { seats: quote.seats })}</span>
-                        </span>
-                        <span className="font-medium whitespace-nowrap tabular-nums">{formatIdr(quote.totalIdr, locale)}</span>
+                    {groups.map((group) => (
+                      <span key={group.seatClass} className="flex items-baseline justify-between gap-3 py-1.5">
+                        <span>{dict.transfer.seatClasses[group.seatClass]}</span>
+                        <span className="font-medium whitespace-nowrap tabular-nums">{formatIdr(group.vehicle.totalIdr, locale)}</span>
                       </span>
                     ))}
                   </span>
@@ -296,7 +289,7 @@ function PopularRoutes({ routes, places, vehicles, site, locale, dict }: Popular
   );
 }
 
-function transferMessage({ search, party, from, to }: Trip, quote: VehicleQuote, locale: Locale, dict: Dictionary) {
+function transferMessage({ search, party, from, to }: Trip, vehicle: string, priceIdr: number, locale: Locale, dict: Dictionary) {
   const t = dict.transferPage;
   const p = dict.pickers.party;
   return [
@@ -307,8 +300,8 @@ function transferMessage({ search, party, from, to }: Trip, quote: VehicleQuote,
     fill(t.messageTime, { time: search.time ?? t.messageUnknown }),
     fill(p.messagePassengers, { party: describeParty(party, p, locale) }),
     party.luggage ? p.messageLuggage : p.messageNoLuggage,
-    fill(t.messageVehicle, { vehicle: quote.name }),
-    fill(t.messagePrice, { price: formatIdr(quote.totalIdr, locale) }),
+    fill(t.messageVehicle, { vehicle }),
+    fill(t.messagePrice, { price: formatIdr(priceIdr, locale) }),
   ].join("\n");
 }
 

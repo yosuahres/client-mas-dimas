@@ -56,10 +56,11 @@ const sql = [
   ),
   insert(
     "vehicles",
-    ["id", "name", "seats", "max_passengers", "max_passengers_with_luggage", "tour_price_percent", "day_with_driver_idr", "day_with_driver_and_fuel_idr", "transfer_base_idr", "transfer_per_km_idr", "transfer_minimum_idr", "position", "published"],
+    ["id", "name", "seat_class", "seats", "max_passengers", "max_passengers_with_luggage", "tour_price_percent", "day_with_driver_idr", "day_with_driver_and_fuel_idr", "transfer_base_idr", "transfer_per_km_idr", "transfer_minimum_idr", "position", "published"],
     vehicles.map((car, index) => [
       text(car.id),
       text(car.name),
+      text(car.seatClass),
       text(car.seats),
       num(car.maxPassengers),
       num(car.maxPassengersWithLuggage),

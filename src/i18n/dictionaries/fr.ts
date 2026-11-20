@@ -29,7 +29,7 @@ export const fr: Dictionary = {
     planMessage: "Bonjour Jogja Travel ! J'aimerais organiser un voyage.",
   },
   toursSection: {
-    title: "Nos circuits",
+    title: "Circuits en transport privé",
     intro:
       "Un prix par voiture, avec chauffeur, carburant, parking et eau. Billets d'entrée en sus.",
     viewAll: "Tout voir",
@@ -153,7 +153,7 @@ export const fr: Dictionary = {
     floatingLabel: "Discuter avec nous sur WhatsApp",
   },
   toursPage: {
-    title: "Nos circuits",
+    title: "Circuits en transport privé",
     metaDescription:
       "Circuits en transport privé depuis Yogyakarta : Borobudur, Prambanan, le Merapi, les grottes et plages de Gunungkidul, Dieng, le Bromo et l'Ijen. Prix par véhicule.",
     lede: "Votre voiture et votre chauffeur depuis Jogja, avec ou sans hôtel. Prix par voiture ; billets d'entrée en sus.",
@@ -230,7 +230,7 @@ export const fr: Dictionary = {
     messageDropOff: "Dépose : {place}",
     visit: "Ce que vous visitez",
     wholePackage: "Le circuit complet",
-    recommended: "conseillé",
+    recommended: "Conseillé",
     carNote: "Pour {party} en {vehicle}. Les grands véhicules coûtent plus cher.",
     tooBig: "Votre groupe a besoin de plus d'un véhicule. Écrivez-nous sur WhatsApp, nous l'organisons.",
     messagePart: "Visite : {part}",
@@ -282,7 +282,7 @@ export const fr: Dictionary = {
   },
   search: {
     label: "Trouver un circuit ou un transfert",
-    tabs: { tours: "Circuits", transfer: "Aéroport et transferts" },
+    tabs: { tours: "Circuit en transport privé", transfer: "Aéroport et transferts" },
     back: "Retour",
     viewAllPackages: "Voir tous les circuits",
     recentTitle: "Recherches récentes",
@@ -308,6 +308,7 @@ export const fr: Dictionary = {
       java: "À travers Java",
       sight: "Sites et îles",
     },
+    seatClasses: { five: "5 places", seven: "7 places", large: "Plus de 7 places" },
     seats: "{seats} places",
     duration: { hoursMinutes: "{h} h {m} min", hours: "{h} h", minutes: "{m} min" },
   },
@@ -340,7 +341,8 @@ export const fr: Dictionary = {
     messageVehicle: "Voiture : {vehicle}",
     messagePrice: "Prix affiché : {price}",
     recommended: "Idéal pour votre groupe",
-    tooSmall: "Trop petit pour {party}",
+    change: "Modifier",
+    closeChange: "Fermer",
   },
   notFound: {
     title: "Page introuvable",

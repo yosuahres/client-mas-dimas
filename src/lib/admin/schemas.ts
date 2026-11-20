@@ -1,7 +1,7 @@
 // What the admin forms may save. Field paths match the input names, so errors land under the right field.
 import { z } from "zod";
 
-import { placeKinds, tourInterests, tourLengths } from "@/lib/content/schema";
+import { placeKinds, seatClasses, tourInterests, tourLengths } from "@/lib/content/schema";
 import type { Draft } from "@/lib/machine-translation/plan";
 
 export const slug = z
@@ -191,6 +191,7 @@ export const vehicleInput = z
   .object({
     id: slug,
     name: required,
+    seatClass: z.enum(seatClasses, "Choose a seat group."),
     seats: required,
     maxPassengers: z.coerce.number().int("Whole number.").min(1, "At least 1.").max(60, "Up to 60."),
     maxPassengersWithLuggage: z.coerce.number().int("Whole number.").min(1, "At least 1.").max(60, "Up to 60."),

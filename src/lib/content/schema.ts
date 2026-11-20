@@ -12,6 +12,13 @@ export type TourInterest = (typeof tourInterests)[number];
 export const tourStays = ["transport", "accommodation"] as const;
 export type TourStay = (typeof tourStays)[number];
 
+/**
+ * Cars are offered to guests by seat group, not one by one: the smallest group their party fits in, and the
+ * next one up. Which car is in which group is set in /admin/fleet.
+ */
+export const seatClasses = ["five", "seven", "large"] as const;
+export type SeatClass = (typeof seatClasses)[number];
+
 export const placeKinds = ["airport", "city", "around", "java", "sight"] as const;
 export type PlaceKind = (typeof placeKinds)[number];
 
@@ -72,6 +79,8 @@ export type FareRate = {
 export type VehicleRecord = {
   id: string;
   name: string;
+  /** 5 seater, 7 seater or above 7. */
+  seatClass: SeatClass;
   /** Seats as listed by the client, e.g. "7" or "10–12". */
   seats: string;
   /** Most adults and children without big luggage. Babies on a lap don't count. */

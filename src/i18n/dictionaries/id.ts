@@ -29,7 +29,7 @@ export const id: Dictionary = {
     planMessage: "Halo Jogja Travel! Saya ingin merencanakan perjalanan.",
   },
   toursSection: {
-    title: "Paket tur",
+    title: "Tur transportasi pribadi",
     intro:
       "Satu harga per mobil, sudah termasuk sopir, BBM, parkir, dan air mineral. Tiket masuk tidak termasuk.",
     viewAll: "Lihat semua",
@@ -153,7 +153,7 @@ export const id: Dictionary = {
     floatingLabel: "Chat dengan kami di WhatsApp",
   },
   toursPage: {
-    title: "Paket tur",
+    title: "Tur transportasi pribadi",
     metaDescription:
       "Paket transportasi privat dari Yogyakarta: Borobudur, Prambanan, Merapi, goa dan pantai Gunungkidul, Dieng, Bromo, dan Ijen. Harga per kendaraan.",
     lede: "Mobil dan sopir pribadi dari Jogja, dengan atau tanpa hotel. Harga per mobil; tiket masuk tidak termasuk.",
@@ -230,7 +230,7 @@ export const id: Dictionary = {
     messageDropOff: "Titik antar: {place}",
     visit: "Yang dikunjungi",
     wholePackage: "Paket lengkap",
-    recommended: "disarankan",
+    recommended: "Disarankan",
     carNote: "Untuk {party} dengan {vehicle}. Mobil lebih besar, harga lebih tinggi.",
     tooBig: "Rombongan Anda perlu lebih dari satu mobil. Tanyakan lewat WhatsApp, kami atur.",
     messagePart: "Kunjungan: {part}",
@@ -282,7 +282,7 @@ export const id: Dictionary = {
   },
   search: {
     label: "Cari paket tur atau transfer",
-    tabs: { tours: "Paket tur", transfer: "Bandara & antar jemput" },
+    tabs: { tours: "Tur transportasi pribadi", transfer: "Bandara & antar jemput" },
     back: "Kembali",
     viewAllPackages: "Lihat semua paket",
     recentTitle: "Pencarian terakhir",
@@ -308,6 +308,7 @@ export const id: Dictionary = {
       java: "Seluruh Jawa",
       sight: "Tempat wisata dan pulau",
     },
+    seatClasses: { five: "5 kursi", seven: "7 kursi", large: "Lebih dari 7 kursi" },
     seats: "{seats} kursi",
     duration: { hoursMinutes: "{h} jam {m} menit", hours: "{h} jam", minutes: "{m} menit" },
   },
@@ -340,7 +341,8 @@ export const id: Dictionary = {
     messageVehicle: "Mobil: {vehicle}",
     messagePrice: "Harga yang tertera: {price}",
     recommended: "Paling pas untuk rombongan Anda",
-    tooSmall: "Terlalu kecil untuk {party}",
+    change: "Ubah",
+    closeChange: "Tutup",
   },
   notFound: {
     title: "Halaman tidak ditemukan",

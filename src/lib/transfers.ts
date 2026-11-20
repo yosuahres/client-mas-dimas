@@ -3,7 +3,7 @@
 // getPlaces(), getPopularRoutes() and getTransferVehicles() from @/lib/content/public.
 // These helpers also run in the browser (trip search), so the data is passed in.
 
-import type { FareRate, PlaceKind, RouteRecord } from "@/lib/content/schema";
+import type { FareRate, PlaceKind, RouteRecord, SeatClass } from "@/lib/content/schema";
 import { transferFare } from "@/lib/pricing";
 
 export { placeKinds } from "@/lib/content/schema";
@@ -21,6 +21,7 @@ export type Place = {
 export type TransferVehicle = {
   id: string;
   name: string;
+  seatClass: SeatClass;
   seats: string;
   maxPassengers: number;
   maxPassengersWithLuggage: number;
@@ -64,6 +65,7 @@ export function estimateRoute(from: Coordinates, to: Coordinates): RouteEstimate
 export type VehicleQuote = {
   vehicle: string;
   name: string;
+  seatClass: SeatClass;
   seats: string;
   maxPassengers: number;
   maxPassengersWithLuggage: number;
@@ -73,9 +75,10 @@ export type VehicleQuote = {
 /** A price for every transfer car over this distance, cheapest first. */
 export function quoteTransfer(vehicles: TransferVehicle[], distanceKm: number): VehicleQuote[] {
   return vehicles
-    .map(({ id, name, seats, maxPassengers, maxPassengersWithLuggage, rate }) => ({
+    .map(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, rate }) => ({
       vehicle: id,
       name,
+      seatClass,
       seats,
       maxPassengers,
       maxPassengersWithLuggage,

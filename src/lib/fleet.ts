@@ -1,8 +1,11 @@
 // The cars Jogja Travel drives, with their day rates, how many people fit, and their price level for packages.
 // Edited in /admin/fleet; read with getFleet() from @/lib/content/public. All amounts are whole rupiah.
 // These helpers also run in the browser (booking card), so the data is passed in.
-import type { VehicleRecord } from "@/lib/content/schema";
+import { seatClasses, type SeatClass, type VehicleRecord } from "@/lib/content/schema";
 import type { Party } from "@/lib/party";
+
+export { seatClasses };
+export type { SeatClass };
 
 export type Vehicle = Omit<VehicleRecord, "published">;
 
@@ -22,14 +25,30 @@ export function fitsParty(vehicle: Capacity, party: Party) {
   return seatsNeeded(party) <= seatsIn(vehicle, party.luggage);
 }
 
+export type SeatOption<V> = {
+  seatClass: SeatClass;
+  /** The cheapest car in this group the party fits in: its price is the group's price. */
+  vehicle: V;
+  /** Every car in this group the party fits in, cheapest first. */
+  vehicles: V[];
+};
+
 /**
- * The car to suggest for this party: of the cars it fits in, the cheapest (lowest price level), then the
- * smallest. Undefined when the party is bigger than every car.
+ * The seat groups to offer a party: the smallest group they fit in and the next one up (`shown`), each with its
+ * cars that fit, cheapest first by `cost`. One person sees 5 and 7 seater; six with luggage, 7 seater and above.
  */
-export function recommendVehicle<V extends Capacity & Pick<Vehicle, "tourPricePercent">>(fleet: V[], party: Party): V | undefined {
-  return fleet
-    .filter((vehicle) => fitsParty(vehicle, party))
-    .toSorted(
-      (a, b) => a.tourPricePercent - b.tourPricePercent || seatsIn(a, party.luggage) - seatsIn(b, party.luggage),
-    )[0];
+export function seatOptions<V extends Capacity & Pick<Vehicle, "seatClass">>(
+  fleet: V[],
+  party: Party,
+  cost: (vehicle: V) => number,
+  shown = 2,
+): SeatOption<V>[] {
+  return seatClasses
+    .flatMap((seatClass) => {
+      const vehicles = fleet
+        .filter((vehicle) => vehicle.seatClass === seatClass && fitsParty(vehicle, party))
+        .toSorted((a, b) => cost(a) - cost(b));
+      return vehicles.length > 0 ? [{ seatClass, vehicle: vehicles[0], vehicles }] : [];
+    })
+    .slice(0, shown);
 }

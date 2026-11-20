@@ -15,7 +15,7 @@ type TourShortlistProps = {
   tours: Pick<Tour, "slug" | "name" | "length" | "priceFromIdr">[];
 };
 
-// Phones, the home page's "Tour packages" tab, like the Disney app: the first three packages as rows to
+// Phones, the home page's "Private transport tour" tab, like the Disney app: the first three packages as rows to
 // tap straight into, then a link to all of them. Picking a date and party happens on the tour page.
 export function TourShortlist({ locale, dict, tours }: TourShortlistProps) {
   return (

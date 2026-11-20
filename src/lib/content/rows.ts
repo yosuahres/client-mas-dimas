@@ -145,6 +145,7 @@ export function tourToRow(tour: TourRecord): Omit<TourRow, "position"> {
 export type VehicleRow = {
   id: string;
   name: string;
+  seat_class: VehicleRecord["seatClass"] | null;
   seats: string;
   max_passengers: number;
   max_passengers_with_luggage: number | null;
@@ -164,6 +165,8 @@ export function vehicleFromRow(row: VehicleRow): VehicleRecord {
   return {
     id: row.id,
     name: row.name,
+    // Until the 20261120010000 migration has run: the built-in group, or one guessed from the seats
+    seatClass: row.seat_class ?? builtInVehicle(row.id)?.seatClass ?? (row.max_passengers > 7 ? "large" : "seven"),
     seats: row.seats,
     maxPassengers: row.max_passengers,
     maxPassengersWithLuggage:
@@ -182,6 +185,7 @@ export function vehicleToRow(vehicle: VehicleRecord): Omit<VehicleRow, "position
   return {
     id: vehicle.id,
     name: vehicle.name,
+    seat_class: vehicle.seatClass,
     seats: vehicle.seats,
     max_passengers: vehicle.maxPassengers,
     max_passengers_with_luggage: vehicle.maxPassengersWithLuggage,

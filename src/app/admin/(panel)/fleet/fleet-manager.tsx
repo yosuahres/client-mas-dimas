@@ -4,13 +4,15 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 
 import { saveVehicle } from "@/app/admin/(panel)/fleet/actions";
-import { SwitchField, TextField } from "@/components/admin/form-fields";
+import { SelectField, SwitchField, TextField } from "@/components/admin/form-fields";
 import { ItemList } from "@/components/admin/item-list";
 import { RecordDialog } from "@/components/admin/record-dialog";
 import { useAdminForm } from "@/components/admin/use-admin-form";
 import { Button } from "@/components/ui/button";
-import type { VehicleRecord } from "@/lib/content/schema";
+import { seatClasses, type SeatClass, type VehicleRecord } from "@/lib/content/schema";
 import { formatIdr } from "@/lib/money";
+
+const seatClassLabels: Record<SeatClass, string> = { five: "5 seater", seven: "7 seater", large: "Above 7 seater" };
 
 export function FleetManager({ vehicles }: { vehicles: VehicleRecord[] }) {
   // null: closed; "new": adding; otherwise the id being edited.
@@ -21,7 +23,8 @@ export function FleetManager({ vehicles }: { vehicles: VehicleRecord[] }) {
     <>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <p className="max-w-xl text-sm text-muted-foreground">
-          Guests pick a car on each package&apos;s booking card; the site suggests the cheapest one their group fits in.
+          Guests choose a seat group, not a car: the smallest group they fit in and the next one up, each priced at its
+          cheapest car that fits.
           Cars with a transfer rate are priced on the Airport &amp; transfers page.
         </p>
         <Button size="sm" onClick={() => setEditing("new")}>
@@ -41,7 +44,7 @@ export function FleetManager({ vehicles }: { vehicles: VehicleRecord[] }) {
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{car.name}</p>
               <p className="text-xs text-muted-foreground">
-                {car.seats} seats · {car.maxPassengers} people, {car.maxPassengersWithLuggage} with luggage · packages at{" "}
+                {seatClassLabels[car.seatClass]} · {car.seats} seats · {car.maxPassengers} people, {car.maxPassengersWithLuggage} with luggage · packages at{" "}
                 {car.tourPricePercent}% · {formatIdr(car.dayWithDriverIdr, "en")} / day with driver ·{" "}
                 {formatIdr(car.dayWithDriverAndFuelIdr, "en")} with fuel
                 {car.transferRate ? ` · transfers from ${formatIdr(car.transferRate.minimumIdr, "en")}` : " · no transfers"}
@@ -76,6 +79,14 @@ function VehicleDialog({ vehicle, onClose }: { vehicle: VehicleRecord | null; on
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField name="name" label="Name" placeholder="Toyota Avanza" defaultValue={vehicle?.name} errors={errors} />
         <TextField name="id" label="Short name" placeholder="avanza" defaultValue={vehicle?.id} errors={errors} hint="Lowercase, used in links." />
+        <SelectField
+          name="seatClass"
+          label="Seat group"
+          options={seatClasses.map((value) => ({ value, label: seatClassLabels[value] }))}
+          defaultValue={vehicle?.seatClass ?? "seven"}
+          errors={errors}
+          hint="Guests see the price per group."
+        />
         <TextField name="seats" label="Seats (as shown)" placeholder="7 or 10–12" defaultValue={vehicle?.seats} errors={errors} />
         <TextField
           name="maxPassengers"

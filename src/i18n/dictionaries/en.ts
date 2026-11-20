@@ -1,6 +1,7 @@
 // Source dictionary. Other languages must match this shape (enforced by the Dictionary type).
 // Placeholders like {price} are filled with fill() from "@/i18n/format".
 // Facts follow jogja-transport.com: private car and driver, priced per vehicle; entrance tickets are not included.
+import type { SeatClass } from "@/lib/fleet";
 import type { PartyGroup, PluralForms } from "@/lib/party";
 import type { TourInterest, TourLength, TourStay } from "@/lib/tours";
 import type { PlaceKind } from "@/lib/transfers";
@@ -34,7 +35,7 @@ export const en = {
     planMessage: "Hi Jogja Travel! I'd like to plan a trip.",
   },
   toursSection: {
-    title: "Tour packages",
+    title: "Private transport tours",
     intro:
       "One price per car, with driver, fuel, parking and water. Entrance tickets are extra.",
     viewAll: "View all",
@@ -159,7 +160,7 @@ export const en = {
     floatingLabel: "Chat with us on WhatsApp",
   },
   toursPage: {
-    title: "Tour packages",
+    title: "Private transport tours",
     metaDescription:
       "Private transport packages from Yogyakarta: Borobudur, Prambanan, Merapi, the caves and beaches of Gunungkidul, Dieng, Bromo and Ijen. Priced per vehicle.",
     lede: "Your own car and driver from Jogja, with or without a hotel. Priced per car; entrance tickets are extra.",
@@ -236,7 +237,7 @@ export const en = {
     messageDropOff: "Drop-off: {place}",
     visit: "What to visit",
     wholePackage: "The whole package",
-    recommended: "recommended",
+    recommended: "Recommended",
     carNote: "For {party} in a {vehicle}. Bigger cars cost more.",
     tooBig: "Your group needs more than one car. Ask us on WhatsApp and we'll arrange it.",
     messagePart: "Visit: {part}",
@@ -288,7 +289,7 @@ export const en = {
   },
   search: {
     label: "Find a tour or a transfer",
-    tabs: { tours: "Tour packages", transfer: "Airport & transfers" },
+    tabs: { tours: "Private transport tour", transfer: "Airport & transfers" },
     back: "Back",
     viewAllPackages: "View all packages",
     recentTitle: "Recently searched",
@@ -314,6 +315,7 @@ export const en = {
       java: "Across Java",
       sight: "Sights and islands",
     } satisfies Record<PlaceKind, string>,
+    seatClasses: { five: "5 seater", seven: "7 seater", large: "Above 7 seater" } satisfies Record<SeatClass, string>,
     seats: "{seats} seats",
     duration: { hoursMinutes: "{h} h {m} min", hours: "{h} h", minutes: "{m} min" },
   },
@@ -346,7 +348,8 @@ export const en = {
     messageVehicle: "Car: {vehicle}",
     messagePrice: "Price shown: {price}",
     recommended: "Best for your group",
-    tooSmall: "Too small for {party}",
+    change: "Change",
+    closeChange: "Close",
   },
   notFound: {
     title: "We couldn't find that page",

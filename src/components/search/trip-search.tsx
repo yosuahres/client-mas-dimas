@@ -52,7 +52,7 @@ type TripSearchProps = {
   showRecent?: boolean;
   /** Phones: start with only the two tabs showing; tapping one opens its form below, tapping it again folds it. */
   collapsible?: boolean;
-  /** Phones: shown in the "Tour packages" tab in place of the tour form, e.g. a short list of packages. */
+  /** Phones: shown in the "Private transport tour" tab in place of the tour form, e.g. a short list of packages. */
   phoneTours?: ReactNode;
 };
 
@@ -116,7 +116,7 @@ export function TripSearch({
     : "mx-4 mt-4 flex gap-1 rounded-full bg-cream p-1 sm:mx-0 sm:mt-0 sm:gap-2 sm:overflow-x-auto sm:rounded-none sm:bg-transparent sm:px-5 sm:pt-5 sm:pb-0";
   const tabClass = collapsible
     ? "pill text-ink-muted hover:text-ink aria-selected:bg-cream aria-selected:text-ink max-sm:min-w-0 max-sm:flex-col max-sm:gap-1.5 max-sm:text-center max-sm:leading-tight max-sm:whitespace-normal max-sm:rounded-none max-sm:bg-transparent max-sm:px-2 max-sm:pt-4 max-sm:pb-3.5 max-sm:text-[0.95rem] max-sm:text-ink max-sm:aria-selected:bg-transparent max-sm:data-[open=true]:text-jade sm:shrink-0 sm:px-4 sm:py-2.5 sm:text-[0.95rem]"
-    : "pill min-w-0 flex-1 justify-center px-2 py-2.5 text-[0.85rem] text-ink-muted hover:text-ink aria-selected:bg-white aria-selected:text-ink sm:flex-none sm:shrink-0 sm:px-4 sm:text-[0.95rem] sm:aria-selected:bg-cream";
+    : "pill min-w-0 flex-1 justify-center px-2 py-2.5 text-[0.85rem] text-ink-muted max-sm:text-center max-sm:leading-tight max-sm:whitespace-normal hover:text-ink aria-selected:bg-white aria-selected:text-ink sm:flex-none sm:shrink-0 sm:px-4 sm:text-[0.95rem] sm:aria-selected:bg-cream";
   const panelClass = `p-4 sm:p-5 ${folded ? "max-sm:hidden" : ""}`;
 
   return (
