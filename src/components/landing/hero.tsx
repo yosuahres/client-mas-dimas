@@ -37,7 +37,7 @@ export async function Hero() {
           <div className="absolute inset-x-0 top-0 hidden h-40 bg-linear-to-b from-black/45 to-transparent sm:block" />
         </div>
 
-        <div className="mx-auto w-full max-w-[90rem] pt-[56vw] sm:px-8 sm:pt-28 sm:pb-8 lg:px-12">
+        <div className="mx-auto w-full max-w-[90rem] pt-[56vw] sm:px-8 sm:pt-28 sm:pb-[clamp(2rem,12svh,9rem)] lg:px-12">
           <p className="kicker text-[1.05rem] text-white/85 animate-rise max-sm:hidden">{t.kicker}</p>
           {/* Phones show only the photo; the h1 stays for screen readers */}
           <h1 id="hero-title" className="display mt-2 text-[clamp(3.25rem,8vw,7rem)] animate-rise [animation-delay:100ms] max-sm:sr-only">
