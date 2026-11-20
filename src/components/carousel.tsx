@@ -3,32 +3,23 @@
 import Link from "next/link";
 import { Children, useRef, type MouseEvent, type PointerEvent, type ReactNode } from "react";
 
-import { ArrowLeftIcon, ArrowRightIcon } from "@/components/icons";
-
 type CarouselProps = {
   titleId: string;
   title: string;
   intro?: string;
   viewAll: { href: string; label: string };
-  previousLabel: string;
-  nextLabel: string;
   children: ReactNode;
 };
 
 // A row of cards that runs off the right edge of the page. Swipe it on touch screens, drag it with a mouse,
-// or scroll it with a trackpad or the keyboard. Screens with a mouse also get arrow buttons by the heading.
+// or scroll it with a trackpad or the keyboard. No arrow buttons: the card peeking in on the right shows there's more.
 
 // How far the mouse must move before a press counts as a drag rather than a click on a card
 const DRAG_THRESHOLD = 6;
-export function Carousel({ titleId, title, intro, viewAll, previousLabel, nextLabel, children }: CarouselProps) {
+
+export function Carousel({ titleId, title, intro, viewAll, children }: CarouselProps) {
   const rowRef = useRef<HTMLUListElement>(null);
   const drag = useRef({ pointerId: -1, startX: 0, startScroll: 0, moved: false });
-
-  const scrollByPage = (direction: 1 | -1) => {
-    const row = rowRef.current;
-    if (!row) return;
-    row.scrollBy({ left: direction * row.clientWidth * 0.75, behavior: "smooth" });
-  };
 
   // Touch already swipes natively; this gives a mouse the same feel. Snapping is paused while dragging,
   // then the row glides to the nearest card.
@@ -85,29 +76,9 @@ export function Carousel({ titleId, title, intro, viewAll, previousLabel, nextLa
           </h2>
           {intro ? <p className="mt-5 text-[1.1rem] text-ink-muted">{intro}</p> : null}
         </div>
-        <div className="flex items-center gap-8">
-          <Link href={viewAll.href} className="pill border border-ink/15 px-4 py-2.5 hover:border-ink/40">
-            {viewAll.label}
-          </Link>
-          <div className="flex gap-2 pointer-coarse:hidden">
-            <button
-              type="button"
-              onClick={() => scrollByPage(-1)}
-              aria-label={previousLabel}
-              className="grid size-11 place-items-center rounded-full border border-ink/15 hover:border-ink/40"
-            >
-              <ArrowLeftIcon className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollByPage(1)}
-              aria-label={nextLabel}
-              className="grid size-11 place-items-center rounded-full bg-ink text-white hover:bg-ink/85"
-            >
-              <ArrowRightIcon className="size-4" />
-            </button>
-          </div>
-        </div>
+        <Link href={viewAll.href} className="pill border border-ink/15 px-4 py-2.5 hover:border-ink/40">
+          {viewAll.label}
+        </Link>
       </div>
 
       <ul

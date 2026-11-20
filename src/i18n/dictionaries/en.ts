@@ -39,8 +39,6 @@ export const en = {
     intro:
       "One price per car, with driver, fuel, parking and water. Entrance tickets are extra.",
     viewAll: "View all",
-    previous: "Previous",
-    next: "Next",
   },
   firstStep: {
     left: "Your Jogja begins here.",

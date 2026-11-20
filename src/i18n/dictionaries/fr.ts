@@ -33,8 +33,6 @@ export const fr: Dictionary = {
     intro:
       "Un prix par voiture, avec chauffeur, carburant, parking et eau. Billets d'entrée en sus.",
     viewAll: "Tout voir",
-    previous: "Précédent",
-    next: "Suivant",
   },
   firstStep: {
     left: "Votre Jogja commence ici.",

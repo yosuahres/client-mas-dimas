@@ -21,8 +21,6 @@ export async function ToursSection() {
         title={t.title}
         intro={t.intro}
         viewAll={{ href: localePath(locale, "/tours"), label: t.viewAll }}
-        previousLabel={t.previous}
-        nextLabel={t.next}
       >
         {tours.map((tour) => {
           const href = tourHref(locale, tour);
