@@ -81,8 +81,10 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
     <>
       <SiteHeader path="/transfer" />
       <main>
-        {/* The URL holds the search, so only this part waits for the request; the rest is prerendered */}
-        <Suspense fallback={defaultView}>
+        {/* The URL holds the search, so only this part waits for the request; the rest is prerendered.
+            While it waits, a skeleton of the results, not the plain page: a guest who just pressed See prices
+            must land on their prices, not on the empty form */}
+        <Suspense fallback={<ResultsSkeleton />}>
           {searchParams.then((params) => {
             const search = parseTransferSearch(params, places);
             if (!search) return defaultView;
@@ -109,6 +111,36 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
       </main>
       <SiteFooter />
     </>
+  );
+}
+
+function ResultsSkeleton() {
+  return (
+    <div aria-hidden="true" className="motion-safe:animate-pulse">
+      <div className="border-b border-ink/10 bg-cream">
+        <div className="mx-auto flex max-w-7xl items-start justify-between gap-4 px-5 py-5 sm:px-8 sm:py-7">
+          <div className="w-full max-w-xl">
+            <div className="h-7 w-4/5 rounded-md bg-ink/10 sm:h-9" />
+            <div className="mt-3 h-4 w-1/2 rounded-md bg-ink/10" />
+          </div>
+          <div className="h-10 w-24 shrink-0 rounded-full bg-white" />
+        </div>
+      </div>
+      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8 sm:pt-10">
+        <div className="h-4 w-56 rounded-md bg-ink/10" />
+        <div className="mt-4 divide-y divide-sand border-y border-sand">
+          {[0, 1].map((row) => (
+            <div key={row} className="flex flex-wrap items-center justify-between gap-4 py-6">
+              <div>
+                <div className="h-6 w-32 rounded-md bg-ink/10" />
+                <div className="mt-2 h-4 w-44 rounded-md bg-ink/10" />
+              </div>
+              <div className="h-8 w-36 rounded-md bg-ink/10" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
