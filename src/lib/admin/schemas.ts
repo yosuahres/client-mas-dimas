@@ -1,7 +1,7 @@
 // What the admin forms may save. Field paths match the input names, so errors land under the right field.
 import { z } from "zod";
 
-import { placeKinds, seatClasses, tourInterests, tourLengths } from "@/lib/content/schema";
+import { homePhotoSlots, placeKinds, seatClasses, tourInterests, tourLengths, type HomePhotoSlot } from "@/lib/content/schema";
 import type { Draft } from "@/lib/machine-translation/plan";
 
 export const slug = z
@@ -270,3 +270,16 @@ export const settingsInput = z.object({
   instagramUrl: webUrl("Enter the full link, starting with https://"),
   idrPerUsd: positiveRupiah,
 });
+
+/** A photo uploaded on the Home page photos page ("home/<uuid>.webp"); empty puts the built-in photo back. */
+const homePhoto = z
+  .string()
+  .trim()
+  .regex(/^home\/[0-9a-f-]{36}\.webp$/, "Upload the photo again.")
+  .or(z.literal(""))
+  .optional()
+  .default("");
+
+export const homePhotosInput = z.object(
+  Object.fromEntries(homePhotoSlots.map((slot) => [slot, homePhoto])) as Record<HomePhotoSlot, typeof homePhoto>,
+);

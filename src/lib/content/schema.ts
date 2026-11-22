@@ -141,6 +141,17 @@ export type SiteSettings = {
   idrPerUsd: number;
 };
 
+/**
+ * The fixed photos on the home page the client can swap: the big one at the top, the four interest tiles and
+ * the drivers feature. A slot with no saved photo shows the one the site launched with (the top photo: the first
+ * package's).
+ */
+export const homePhotoSlots = ["hero", "temples", "culture", "nature", "adventure", "drivers"] as const;
+export type HomePhotoSlot = (typeof homePhotoSlots)[number];
+
+/** Uploaded photo keys ("home/<uuid>.webp") by slot; a missing slot keeps the built-in photo. */
+export type HomePhotos = Partial<Record<HomePhotoSlot, string>>;
+
 /** Saved edits to the page text in src/i18n/dictionaries, keyed by dotted path ("hero.title", "plan.facts.0.label"). */
 export type TextOverrides = Record<string, string>;
 

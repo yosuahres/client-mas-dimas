@@ -8,9 +8,11 @@ import prambanan from "@/assets/photos/prambanan.jpg";
 import { ArrowRightIcon } from "@/components/icons";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
+import { getHomePhotos } from "@/lib/content/public";
 import { tourInterests, type TourInterest } from "@/lib/tours";
 
-const tilePhotos: Record<TourInterest, StaticImageData> = {
+/** Shown until the client replaces a tile's photo in /admin/home-photos. */
+const builtInPhotos: Record<TourInterest, StaticImageData> = {
   temples: prambanan,
   culture: kraton,
   nature: merapi,
@@ -21,6 +23,7 @@ const tilePhotos: Record<TourInterest, StaticImageData> = {
 export async function FirstStepSection() {
   const locale = await getLocale();
   const t = (await getDictionary()).firstStep;
+  const homePhotos = await getHomePhotos();
 
   return (
     <section aria-labelledby="first-step-title">
@@ -32,6 +35,7 @@ export async function FirstStepSection() {
         <ul className="mt-10 grid gap-4 md:grid-cols-2">
           {tourInterests.map((interest) => {
             const tile = t.tiles[interest];
+            const replaced = homePhotos[interest];
             return (
               <li key={interest}>
                 <Link
@@ -39,9 +43,9 @@ export async function FirstStepSection() {
                   className="group relative isolate flex aspect-4/3 flex-col items-start justify-end overflow-hidden rounded-3xl p-6 text-white sm:aspect-[66/52] sm:p-8"
                 >
                   <Image
-                    src={tilePhotos[interest]}
+                    src={replaced ?? builtInPhotos[interest]}
                     alt=""
-                    placeholder="blur"
+                    placeholder={replaced ? "empty" : "blur"}
                     fill
                     sizes="(min-width: 768px) 46vw, 100vw"
                     className="-z-10 object-cover transition-transform duration-700 group-hover:scale-[1.03]"

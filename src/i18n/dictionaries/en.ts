@@ -33,6 +33,8 @@ export const en = {
     seeTours: "See the tours",
     planOnWhatsapp: "Plan it on WhatsApp",
     planMessage: "Hi Jogja Travel! I'd like to plan a trip.",
+    /** Only used when a top photo is set in /admin/home-photos; otherwise the first package's photo and its description show. */
+    photoAlt: "A view of Yogyakarta",
   },
   toursSection: {
     title: "Private transport tours",

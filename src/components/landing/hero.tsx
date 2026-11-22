@@ -4,7 +4,7 @@ import { WhatsappIcon } from "@/components/icons";
 import { TourShortlist } from "@/components/search/tour-shortlist";
 import { TripSearch } from "@/components/search/trip-search";
 import { getDictionary, getLocale } from "@/i18n/server";
-import { getPlaces, getSite, getTours } from "@/lib/content/public";
+import { getHomePhotos, getPlaces, getSite, getTours } from "@/lib/content/public";
 import { whatsappLink } from "@/lib/site";
 
 // A photo in a rounded frame filling the first screen under the header: a calm headline, a short intro,
@@ -13,8 +13,14 @@ export async function Hero() {
   const locale = await getLocale();
   const dict = await getDictionary();
   const t = dict.hero;
-  const [tours, places, site] = await Promise.all([getTours(locale), getPlaces(locale), getSite()]);
+  const [tours, places, site, homePhotos] = await Promise.all([getTours(locale), getPlaces(locale), getSite(), getHomePhotos()]);
   const [featuredTour] = tours;
+  // The photo set in /admin/home-photos, otherwise the first package's
+  const photo = homePhotos.hero
+    ? { src: homePhotos.hero, alt: t.photoAlt }
+    : featuredTour.photo
+      ? { src: featuredTour.photo, alt: featuredTour.photoAlt }
+      : null;
 
   return (
     <section aria-labelledby="hero-title">
@@ -22,10 +28,10 @@ export async function Hero() {
           Phones: a wide photo, then the search as a white bar of two tabs right under it */}
       <div className="relative isolate flex flex-col justify-end text-white sm:min-h-svh">
         <div className="absolute inset-x-0 top-0 -z-10 h-[56vw] overflow-hidden bg-ink sm:inset-y-0 sm:h-auto">
-          {featuredTour.photo ? (
+          {photo ? (
             <Image
-              src={featuredTour.photo}
-              alt={featuredTour.photoAlt}
+              src={photo.src}
+              alt={photo.alt}
               priority
               fill
               sizes="100vw"

@@ -6,6 +6,7 @@ import type { Locale } from "@/i18n/config";
 import { defaultContent } from "@/lib/content/defaults";
 import {
   faqFromRow,
+  homePhotosFromRows,
   placeFromRow,
   reviewFromRow,
   settingsFromRow,
@@ -13,6 +14,7 @@ import {
   tourFromRow,
   vehicleFromRow,
   type FaqRow,
+  type HomePhotoRow,
   type PlaceRow,
   type ReviewRow,
   type RouteRow,
@@ -22,6 +24,7 @@ import {
 } from "@/lib/content/rows";
 import type {
   FaqRecord,
+  HomePhotos,
   PlaceRecord,
   ReviewRecord,
   RouteRecord,
@@ -46,6 +49,7 @@ export const contentTags = {
   reviews: "content:reviews",
   faqs: "content:faqs",
   text: "content:text",
+  homePhotos: "content:home-photos",
 } as const;
 
 function usingDefaults() {
@@ -127,4 +131,19 @@ export async function loadTextOverrides(locale: Locale): Promise<TextOverrides> 
   const { data, error } = await createPublicClient().from(tables.text).select("key, value").eq("locale", locale);
   if (error) throw new Error(`Couldn't read page text from Supabase: ${error.message}`);
   return Object.fromEntries((data as { key: string; value: string }[]).map(({ key, value }) => [key, value]));
+}
+
+export async function loadHomePhotos(): Promise<HomePhotos> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(contentTags.homePhotos);
+  if (usingDefaults()) return {};
+
+  const { data, error } = await createPublicClient().from(tables.homePhotos).select("slot, photo");
+  if (error) {
+    // No such table (42P01 from Postgres, PGRST205 from the API): the 20261122 migration hasn't run yet, so nothing is replaced.
+    if (error.code === "42P01" || error.code === "PGRST205") return {};
+    throw new Error(`Couldn't read the home page photos from Supabase: ${error.message}`);
+  }
+  return homePhotosFromRows(data as HomePhotoRow[]);
 }

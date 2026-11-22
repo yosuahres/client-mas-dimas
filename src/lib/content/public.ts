@@ -5,6 +5,7 @@ import "server-only";
 import type { Locale } from "@/i18n/config";
 import {
   loadFaqs,
+  loadHomePhotos,
   loadPlaces,
   loadReviews,
   loadRoutes,
@@ -12,7 +13,7 @@ import {
   loadTours,
   loadVehicles,
 } from "@/lib/content/store";
-import type { SiteSettings, TourRecord } from "@/lib/content/schema";
+import type { HomePhotoSlot, SiteSettings, TourRecord } from "@/lib/content/schema";
 import { translate, translateFields } from "@/lib/content/translate";
 import type { Vehicle } from "@/lib/fleet";
 import { photoUrl } from "@/lib/photos";
@@ -21,6 +22,15 @@ import type { Place, PopularRoute, TransferVehicle } from "@/lib/transfers";
 
 export async function getSite(): Promise<SiteSettings> {
   return loadSettings();
+}
+
+/** The URL of each home page photo the client replaced. A missing slot keeps the built-in photo. */
+export async function getHomePhotos(): Promise<Partial<Record<HomePhotoSlot, string>>> {
+  const photos = await loadHomePhotos();
+  return Object.fromEntries(Object.entries(photos).flatMap(([slot, photo]) => {
+    const url = photoUrl(photo);
+    return url ? [[slot, url]] : [];
+  }));
 }
 
 function localizeTour(record: TourRecord, locale: Locale): Tour {

@@ -3,7 +3,9 @@
 import { requireAdmin } from "@/lib/admin/session";
 import { PHOTO_BUCKET, photoUrl } from "@/lib/photos";
 
-const folders = ["tours"] as const;
+const folders = ["tours", "home"] as const;
+
+export type PhotoFolder = (typeof folders)[number];
 
 export type PhotoUpload = { ok: true; key: string; uploadUrl: string; previewUrl: string } | { ok: false; error: string };
 
@@ -11,7 +13,7 @@ export type PhotoUpload = { ok: true; key: string; uploadUrl: string; previewUrl
  * A fresh key and a signed URL the browser PUTs the compressed WebP to, so large files never pass through the
  * Node server on cPanel. Signed as the admin: the bucket's policies check the same admin role as the tables.
  */
-export async function requestPhotoUpload(folder: (typeof folders)[number]): Promise<PhotoUpload> {
+export async function requestPhotoUpload(folder: PhotoFolder): Promise<PhotoUpload> {
   const { supabase } = await requireAdmin();
   if (!folders.includes(folder)) return { ok: false, error: "Unknown photo folder." };
   const key = `${folder}/${crypto.randomUUID()}.webp`;

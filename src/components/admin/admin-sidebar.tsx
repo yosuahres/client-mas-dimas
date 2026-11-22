@@ -6,6 +6,7 @@ import {
   CircleHelp,
   ExternalLink,
   House,
+  Images,
   LogOut,
   Map as MapIcon,
   MapPinned,
@@ -58,6 +59,7 @@ const groups: NavGroup[] = [
       { href: "/admin/reviews", title: "Reviews", icon: MessageSquareQuote },
       { href: "/admin/faq", title: "Questions", icon: CircleHelp },
       { href: "/admin/text", title: "Website text", icon: Type },
+      { href: "/admin/home-photos", title: "Home page photos", icon: Images },
     ],
   },
   {

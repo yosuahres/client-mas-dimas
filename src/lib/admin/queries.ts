@@ -3,6 +3,7 @@ import "server-only";
 import { readAsAdmin } from "@/lib/admin/session";
 import {
   faqFromRow,
+  homePhotosFromRows,
   placeFromRow,
   reviewFromRow,
   routeFromRow,
@@ -11,6 +12,7 @@ import {
   tourFromRow,
   vehicleFromRow,
   type FaqRow,
+  type HomePhotoRow,
   type PlaceRow,
   type ReviewRow,
   type RouteRow,
@@ -67,6 +69,16 @@ export async function adminSettings() {
   );
   if (error) throw new Error(`Couldn't read the business details: ${error.message}`);
   return data ? settingsFromRow(data) : null;
+}
+
+/** The home page photos the client replaced, by slot. Empty until the 20261122 migration has run. */
+export async function adminHomePhotos() {
+  const { data, error } = await readAsAdmin((supabase) => supabase.from(tables.homePhotos).select("slot, photo"));
+  if (error) {
+    if (error.code === "42P01" || error.code === "PGRST205") return null;
+    throw new Error(`Couldn't read the home page photos: ${error.message}`);
+  }
+  return homePhotosFromRows(data as HomePhotoRow[]);
 }
 
 /** Saved page-text edits, by locale then dotted key. */

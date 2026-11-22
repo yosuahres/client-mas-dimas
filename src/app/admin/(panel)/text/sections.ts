@@ -35,6 +35,7 @@ export const textSections: TextSection[] = [
   { key: "booking", page: "info", title: "How booking works page", where: "The three steps" },
   { key: "faq", page: "info", title: "Questions page", where: "Heading and WhatsApp line" },
   { key: "header", page: "every", title: "Top menu", where: "Menu at the top of every page" },
+  { key: "pickers", page: "every", title: "Date, time and passenger pickers", where: "The calendars, time and passenger choosers in the search and booking forms" },
   { key: "pageCta", page: "every", title: "“Ready to choose a trip?” band", where: "Near the bottom of most pages" },
   { key: "footer", page: "every", title: "Footer", where: "Bottom of every page" },
   { key: "notFound", page: "every", title: "Broken link page", where: "Shown when a link is wrong" },

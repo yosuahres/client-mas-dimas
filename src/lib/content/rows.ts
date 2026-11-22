@@ -2,6 +2,8 @@
 import { defaultContent } from "@/lib/content/defaults";
 import type {
   FaqRecord,
+  HomePhotos,
+  HomePhotoSlot,
   PlaceRecord,
   ReviewRecord,
   RouteRecord,
@@ -19,6 +21,7 @@ export const tables = {
   reviews: "reviews",
   faqs: "faqs",
   text: "page_text",
+  homePhotos: "home_photos",
 } as const;
 
 export type SettingsRow = {
@@ -273,4 +276,13 @@ export function faqFromRow(row: FaqRow): FaqRecord {
 
 export function faqToRow(faq: Omit<FaqRecord, "id">): Omit<FaqRow, "id" | "position"> {
   return { question: faq.question, answer: faq.answer, published: faq.published };
+}
+
+export type HomePhotoRow = {
+  slot: HomePhotoSlot;
+  photo: string;
+};
+
+export function homePhotosFromRows(rows: HomePhotoRow[]): HomePhotos {
+  return Object.fromEntries(rows.map(({ slot, photo }) => [slot, photo]));
 }

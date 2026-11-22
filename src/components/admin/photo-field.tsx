@@ -4,7 +4,7 @@ import { ImageUp, Trash2 } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import { requestPhotoUpload } from "@/app/admin/(panel)/photo-actions";
+import { requestPhotoUpload, type PhotoFolder } from "@/app/admin/(panel)/photo-actions";
 import { Button } from "@/components/ui/button";
 
 // Photos are shrunk in the browser before upload: at most 2000 px wide, WebP, aiming under ~400 KB,
@@ -36,10 +36,17 @@ type PhotoFieldProps = {
   defaultValue: string | null;
   /** The URL to preview the stored value. */
   defaultPreview: string | null;
+  /** Where uploads are kept in the bucket. */
+  folder?: PhotoFolder;
+  /**
+   * The photo the site shows while this field is empty. With it, Remove reads "Use the built-in photo" and the
+   * preview shows that photo instead of "No photo yet".
+   */
+  builtInPreview?: string | null;
   error?: string;
 };
 
-export function PhotoField({ name, defaultValue, defaultPreview, error }: PhotoFieldProps) {
+export function PhotoField({ name, defaultValue, defaultPreview, folder = "tours", builtInPreview, error }: PhotoFieldProps) {
   const [value, setValue] = useState(defaultValue ?? "");
   const [preview, setPreview] = useState(defaultPreview);
   const [uploading, startUpload] = useTransition();
@@ -49,7 +56,7 @@ export function PhotoField({ name, defaultValue, defaultPreview, error }: PhotoF
     startUpload(async () => {
       try {
         const webp = await compressToWebp(file);
-        const target = await requestPhotoUpload("tours");
+        const target = await requestPhotoUpload(folder);
         if (!target.ok) throw new Error(target.error);
         // Each upload gets a new key, so the file never changes and browsers may cache it for a year.
         const response = await fetch(target.uploadUrl, {
@@ -74,6 +81,12 @@ export function PhotoField({ name, defaultValue, defaultPreview, error }: PhotoF
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element -- admin preview of a just-uploaded file
           <img src={preview} alt="" className="size-full object-cover" />
+        ) : builtInPreview ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element -- admin preview of the bundled photo */}
+            <img src={builtInPreview} alt="" className="size-full object-cover" />
+            <span className="absolute top-2 left-2 rounded-md bg-background/90 px-2 py-0.5 text-xs font-medium">Built-in photo</span>
+          </>
         ) : (
           <p className="grid size-full place-items-center text-xs text-muted-foreground">No photo yet</p>
         )}
@@ -107,7 +120,7 @@ export function PhotoField({ name, defaultValue, defaultPreview, error }: PhotoF
             }}
           >
             <Trash2 />
-            Remove
+            {builtInPreview !== undefined ? "Use the built-in photo" : "Remove"}
           </Button>
         ) : null}
       </div>

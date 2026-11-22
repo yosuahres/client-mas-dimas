@@ -27,6 +27,7 @@ export const fr: Dictionary = {
     seeTours: "Voir les circuits",
     planOnWhatsapp: "Organiser sur WhatsApp",
     planMessage: "Bonjour Jogja Travel ! J'aimerais organiser un voyage.",
+    photoAlt: "Une vue de Yogyakarta",
   },
   toursSection: {
     title: "Circuits en transport privé",

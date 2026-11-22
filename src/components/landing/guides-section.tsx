@@ -5,18 +5,21 @@ import batik from "@/assets/photos/batik.jpg";
 import { ArrowRightIcon } from "@/components/icons";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
+import { getHomePhotos } from "@/lib/content/public";
 
 // From 640px: a big photo feature in a rounded frame, with the promise on top of it.
 // Phones: a short photo, then the text on white underneath, so the copy isn't buried in one tall image card.
 export async function GuidesSection() {
   const locale = await getLocale();
   const t = (await getDictionary()).guides;
+  // The photo set in /admin/home-photos, otherwise the batik maker
+  const replaced = (await getHomePhotos()).drivers;
 
   return (
     <section aria-labelledby="guides-title" className="px-3">
       <div className="relative isolate mx-auto max-w-[90rem] sm:overflow-hidden sm:rounded-3xl sm:bg-ink sm:text-white">
         <div className="relative h-48 overflow-hidden rounded-2xl bg-ink sm:absolute sm:inset-0 sm:-z-10 sm:h-auto sm:rounded-none">
-          <Image src={batik} alt={t.photoAlt} placeholder="blur" fill sizes="100vw" className="object-cover object-[50%_35%]" />
+          <Image src={replaced ?? batik} alt={t.photoAlt} placeholder={replaced ? "empty" : "blur"} fill sizes="100vw" className="object-cover object-[50%_35%]" />
           <div className="absolute inset-0 hidden bg-linear-to-r from-black/75 via-black/40 to-black/5 sm:block" />
         </div>
 

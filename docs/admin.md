@@ -1,6 +1,6 @@
 # Admin panel: setup and handover
 
-The admin panel lives at `/admin`. Everything a guest reads can be changed there: tour packages and their photos, cars and prices, transfer places and popular routes, reviews, the questions page, contact details, and every heading and sentence on the site.
+The admin panel lives at `/admin`. Everything a guest reads can be changed there: tour packages and their photos, the photos on the home page, cars and prices, transfer places and popular routes, reviews, the questions page, contact details, and every heading and sentence on the site.
 
 The client writes in **Indonesian only**. When they save, English and French are translated automatically with Google Cloud Translation.
 
@@ -13,6 +13,10 @@ Content, admin logins and photos are all stored in **Supabase** (database, Auth 
    - `supabase/migrations/20261104000000_site_content.sql` (the tables and access rules)
    - `supabase/migrations/20261104010000_photos_bucket.sql` (the public `photos` bucket, which only admins can upload to)
    - `supabase/migrations/20261108000000_tour_options.sql` (the "with accommodation" option and drop-off points on packages)
+   - `supabase/migrations/20261111000000_harden_functions.sql` (pins the helper functions' search path)
+   - `supabase/migrations/20261120000000_split_packages_and_car_capacity.sql` (split packages, car luggage capacity and tour price %)
+   - `supabase/migrations/20261120010000_car_seat_classes.sql` (5 seater / 7 seater / above 7 groups)
+   - `supabase/migrations/20261122000000_home_photos.sql` (the photos the client can swap on /admin/home-photos)
    - `supabase/seed.sql` (the 15 packages, 5 cars, 27 places, routes, reviews and questions the site launched with)
 3. **Authentication → Sign In / Providers → Email**: turn **off** "Allow new users to sign up". Admins are only added from `/admin/settings/users` or by you.
 4. **Project Settings → API Keys**: copy the project URL, the publishable key (`sb_publishable_…`) and a secret key (`sb_secret_…`) into the environment (step 3 below).
