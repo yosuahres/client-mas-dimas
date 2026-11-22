@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { failure, type ActionResult } from "@/lib/admin/action-result";
 import type { Translations } from "@/lib/content/schema";
-import { translateFromIndonesian } from "@/lib/machine-translation/google";
+import { translateFromIndonesian } from "@/lib/machine-translation";
 import { fieldsToTranslate, withTranslations, type Draft, type Target, type TextFields } from "@/lib/machine-translation/plan";
 
 export type Translated<T> =

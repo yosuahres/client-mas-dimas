@@ -5,7 +5,7 @@ import type { ElementType } from "react";
 
 import { PageBody, PageHeader } from "@/components/admin/page-header";
 import { adminFaqs, adminPlaces, adminReviews, adminTextOverrides, adminTours, adminVehicles } from "@/lib/admin/queries";
-import { isTranslationConfigured } from "@/lib/machine-translation/google";
+import { isTranslationConfigured } from "@/lib/machine-translation";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -42,7 +42,7 @@ export default async function DashboardPage() {
     {
       ok: isTranslationConfigured(),
       good: "English and French are translated automatically from the Indonesian.",
-      bad: "Automatic translation isn't set up: add GOOGLE_TRANSLATE_API_KEY on the server.",
+      bad: "Automatic translation isn't set up: add GEMINI_API_KEY on the server (see docs/admin.md).",
     },
     {
       ok: Boolean(process.env.SUPABASE_SECRET_KEY),

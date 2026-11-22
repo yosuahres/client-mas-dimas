@@ -21,7 +21,8 @@ Prices are estimates as of November 2026, at about Rp 16,500 per USD. Check them
 | Domain email (yarkasi@jogja-transport.com) | Business email | Included with cPanel hosting | — | — |
 | Cloudflare (DNS + CDN) | Speed for foreign visitors, DDoS protection | Free plan | — | — |
 | Cloudflare Turnstile | Anti-spam on contact/booking forms | Free | — | — |
-| Google Cloud Translation | Translates the client's Indonesian into English and French in the admin panel | 500,000 characters / month (needs billing on, card on file) | No. The site is ~40,000 characters per language and only changed text is translated. Cap the daily quota at 15,000 characters (docs/admin.md) so it can never be charged. | $20 per million characters |
+| Gemini API (Google AI Studio) | Translates the client's Indonesian into English and French in the admin panel | Free tier: a set number of requests per minute and per day, **no billing or card** | No. A save is about one request per language. Past the limit Google refuses until the next day (15:00 WIB); nothing can be charged while billing is off. | Only if billing is turned on; not needed |
+| Google Cloud Translation (optional fallback) | Same, if Gemini fails | 500,000 characters / month (needs billing on, card on file) | No. Cap the daily quota at 15,000 characters (docs/admin.md) so it can never be charged. | $20 per million characters |
 | Resend (form emails) | Sends booking enquiries to the owner's inbox | 3,000 emails / month, 100 / day | No | $20/mo |
 | GitHub | Code, plus Actions for build/deploy and DB backups | Free private repos, 2,000 Action minutes / month | No | — |
 | WhatsApp links (wa.me) | Booking via WhatsApp | Free | — | WhatsApp Business API is paid; not needed |

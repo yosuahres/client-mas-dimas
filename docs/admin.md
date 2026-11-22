@@ -2,7 +2,7 @@
 
 The admin panel lives at `/admin`. Everything a guest reads can be changed there: tour packages and their photos, the photos on the home page, cars and prices, transfer places and popular routes, reviews, the questions page, contact details, and every heading and sentence on the site.
 
-The client writes in **Indonesian only**. When they save, English and French are translated automatically with Google Cloud Translation.
+The client writes in **Indonesian only**. When they save, English and French are translated automatically with Gemini (Google AI Studio, free), with Google Cloud Translation as an optional fallback.
 
 Content, admin logins and photos are all stored in **Supabase** (database, Auth and Storage). See `docs/costs.md` for what each costs. Until Supabase is connected, the website shows the content it launched with and `/admin` shows the setup steps.
 
@@ -44,7 +44,21 @@ Photos are resized in the browser to at most 2000 px wide and saved as WebP (usu
 
 The free plan holds 1 GB of files and about 5 GB of downloads a month (see `docs/costs.md`). If the site outgrows that, move photos to Cloudflare R2: the R2 version of the upload code is in git history (commit `847283e`).
 
-## 3. Google Cloud Translation (English and French)
+## 3. Automatic translation (English and French)
+
+### Gemini (the default: free, no card)
+
+1. Sign in to aistudio.google.com with the client's Google account (any Gmail works).
+2. Click **Get API key → Create API key**. Let it create a new project (e.g. "Jogja Travel"). Copy the key into `GEMINI_API_KEY`.
+3. Don't turn on billing for that project. Without billing it stays on the free tier: when a limit is reached Google refuses the request and the admin shows a notice, and nothing can ever be charged.
+
+Limits: the free tier allows a number of requests per minute and per day (AI Studio shows the project's current numbers under its rate-limit page). The daily count resets at midnight Pacific time, 15:00 WIB in winter (14:00 WIB in summer). A save is about one request per language, so normal editing stays far below it. Text sent on the free tier may be used by Google to improve its models; it's public website text, so that's fine, but never paste customer details into the admin text fields.
+
+The model is `gemini-3.5-flash-lite`. If Google retires it or takes it off the free tier (saves then say "Gemini refused the request (404 …)"), set `GEMINI_MODEL` to a current Flash-Lite id from ai.google.dev/gemini-api/docs/models.
+
+### Google Cloud Translation (optional fallback, needs billing)
+
+Only if the client is ever fine with a card on file. With both keys set, Google translates whenever Gemini fails; with only this key, Google does all the translation.
 
 1. At console.cloud.google.com, create a project (e.g. "Jogja Travel") under the client's Google account and turn on billing for it. A card is required, but the first 500,000 characters a month are free; the whole site is about 40,000 characters per language, and only changed text is translated.
 2. **APIs & Services → Library**: enable **Cloud Translation API**.
@@ -57,14 +71,14 @@ How it works for the client:
 - Every form opens on the **Indonesia** tab. The English and French tabs are marked "auto".
 - On save, a field's English and French are translated when its Indonesian changed, or when they're empty. A translation corrected by hand on the English or French tab stays until that Indonesian text changes again.
 - Words in curly brackets like `{price}` are protected from translation.
-- If translation fails (no key, quota reached, Google down), the Indonesian still saves and a notice says English and French weren't updated. A brand-new item can't be saved without English, since it's the language the site falls back to: try again later or type the English.
+- If translation fails (no key, free limit reached, Gemini down), the Indonesian still saves and a notice says English and French weren't updated. A brand-new item can't be saved without English, since it's the language the site falls back to: try again later or type the English.
 - In **Website text**, saving the Indonesian also updates English and French; "Back to original" on the Indonesian puts all three back.
 
 ## 4. Google reviews (optional)
 
 The home page can show the business's live Google rating, review count and its best recent reviews, straight from its Google Maps listing. Without this, it shows the rating typed in **Settings → Business** and the quotes from **Reviews** in the admin.
 
-1. In the same Google Cloud project as translation (billing is already on), **APIs & Services → Library**: enable **Places API (New)**.
+1. At console.cloud.google.com, in a project with billing on (the Gemini project from step 3 works once billing is turned on, but then Gemini is no longer on the free tier, so a separate project is safer), **APIs & Services → Library**: enable **Places API (New)**.
 2. **Credentials → Create credentials → API key**. Restrict it to **Places API (New)** and copy it into `GOOGLE_PLACES_API_KEY`. (A separate key from translation, so each can be turned off on its own.)
 3. Find the listing's Place ID: open developers.google.com/maps/documentation/places/web-service/place-id, search for the business as it's named on Google Maps, and copy the ID (starts with `ChIJ…`) into `GOOGLE_PLACE_ID`.
 4. **Make it impossible to pay anything**: **APIs & Services → Places API (New) → Quotas & System Limits**, find the request limit for **GetPlace** (Place Details) and set it as low as Google allows (filter for "per day" if it's listed; otherwise the per-minute one). The site asks once a day per language (3 a day, about 90 a month); Google's free allowance for this kind of request is 1,000 a month.

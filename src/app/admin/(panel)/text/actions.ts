@@ -10,7 +10,7 @@ import { dictionaries } from "@/i18n/server";
 import { textEntries } from "@/i18n/text-paths";
 import { tables } from "@/lib/content/rows";
 import { contentTags } from "@/lib/content/store";
-import { translateFromIndonesian, type TranslationTarget } from "@/lib/machine-translation/google";
+import { translateFromIndonesian, type TranslationTarget } from "@/lib/machine-translation";
 import { placeholdersOf } from "@/lib/machine-translation/html";
 
 const FIELD_PREFIX = "text:";

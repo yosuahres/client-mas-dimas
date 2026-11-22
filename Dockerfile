@@ -33,5 +33,5 @@ COPY --from=build --chown=node:node /app/.next/static ./.next/static
 COPY --from=build --chown=node:node /app/public ./public
 USER node
 EXPOSE 3000
-# Server secrets (SUPABASE_SECRET_KEY, GOOGLE_TRANSLATE_API_KEY, ...) come in at run time: docker run --env-file .env
+# Server secrets (SUPABASE_SECRET_KEY, GEMINI_API_KEY, ...) come in at run time: docker run --env-file .env
 CMD ["node", "server.js"]
