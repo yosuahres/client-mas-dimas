@@ -45,7 +45,7 @@ export function UsersManager({ admins, currentUserId }: { admins: AdminAccount[]
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 text-muted-foreground hover:text-destructive"
+                className="size-10 shrink-0 text-muted-foreground hover:text-destructive md:size-8"
                 aria-label={`Remove ${admin.email}`}
                 onClick={() => setToRemove(admin)}
               >

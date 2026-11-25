@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { Toaster } from "sonner";
+
+import { AdminToaster } from "@/components/admin/admin-toaster";
 
 import "./admin.css";
 
@@ -22,7 +23,7 @@ export default function AdminRootLayout({ children }: LayoutProps<"/admin">) {
     <html lang="en" className={geist.variable}>
       <body className="min-h-svh antialiased">
         {children}
-        <Toaster position="bottom-right" richColors closeButton />
+        <AdminToaster />
       </body>
     </html>
   );

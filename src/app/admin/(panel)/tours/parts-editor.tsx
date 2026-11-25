@@ -44,8 +44,10 @@ export function PartsEditor({ names, prices, errors }: PartsEditorProps) {
             const error = errors[`partPrices.${index}`];
             return (
               <li key={row.key} className="grid gap-1">
-                <div className="grid grid-cols-[1fr_9rem_auto] items-center gap-2">
+                {/* On phones the name gets its own line and the price sits under it, next to the remove button. */}
+                <div className="grid grid-cols-[1fr_auto] items-center gap-2 sm:grid-cols-[1fr_9rem_auto]">
                   <Input
+                    className="col-span-2 sm:col-span-1"
                     name="text.id.parts[]"
                     aria-label={`Option ${index + 1} name (Indonesian)`}
                     placeholder="Borobudur saja"

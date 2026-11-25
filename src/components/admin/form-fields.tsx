@@ -148,11 +148,11 @@ export function LocaleTabs({ errors, prefixes, children }: { errors: FieldErrors
   return (
     <Tabs defaultValue="id">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <TabsList>
+        <TabsList className="w-full sm:w-fit">
           {tabOrder.map((locale) => (
-            <TabsTrigger key={locale} value={locale} className="gap-1.5 text-[13px]">
+            <TabsTrigger key={locale} value={locale} className="flex-1 gap-1.5 text-[13px] sm:flex-none">
               {localeLabels[locale]}
-              {locale === "id" ? null : <span className="text-[10px] font-normal text-muted-foreground">auto</span>}
+              {locale === "id" ? null : <span className="hidden text-[10px] font-normal text-muted-foreground sm:inline">auto</span>}
               {hasError(locale) ? <span aria-label="has errors" className="size-1.5 rounded-full bg-destructive" /> : null}
             </TabsTrigger>
           ))}

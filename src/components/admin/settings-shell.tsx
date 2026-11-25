@@ -73,7 +73,7 @@ function SettingsSidebar() {
                       size="sm"
                       isActive={pathname === page.href}
                       tooltip={page.title}
-                      className="pl-1 [&_svg]:text-muted-foreground/80"
+                      className="pl-1 max-md:h-10 [&_svg]:text-muted-foreground/80"
                     >
                       <Link href={page.href} onClick={closeMobileSidebar}>
                         <page.icon />
@@ -92,7 +92,7 @@ function SettingsSidebar() {
         <SidebarMenu>
           <SidebarSeparator className="mx-0" />
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="sm" tooltip="Back to admin" className="pl-1">
+            <SidebarMenuButton asChild size="sm" tooltip="Back to admin" className="pl-1 max-md:h-10">
               <Link href={backHref} onClick={closeMobileSidebar}>
                 <ChevronLeft />
                 <span className="text-[13px] font-medium">Back to admin</span>

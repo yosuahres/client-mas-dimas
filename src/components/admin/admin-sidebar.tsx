@@ -104,7 +104,7 @@ export function AdminSidebar({ email }: { email: string }) {
           href="/en"
           target="_blank"
           rel="noreferrer"
-          className="mb-2 flex w-full items-center gap-2 rounded-md border border-foreground/15 bg-white px-2.5 py-1.5 text-xs text-muted-foreground shadow-sm transition-colors hover:bg-white/90"
+          className="mb-2 flex w-full items-center gap-2 rounded-md border border-foreground/15 bg-white px-2.5 py-1.5 text-xs max-md:py-2.5 text-muted-foreground shadow-sm transition-colors hover:bg-white/90"
         >
           <ExternalLink className="size-3 shrink-0" />
           <span className="flex-1">View website</span>
@@ -117,7 +117,7 @@ export function AdminSidebar({ email }: { email: string }) {
             <SidebarMenu>
               {modules.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild size="sm" isActive={isActive(item.href)} tooltip={item.title} className="pl-1 [&_svg]:text-muted-foreground/80">
+                  <SidebarMenuButton asChild size="sm" isActive={isActive(item.href)} tooltip={item.title} className="pl-1 max-md:h-10 [&_svg]:text-muted-foreground/80">
                     <Link href={item.href} onClick={closeMobileSidebar}>
                       <item.icon />
                       <span className="text-[13px] font-medium">{item.title}</span>
@@ -135,7 +135,7 @@ export function AdminSidebar({ email }: { email: string }) {
               type="button"
               onClick={() => setOpenGroups((open) => ({ ...open, [group.key]: !open[group.key] }))}
               aria-expanded={openGroups[group.key]}
-              className="flex w-full items-center gap-1 rounded-md px-1 py-1 transition-colors hover:bg-accent"
+              className="flex w-full items-center gap-1 rounded-md px-1 py-1 transition-colors max-md:py-2 hover:bg-accent"
             >
               <ChevronDown className={`size-3 text-muted-foreground transition-transform ${openGroups[group.key] ? "" : "-rotate-90"}`} />
               <span className="text-[11px] font-normal text-muted-foreground">{group.title}</span>
@@ -145,7 +145,7 @@ export function AdminSidebar({ email }: { email: string }) {
                 <SidebarMenu>
                   {group.items.map((item) => (
                     <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton asChild size="sm" isActive={isActive(item.href)} tooltip={item.title} className="pl-1">
+                      <SidebarMenuButton asChild size="sm" isActive={isActive(item.href)} tooltip={item.title} className="pl-1 max-md:h-10">
                         <Link href={item.href} onClick={closeMobileSidebar}>
                           <span className="flex size-4 shrink-0 items-center justify-center rounded bg-blue-500 text-white [&_svg]:size-3">
                             <item.icon />
@@ -168,7 +168,7 @@ export function AdminSidebar({ email }: { email: string }) {
         </p>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="sm" tooltip="Settings" className="pl-1 [&_svg]:text-muted-foreground/80">
+            <SidebarMenuButton asChild size="sm" tooltip="Settings" className="pl-1 max-md:h-10 [&_svg]:text-muted-foreground/80">
               <Link href={SETTINGS_HOME} onClick={closeMobileSidebar}>
                 <Settings />
                 <span className="text-[13px] font-medium">Settings</span>
@@ -179,7 +179,7 @@ export function AdminSidebar({ email }: { email: string }) {
         <form action={signOut}>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton type="submit" size="sm" className="pl-1 [&_svg]:text-muted-foreground/80">
+              <SidebarMenuButton type="submit" size="sm" className="pl-1 max-md:h-10 [&_svg]:text-muted-foreground/80">
                 <LogOut />
                 <span className="text-[13px] font-medium">Sign out</span>
               </SidebarMenuButton>

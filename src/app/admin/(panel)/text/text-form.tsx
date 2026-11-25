@@ -121,7 +121,7 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Find text: type words you see on the website"
+            placeholder="Find words on the website"
             aria-label="Find text"
             className="pl-9"
           />
@@ -134,7 +134,7 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
                 key={language.locale}
                 href={language.locale === "id" ? "/admin/text" : `/admin/text?lang=${language.locale}`}
                 className={cn(
-                  "rounded-md px-3 py-1 font-medium text-muted-foreground",
+                  "rounded-md px-3 py-2 font-medium text-muted-foreground md:py-1",
                   language.locale === locale && "bg-background text-foreground shadow",
                 )}
               >
@@ -175,7 +175,11 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
           </Button>
         </div>
       ) : (
-        <div role="tablist" aria-label="Part of the website" className="flex flex-wrap gap-2">
+        <div
+          role="tablist"
+          aria-label="Part of the website"
+          className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+        >
           {textPages.map((candidate) => (
             <button
               key={candidate.key}
@@ -184,7 +188,7 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
               aria-selected={candidate.key === page}
               onClick={() => setPage(candidate.key)}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                "shrink-0 rounded-full border px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors sm:py-1.5",
                 candidate.key === page ? "border-foreground bg-foreground text-background" : "hover:bg-accent",
               )}
             >
@@ -224,7 +228,7 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
         <input key={field.key} type="hidden" name={`text:${field.key}`} value={values[field.key]} />
       ))}
 
-      <div className="sticky bottom-0 -mx-4 grid gap-2 border-t bg-background/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+      <div className="sticky -bottom-4 -mx-4 -mb-4 grid gap-2 border-t bg-background/95 px-4 py-3 backdrop-blur sm:-bottom-6 sm:-mx-6 sm:-mb-6 sm:px-6">
         {errorList.length > 0 ? (
           <ul className="grid gap-0.5 text-xs text-destructive">
             {errorList.map((error) => (
@@ -235,12 +239,19 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
           </ul>
         ) : null}
         <div className="flex items-center justify-end gap-2">
-          <span className="mr-auto text-sm text-muted-foreground">
-            {unsaved.length === 0 ? "No changes" : `${unsaved.length} change${unsaved.length === 1 ? "" : "s"} not saved yet`}
+          <span className="mr-auto min-w-0 text-sm text-muted-foreground">
+            {unsaved.length === 0 ? (
+              "No changes"
+            ) : (
+              <>
+                {unsaved.length} change{unsaved.length === 1 ? "" : "s"}
+                <span className="hidden sm:inline"> not saved yet</span>
+              </>
+            )}
           </span>
           {unsaved.length > 0 ? (
             <Button type="button" variant="ghost" onClick={discard} disabled={pending}>
-              Undo changes
+              Undo<span className="hidden sm:inline"> changes</span>
             </Button>
           ) : null}
           <Button type="submit" disabled={pending || unsaved.length === 0}>

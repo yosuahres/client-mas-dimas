@@ -35,7 +35,7 @@ export function PlacesManager({ places, routes }: PlacesManagerProps) {
   };
 
   return (
-    <div className="grid gap-10">
+    <div className="grid grid-cols-1 gap-10">
       <section>
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -50,9 +50,9 @@ export function PlacesManager({ places, routes }: PlacesManagerProps) {
             key: route.id,
             label: `${placeName(route.from)} to ${placeName(route.to)}`,
             content: (
-              <p className="flex items-center gap-2 text-sm">
+              <p className="text-sm">
                 {placeName(route.from)}
-                <ArrowRight className="size-3.5 text-muted-foreground" />
+                <ArrowRight className="mx-1.5 inline size-3.5 align-[-2px] text-muted-foreground" />
                 {placeName(route.to)}
               </p>
             ),
@@ -108,7 +108,7 @@ function AddRouteForm({ places }: { places: PlaceRecord[] }) {
   const options = places.map((place) => ({ value: place.id, label: translate(place.name, "id") }));
 
   return (
-    <form key={formKey} onSubmit={onSubmit} noValidate className="mt-3 grid items-end gap-3 rounded-xl border border-dashed p-3 sm:grid-cols-[1fr_1fr_auto]">
+    <form key={formKey} onSubmit={onSubmit} noValidate className="mt-3 grid grid-cols-1 items-end gap-3 rounded-xl border border-dashed p-3 sm:grid-cols-[1fr_1fr_auto]">
       <SelectField name="from" label="From" options={options} placeholder="Choose a place" errors={errors} />
       <SelectField name="to" label="To" options={options} placeholder="Choose a place" errors={errors} />
       <Button type="submit" variant="outline" disabled={pending}>
