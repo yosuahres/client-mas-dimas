@@ -26,25 +26,25 @@ export function ReviewsManager({ reviews, tours, googleReviewsUrl }: ReviewsMana
     <>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <p className="max-w-xl text-sm text-muted-foreground">
-          The guest quotes on the home page. Copy real ones from your{" "}
+          Kutipan tamu di beranda. Salin ulasan asli dari{" "}
           <a href={googleReviewsUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">
-            Google reviews
-          </a>
-          , with the guest&apos;s permission. The home page shows the first three that are shown, unless it&apos;s connected to
-          Google reviews: then it shows those instead, and these are the backup.
+            ulasan Google
+          </a>{" "}
+          Anda, dengan izin tamu. Beranda menampilkan tiga ulasan pertama yang tampil, kecuali kalau terhubung ke ulasan
+          Google: yang tampil ulasan Google, dan ulasan di sini jadi cadangan.
         </p>
         <Button size="sm" onClick={() => setEditing("new")}>
           <Plus />
-          Add review
+          Tambah ulasan
         </Button>
       </div>
       <ItemList
         list="reviews"
-        emptyText="No reviews yet."
+        emptyText="Belum ada ulasan."
         onEdit={setEditing}
         items={reviews.map((candidate) => ({
           key: candidate.id,
-          label: `the review by ${candidate.guestName}`,
+          label: `ulasan dari ${candidate.guestName}`,
           published: candidate.published,
           content: (
             <div className="min-w-0">
@@ -71,17 +71,17 @@ function ReviewDialog({ review, tours, onClose }: { review: ReviewRecord | null;
       onOpenChange={(open) => {
         if (!open) onClose();
       }}
-      title={review ? "Edit review" : "Add a review"}
+      title={review ? "Ubah ulasan" : "Tambah ulasan"}
       onSubmit={onSubmit}
       pending={pending}
-      submitLabel={review ? "Save review" : "Add review"}
+      submitLabel={review ? "Simpan ulasan" : "Tambah ulasan"}
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField name="guestName" label="Guest's name" placeholder="Emma" defaultValue={review?.guestName} errors={errors} />
+        <TextField name="guestName" label="Nama tamu" placeholder="Emma" defaultValue={review?.guestName} errors={errors} />
         <SelectField
           name="tourSlug"
-          label="Package they took"
-          options={[{ value: "none", label: "No package" }, ...tours]}
+          label="Paket yang diambil"
+          options={[{ value: "none", label: "Tanpa paket" }, ...tours]}
           defaultValue={review?.tourSlug ?? "none"}
           errors={errors}
         />
@@ -91,7 +91,7 @@ function ReviewDialog({ review, tours, onClose }: { review: ReviewRecord | null;
           <div className="grid gap-4">
             <TextAreaField
               name={`quote.${locale}`}
-              label="What they wrote"
+              label="Isi ulasan"
               rows={4}
               defaultValue={review?.quote[locale]}
               placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
@@ -99,7 +99,7 @@ function ReviewDialog({ review, tours, onClose }: { review: ReviewRecord | null;
             />
             <TextField
               name={`origin.${locale}`}
-              label="Where they're from"
+              label="Asal tamu"
               defaultValue={review?.origin[locale]}
               placeholder={locale === "id" ? "Melbourne, Australia" : autoTranslatedPlaceholder}
               errors={errors}
@@ -107,7 +107,7 @@ function ReviewDialog({ review, tours, onClose }: { review: ReviewRecord | null;
           </div>
         )}
       </LocaleTabs>
-      <SwitchField name="published" label="Show on the website" defaultChecked={review?.published ?? true} />
+      <SwitchField name="published" label="Tampilkan di website" defaultChecked={review?.published ?? true} />
     </RecordDialog>
   );
 }

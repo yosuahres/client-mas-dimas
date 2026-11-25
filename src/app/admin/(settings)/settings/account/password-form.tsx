@@ -14,13 +14,13 @@ export function PasswordForm() {
 
   return (
     <form key={formKey} onSubmit={onSubmit} noValidate>
-      <FormSection title="Change password">
-        <TextField name="current" label="Current password" type="password" autoComplete="current-password" errors={errors} />
-        <TextField name="password" label="New password" type="password" autoComplete="new-password" errors={errors} hint="At least 10 characters." />
-        <TextField name="confirm" label="New password again" type="password" autoComplete="new-password" errors={errors} />
+      <FormSection title="Ganti kata sandi">
+        <TextField name="current" label="Kata sandi saat ini" type="password" autoComplete="current-password" errors={errors} />
+        <TextField name="password" label="Kata sandi baru" type="password" autoComplete="new-password" errors={errors} hint="Minimal 10 karakter." />
+        <TextField name="confirm" label="Ulangi kata sandi baru" type="password" autoComplete="new-password" errors={errors} />
         <div>
           <Button type="submit" disabled={pending}>
-            {pending ? "Saving…" : "Change password"}
+            {pending ? "Menyimpan…" : "Ganti kata sandi"}
           </Button>
         </div>
       </FormSection>

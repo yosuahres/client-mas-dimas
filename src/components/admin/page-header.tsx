@@ -22,7 +22,7 @@ export function PageHeader({ title, parent, actions }: PageHeaderProps) {
       {parent ? (
         <Link
           href={parent.href}
-          aria-label={`Back to ${parent.title}`}
+          aria-label={`Kembali ke ${parent.title}`}
           className="-ml-1 flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent sm:hidden"
         >
           <ChevronLeft className="size-5" />

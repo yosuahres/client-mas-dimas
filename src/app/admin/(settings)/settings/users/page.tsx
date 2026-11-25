@@ -4,7 +4,7 @@ import { UsersManager } from "@/app/admin/(settings)/settings/users/users-manage
 import { isAdmin, requireAdmin } from "@/lib/admin/session";
 import { createServiceClient } from "@/lib/supabase/clients";
 
-export const metadata: Metadata = { title: "Admin users" };
+export const metadata: Metadata = { title: "Pengguna admin" };
 
 export default async function UsersPage() {
   const { user } = await requireAdmin();
@@ -12,14 +12,14 @@ export default async function UsersPage() {
   if (!process.env.SUPABASE_SECRET_KEY) {
     return (
       <p className="rounded-xl border px-4 py-6 text-sm text-muted-foreground">
-        Managing admins needs the <code className="rounded bg-muted px-1">SUPABASE_SECRET_KEY</code> setting on the
-        server. Until it&apos;s set, add admins in the Supabase dashboard (see docs/admin.md).
+        Untuk mengelola admin, server perlu pengaturan <code className="rounded bg-muted px-1">SUPABASE_SECRET_KEY</code>.
+        Selama belum diisi, tambahkan admin lewat dashboard Supabase (lihat docs/admin.md).
       </p>
     );
   }
 
   const { data, error } = await createServiceClient().auth.admin.listUsers({ perPage: 200 });
-  if (error) throw new Error(`Couldn't list the admins: ${error.message}`);
+  if (error) throw new Error(`Gagal memuat daftar admin: ${error.message}`);
   const admins = data.users
     .filter(isAdmin)
     .map((account) => ({ id: account.id, email: account.email ?? "", lastSignIn: account.last_sign_in_at ?? null }))

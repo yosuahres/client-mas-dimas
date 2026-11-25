@@ -27,7 +27,7 @@ type TextRow = { locale: string; key: string; value: string };
  */
 export async function saveText(locale: string, formData: FormData): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
-  if (!hasLocale(locale)) return failure("Unknown language.");
+  if (!hasLocale(locale)) return failure("Bahasa tidak dikenal.");
   const sections = new Set<string>(textSections.map((section) => section.key));
 
   const original = new Map(textEntries((await dictionaries[locale]()) as object).map((entry) => [entry.key, entry.value]));
@@ -43,31 +43,31 @@ export async function saveText(locale: string, formData: FormData): Promise<Acti
 
     const value = raw.trim();
     if (value === "") {
-      fieldErrors[name] = "Can't be empty. Use “Back to original” instead.";
+      fieldErrors[name] = "Tidak boleh kosong. Pakai “Kembalikan teks asli”.";
     } else if (placeholdersOf(value) !== placeholdersOf(fileValue)) {
-      fieldErrors[name] = `Keep the words in curly brackets exactly: ${placeholdersOf(fileValue).replaceAll(",", " ")}`;
+      fieldErrors[name] = `Kata di dalam kurung kurawal harus tetap sama: ${placeholdersOf(fileValue).replaceAll(",", " ")}`;
     } else if (value === fileValue) {
       removals.push(key);
     } else {
       upserts.push({ locale, key, value });
     }
   }
-  if (Object.keys(fieldErrors).length > 0) return failure("Some fields need fixing.", fieldErrors);
-  if (upserts.length === 0 && removals.length === 0) return failure("Nothing changed.");
+  if (Object.keys(fieldErrors).length > 0) return failure("Ada isian yang perlu diperbaiki.", fieldErrors);
+  if (upserts.length === 0 && removals.length === 0) return failure("Tidak ada yang berubah.");
 
   let problem: string | null = null;
   if (locale === "id") {
     // Only fields whose Indonesian actually changed; untouched ones keep any hand-made English or French.
     const { data: saved, error } = await supabase.from(tables.text).select("key, value").eq("locale", "id")
       .in("key", [...upserts.map((row) => row.key), ...removals]);
-    if (error) return failure(`Couldn't read the saved text: ${error.message}`);
+    if (error) return failure(`Gagal membaca teks yang tersimpan: ${error.message}`);
     const savedValue = new Map((saved as { key: string; value: string }[]).map((row) => [row.key, row.value]));
     const before = (key: string) => savedValue.get(key) ?? original.get(key);
 
     const reset = removals.filter((key) => before(key) !== original.get(key));
     if (reset.length > 0) {
       const { error: resetError } = await supabase.from(tables.text).delete().in("locale", TRANSLATED).in("key", reset);
-      if (resetError) return failure(`Couldn't save the text: ${resetError.message}`);
+      if (resetError) return failure(`Gagal menyimpan teks: ${resetError.message}`);
     }
 
     const changed = upserts.filter((row) => row.value !== before(row.key));
@@ -80,7 +80,7 @@ export async function saveText(locale: string, formData: FormData): Promise<Acti
         changed.forEach((row, index) => upserts.push({ locale: target, key: row.key, value: translations[index] }));
       }
     } catch (translationError) {
-      problem = translationError instanceof Error ? translationError.message : "the translation service didn't answer";
+      problem = translationError instanceof Error ? translationError.message : "layanan terjemahan tidak merespons";
       // Keep the Indonesian; drop any half-done translations so both languages stay as they were.
       upserts.splice(0, upserts.length, ...upserts.filter((row) => row.locale === "id"));
     }
@@ -88,13 +88,13 @@ export async function saveText(locale: string, formData: FormData): Promise<Acti
 
   if (upserts.length > 0) {
     const { error } = await supabase.from(tables.text).upsert(upserts, { onConflict: "locale,key" });
-    if (error) return failure(`Couldn't save the text: ${error.message}`);
+    if (error) return failure(`Gagal menyimpan teks: ${error.message}`);
   }
   if (removals.length > 0) {
     const { error } = await supabase.from(tables.text).delete().eq("locale", locale).in("key", removals);
-    if (error) return failure(`Couldn't save the text: ${error.message}`);
+    if (error) return failure(`Gagal menyimpan teks: ${error.message}`);
   }
 
   contentChanged(contentTags.text);
-  return { ok: true, message: savedMessage("Text saved.", [problem]) };
+  return { ok: true, message: savedMessage("Teks disimpan.", [problem]) };
 }

@@ -33,7 +33,7 @@ type ItemListProps = {
 };
 
 function report(result: ActionResult) {
-  if (result.ok) toast.success(result.message ?? "Saved.");
+  if (result.ok) toast.success(result.message ?? "Tersimpan.");
   else toast.error(result.error);
 }
 
@@ -88,7 +88,7 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
             <div className="hidden shrink-0 flex-col sm:flex">
               <button
                 type="button"
-                aria-label="Move up"
+                aria-label="Naikkan"
                 disabled={index === 0}
                 onClick={() => moveTo(index, index - 1)}
                 className="rounded p-0.5 text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-30"
@@ -97,7 +97,7 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
               </button>
               <button
                 type="button"
-                aria-label="Move down"
+                aria-label="Turunkan"
                 disabled={index === optimisticItems.length - 1}
                 onClick={() => moveTo(index, index + 1)}
                 className="rounded p-0.5 text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-30"
@@ -122,24 +122,24 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
 
             {item.published !== undefined ? (
               <label className="flex shrink-0 items-center gap-2 px-2 sm:px-0">
-                <span className="hidden text-xs text-muted-foreground sm:inline">{item.published ? "Shown" : "Hidden"}</span>
+                <span className="hidden text-xs text-muted-foreground sm:inline">{item.published ? "Tampil" : "Tersembunyi"}</span>
                 <Switch
                   checked={item.published}
                   onCheckedChange={(checked) => togglePublished(item, checked)}
-                  aria-label={`Show ${item.label} on the website`}
+                  aria-label={`Tampilkan ${item.label} di website`}
                 />
               </label>
             ) : null}
 
             <div className="hidden shrink-0 items-center sm:flex">
               {item.href ? (
-                <Button asChild variant="ghost" size="icon" className="size-8" aria-label={`Edit ${item.label}`}>
+                <Button asChild variant="ghost" size="icon" className="size-8" aria-label={`Ubah ${item.label}`}>
                   <Link href={item.href}>
                     <Pencil />
                   </Link>
                 </Button>
               ) : onEdit ? (
-                <Button variant="ghost" size="icon" className="size-8" aria-label={`Edit ${item.label}`} onClick={() => onEdit(item.key)}>
+                <Button variant="ghost" size="icon" className="size-8" aria-label={`Ubah ${item.label}`} onClick={() => onEdit(item.key)}>
                   <Pencil />
                 </Button>
               ) : null}
@@ -147,7 +147,7 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
                 variant="ghost"
                 size="icon"
                 className="size-8 text-muted-foreground hover:text-destructive"
-                aria-label={`Delete ${item.label}`}
+                aria-label={`Hapus ${item.label}`}
                 onClick={() => setToDelete(item)}
               >
                 <Trash2 />
@@ -158,7 +158,7 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
               variant="ghost"
               size="icon"
               className="shrink-0 text-muted-foreground sm:hidden"
-              aria-label={`More for ${item.label}`}
+              aria-label={`Pilihan lain untuk ${item.label}`}
               onClick={() => setActionsKey(item.key)}
             >
               <Ellipsis />
@@ -179,17 +179,17 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
               <SheetHeader className="border-b pr-12">
                 <SheetTitle className="truncate text-sm">{actionsItem.label}</SheetTitle>
                 <SheetDescription className="text-xs">
-                  Number {actionsIndex + 1} of {optimisticItems.length} on the list
+                  Nomor {actionsIndex + 1} dari {optimisticItems.length} di daftar
                 </SheetDescription>
               </SheetHeader>
               <div className="grid py-1">
                 {canEdit(actionsItem) ? (
                   actionsItem.href ? (
-                    <SheetRow icon={Pencil} label="Edit" href={actionsItem.href} />
+                    <SheetRow icon={Pencil} label="Ubah" href={actionsItem.href} />
                   ) : (
                     <SheetRow
                       icon={Pencil}
-                      label="Edit"
+                      label="Ubah"
                       onClick={() => {
                         setActionsKey(null);
                         onEdit?.(actionsItem.key);
@@ -198,23 +198,23 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
                   )
                 ) : null}
                 {/* The sheet stays open while moving, so the item can be nudged several places in a row. */}
-                <SheetRow icon={ArrowUp} label="Move up" disabled={actionsIndex === 0} onClick={() => moveTo(actionsIndex, actionsIndex - 1)} />
+                <SheetRow icon={ArrowUp} label="Naikkan" disabled={actionsIndex === 0} onClick={() => moveTo(actionsIndex, actionsIndex - 1)} />
                 <SheetRow
                   icon={ArrowDown}
-                  label="Move down"
+                  label="Turunkan"
                   disabled={actionsIndex === optimisticItems.length - 1}
                   onClick={() => moveTo(actionsIndex, actionsIndex + 1)}
                 />
-                <SheetRow icon={ArrowUpToLine} label="Move to the top" disabled={actionsIndex === 0} onClick={() => moveTo(actionsIndex, 0)} />
+                <SheetRow icon={ArrowUpToLine} label="Pindah ke paling atas" disabled={actionsIndex === 0} onClick={() => moveTo(actionsIndex, 0)} />
                 <SheetRow
                   icon={ArrowDownToLine}
-                  label="Move to the bottom"
+                  label="Pindah ke paling bawah"
                   disabled={actionsIndex === optimisticItems.length - 1}
                   onClick={() => moveTo(actionsIndex, optimisticItems.length - 1)}
                 />
                 <SheetRow
                   icon={Trash2}
-                  label="Delete"
+                  label="Hapus"
                   destructive
                   onClick={() => {
                     setActionsKey(null);
@@ -232,8 +232,8 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
         onOpenChange={(open) => {
           if (!open) setToDelete(null);
         }}
-        title={`Delete "${toDelete?.label ?? ""}"?`}
-        description={`This removes it from the website and can't be undone.${deleteNote ? ` ${deleteNote}` : ""}`}
+        title={`Hapus "${toDelete?.label ?? ""}"?`}
+        description={`Ini menghapusnya dari website dan tidak bisa dibatalkan.${deleteNote ? ` ${deleteNote}` : ""}`}
         onConfirm={() => {
           if (toDelete) remove(toDelete);
           setToDelete(null);

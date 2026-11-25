@@ -22,8 +22,8 @@ export async function saveVehicle(originalId: string | null, formData: FormData)
     originalId === null
       ? await supabase.from(tables.vehicles).insert({ ...row, position: await nextPosition(tables.vehicles) })
       : await supabase.from(tables.vehicles).update(row).eq("id", originalId);
-  if (error) return databaseFailure(error, "car");
+  if (error) return databaseFailure(error, "mobil");
 
   contentChanged(contentTags.vehicles);
-  return { ok: true, message: originalId === null ? "Car added." : "Car saved." };
+  return { ok: true, message: originalId === null ? "Mobil ditambahkan." : "Mobil disimpan." };
 }

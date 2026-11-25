@@ -46,28 +46,28 @@ type NavGroup = {
   items: NavItem[];
 };
 
-const modules: NavItem[] = [{ href: "/admin", title: "Dashboard", icon: House }];
+const modules: NavItem[] = [{ href: "/admin", title: "Dasbor", icon: House }];
 
 // Laid out like the CRM sidebar in majorsales-binapatria: plain modules first, then collapsible groups.
 // Settings are a separate area with their own sidebar (settings-shell.tsx), reached from the footer.
 const groups: NavGroup[] = [
   {
     key: "content",
-    title: "Content",
+    title: "Konten",
     items: [
-      { href: "/admin/tours", title: "Tour packages", icon: MapIcon },
-      { href: "/admin/reviews", title: "Reviews", icon: MessageSquareQuote },
-      { href: "/admin/faq", title: "Questions", icon: CircleHelp },
-      { href: "/admin/text", title: "Website text", icon: Type },
-      { href: "/admin/home-photos", title: "Home page photos", icon: Images },
+      { href: "/admin/tours", title: "Paket tour", icon: MapIcon },
+      { href: "/admin/reviews", title: "Ulasan", icon: MessageSquareQuote },
+      { href: "/admin/faq", title: "Pertanyaan", icon: CircleHelp },
+      { href: "/admin/text", title: "Teks website", icon: Type },
+      { href: "/admin/home-photos", title: "Foto beranda", icon: Images },
     ],
   },
   {
     key: "transport",
-    title: "Transport",
+    title: "Transportasi",
     items: [
-      { href: "/admin/fleet", title: "Cars & prices", icon: Bus },
-      { href: "/admin/transfers", title: "Places & routes", icon: MapPinned },
+      { href: "/admin/fleet", title: "Mobil & harga", icon: Bus },
+      { href: "/admin/transfers", title: "Tempat & rute", icon: MapPinned },
     ],
   },
 ];
@@ -107,7 +107,7 @@ export function AdminSidebar({ email }: { email: string }) {
           className="mb-2 flex w-full items-center gap-2 rounded-md border border-foreground/15 bg-white px-2.5 py-1.5 text-xs max-md:py-2.5 text-muted-foreground shadow-sm transition-colors hover:bg-white/90"
         >
           <ExternalLink className="size-3 shrink-0" />
-          <span className="flex-1">View website</span>
+          <span className="flex-1">Lihat website</span>
         </a>
       </SidebarHeader>
 
@@ -168,10 +168,10 @@ export function AdminSidebar({ email }: { email: string }) {
         </p>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="sm" tooltip="Settings" className="pl-1 max-md:h-10 [&_svg]:text-muted-foreground/80">
+            <SidebarMenuButton asChild size="sm" tooltip="Pengaturan" className="pl-1 max-md:h-10 [&_svg]:text-muted-foreground/80">
               <Link href={SETTINGS_HOME} onClick={closeMobileSidebar}>
                 <Settings />
-                <span className="text-[13px] font-medium">Settings</span>
+                <span className="text-[13px] font-medium">Pengaturan</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -181,7 +181,7 @@ export function AdminSidebar({ email }: { email: string }) {
             <SidebarMenuItem>
               <SidebarMenuButton type="submit" size="sm" className="pl-1 max-md:h-10 [&_svg]:text-muted-foreground/80">
                 <LogOut />
-                <span className="text-[13px] font-medium">Sign out</span>
+                <span className="text-[13px] font-medium">Keluar</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

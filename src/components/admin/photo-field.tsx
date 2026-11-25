@@ -26,7 +26,7 @@ async function compressToWebp(file: File): Promise<Blob> {
     blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", quality));
     if (blob && blob.size <= TARGET_BYTES) break;
   }
-  if (!blob || blob.type !== "image/webp") throw new Error("This browser can't convert photos to WebP. Try Chrome or Firefox.");
+  if (!blob || blob.type !== "image/webp") throw new Error("Browser ini tidak bisa mengubah foto ke WebP. Coba pakai Chrome atau Firefox.");
   return blob;
 }
 
@@ -64,12 +64,12 @@ export function PhotoField({ name, defaultValue, defaultPreview, folder = "tours
           body: webp,
           headers: { "content-type": "image/webp", "cache-control": "max-age=31536000" },
         });
-        if (!response.ok) throw new Error(`The upload failed (${response.status}). Try again.`);
+        if (!response.ok) throw new Error(`Gagal mengunggah (${response.status}). Coba lagi.`);
         setValue(target.key);
         setPreview(target.previewUrl);
-        toast.success(`Photo uploaded (${Math.round(webp.size / 1000)} KB). Save to use it.`);
+        toast.success(`Foto terunggah (${Math.round(webp.size / 1000)} KB). Simpan untuk memakainya.`);
       } catch (cause) {
-        toast.error(cause instanceof Error ? cause.message : "The upload failed.");
+        toast.error(cause instanceof Error ? cause.message : "Gagal mengunggah.");
       }
     });
   }
@@ -85,12 +85,12 @@ export function PhotoField({ name, defaultValue, defaultPreview, folder = "tours
           <>
             {/* eslint-disable-next-line @next/next/no-img-element -- admin preview of the bundled photo */}
             <img src={builtInPreview} alt="" className="size-full object-cover" />
-            <span className="absolute top-2 left-2 rounded-md bg-background/90 px-2 py-0.5 text-xs font-medium">Built-in photo</span>
+            <span className="absolute top-2 left-2 rounded-md bg-background/90 px-2 py-0.5 text-xs font-medium">Foto bawaan</span>
           </>
         ) : (
-          <p className="grid size-full place-items-center text-xs text-muted-foreground">No photo yet</p>
+          <p className="grid size-full place-items-center text-xs text-muted-foreground">Belum ada foto</p>
         )}
-        {uploading ? <div className="absolute inset-0 grid place-items-center bg-background/70 text-xs">Uploading…</div> : null}
+        {uploading ? <div className="absolute inset-0 grid place-items-center bg-background/70 text-xs">Mengunggah…</div> : null}
       </div>
       <div className="flex flex-wrap gap-2">
         <input
@@ -106,7 +106,7 @@ export function PhotoField({ name, defaultValue, defaultPreview, folder = "tours
         />
         <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileInput.current?.click()}>
           <ImageUp />
-          {value ? "Replace photo" : "Upload photo"}
+          {value ? "Ganti foto" : "Unggah foto"}
         </Button>
         {value ? (
           <Button
@@ -120,11 +120,11 @@ export function PhotoField({ name, defaultValue, defaultPreview, folder = "tours
             }}
           >
             <Trash2 />
-            {builtInPreview !== undefined ? "Use the built-in photo" : "Remove"}
+            {builtInPreview !== undefined ? "Pakai foto bawaan" : "Hapus"}
           </Button>
         ) : null}
       </div>
-      {error ? <p className="text-xs text-destructive">{error}</p> : <p className="text-xs text-muted-foreground">JPG, PNG or WebP. Wide photos work best; it&apos;s resized automatically.</p>}
+      {error ? <p className="text-xs text-destructive">{error}</p> : <p className="text-xs text-muted-foreground">JPG, PNG, atau WebP. Foto lebar paling bagus; ukurannya disesuaikan otomatis.</p>}
     </div>
   );
 }

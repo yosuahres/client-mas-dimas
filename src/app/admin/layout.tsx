@@ -11,7 +11,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: { template: "%s · Jogja Travel admin", default: "Jogja Travel admin" },
+  title: { template: "%s · Admin Jogja Travel", default: "Admin Jogja Travel" },
   robots: { index: false, follow: false },
 };
 
@@ -20,7 +20,7 @@ export const instant = false;
 
 export default function AdminRootLayout({ children }: LayoutProps<"/admin">) {
   return (
-    <html lang="en" className={geist.variable}>
+    <html lang="id" className={geist.variable}>
       <body className="min-h-svh antialiased">
         {children}
         <AdminToaster />

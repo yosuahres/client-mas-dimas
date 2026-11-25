@@ -18,7 +18,7 @@ export function LoginForm({ notice }: { notice?: string }) {
         <Input id="email" name="email" type="email" autoComplete="username" required autoFocus />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">Kata sandi</Label>
         <Input id="password" name="password" type="password" autoComplete="current-password" required />
       </div>
       {error ? (
@@ -27,7 +27,7 @@ export function LoginForm({ notice }: { notice?: string }) {
         </p>
       ) : null}
       <Button type="submit" disabled={pending} className="w-full">
-        {pending ? "Signing in…" : "Sign in"}
+        {pending ? "Sedang masuk…" : "Masuk"}
       </Button>
     </form>
   );

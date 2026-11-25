@@ -7,7 +7,7 @@ import { PageBody, PageHeader } from "@/components/admin/page-header";
 import { adminFaqs, adminPlaces, adminReviews, adminTextOverrides, adminTours, adminVehicles } from "@/lib/admin/queries";
 import { isTranslationConfigured } from "@/lib/machine-translation";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: "Dasbor" };
 
 type Count = {
   href: string;
@@ -28,11 +28,11 @@ export default async function DashboardPage() {
   ]);
   const shown = (items: { published: boolean }[]) => items.filter((item) => item.published).length;
   const counts: Count[] = [
-    { href: "/admin/tours", title: "Tour packages", icon: MapIcon, shown: shown(tours), total: tours.length },
-    { href: "/admin/fleet", title: "Cars", icon: Bus, shown: shown(vehicles), total: vehicles.length },
-    { href: "/admin/transfers", title: "Places", icon: MapPinned, shown: shown(places), total: places.length },
-    { href: "/admin/reviews", title: "Reviews", icon: MessageSquareQuote, shown: shown(reviews), total: reviews.length },
-    { href: "/admin/faq", title: "Questions", icon: CircleHelp, shown: shown(faqs), total: faqs.length },
+    { href: "/admin/tours", title: "Paket tour", icon: MapIcon, shown: shown(tours), total: tours.length },
+    { href: "/admin/fleet", title: "Mobil", icon: Bus, shown: shown(vehicles), total: vehicles.length },
+    { href: "/admin/transfers", title: "Tempat", icon: MapPinned, shown: shown(places), total: places.length },
+    { href: "/admin/reviews", title: "Ulasan", icon: MessageSquareQuote, shown: shown(reviews), total: reviews.length },
+    { href: "/admin/faq", title: "Pertanyaan", icon: CircleHelp, shown: shown(faqs), total: faqs.length },
   ];
   const editedText = Object.values(text).reduce((sum, edits) => sum + Object.keys(edits).length, 0);
   const untranslated = tours.filter((tour) => !tour.text.id || !tour.text.fr);
@@ -41,29 +41,29 @@ export default async function DashboardPage() {
   const checks = [
     {
       ok: isTranslationConfigured(),
-      good: "English and French are translated automatically from the Indonesian.",
-      bad: "Automatic translation isn't set up: add GEMINI_API_KEY on the server (see docs/admin.md).",
+      good: "Bahasa Inggris dan Prancis diterjemahkan otomatis dari bahasa Indonesia.",
+      bad: "Terjemahan otomatis belum disiapkan: tambahkan GEMINI_API_KEY di server (lihat docs/admin.md).",
     },
     {
       ok: Boolean(process.env.SUPABASE_SECRET_KEY),
-      good: "Admin users can be managed here.",
-      bad: "Add SUPABASE_SECRET_KEY on the server to manage admin users here.",
+      good: "Pengguna admin bisa dikelola di sini.",
+      bad: "Tambahkan SUPABASE_SECRET_KEY di server supaya pengguna admin bisa dikelola di sini.",
     },
     {
       ok: sampleReviews.length === 0,
-      good: "All shown reviews are real.",
-      bad: `${sampleReviews.length} sample review${sampleReviews.length === 1 ? " is" : "s are"} still shown. Replace them with real Google reviews.`,
+      good: "Semua ulasan yang tampil adalah ulasan asli.",
+      bad: `${sampleReviews.length} ulasan contoh masih tampil. Ganti dengan ulasan Google yang asli.`,
     },
     {
       ok: untranslated.length === 0,
-      good: "Every package is in English, Indonesian and French.",
-      bad: `${untranslated.length} package${untranslated.length === 1 ? " is" : "s are"} missing Indonesian or French; English is shown instead.`,
+      good: "Semua paket sudah ada dalam bahasa Inggris, Indonesia, dan Prancis.",
+      bad: `${untranslated.length} paket belum punya bahasa Indonesia atau Prancis; yang tampil bahasa Inggris.`,
     },
   ];
 
   return (
     <>
-      <PageHeader title="Dashboard" />
+      <PageHeader title="Dasbor" />
       <PageBody>
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
           {counts.map((count) => (
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
                 <span>
                   <span className="block text-sm font-medium">{count.title}</span>
                   <span className="block text-xs text-muted-foreground">
-                    {count.shown} shown{count.total > count.shown ? `, ${count.total - count.shown} hidden` : ""}
+                    {count.shown} tampil{count.total > count.shown ? `, ${count.total - count.shown} tersembunyi` : ""}
                   </span>
                 </span>
               </Link>
@@ -87,9 +87,9 @@ export default async function DashboardPage() {
                 <Type className="size-4" />
               </span>
               <span>
-                <span className="block text-sm font-medium">Website text</span>
+                <span className="block text-sm font-medium">Teks website</span>
                 <span className="block text-xs text-muted-foreground">
-                  {editedText === 0 ? "As written" : `${editedText} edit${editedText === 1 ? "" : "s"}`}
+                  {editedText === 0 ? "Belum diubah" : `${editedText} perubahan`}
                 </span>
               </span>
             </Link>
@@ -97,7 +97,7 @@ export default async function DashboardPage() {
         </ul>
 
         <section className="mt-8 rounded-xl border">
-          <h2 className="border-b px-4 py-3 text-sm font-semibold">Checklist</h2>
+          <h2 className="border-b px-4 py-3 text-sm font-semibold">Daftar periksa</h2>
           <ul>
             {checks.map((check) => (
               <li key={check.good} className="flex items-start gap-2.5 border-b px-4 py-2.5 text-sm last:border-b-0">
@@ -113,8 +113,8 @@ export default async function DashboardPage() {
         </section>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          Changes show on the website as soon as you save. If you edit straight in the Supabase dashboard instead, the website
-          catches up within an hour.
+          Perubahan langsung tampil di website begitu disimpan. Kalau Anda mengubah langsung di dashboard Supabase, website
+          menyesuaikan dalam satu jam.
         </p>
       </PageBody>
     </>

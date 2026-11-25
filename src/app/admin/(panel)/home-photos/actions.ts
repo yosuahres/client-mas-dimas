@@ -16,7 +16,7 @@ export async function saveHomePhotos(formData: FormData): Promise<ActionResult> 
   if (!parsed.success) return invalid(parsed.error);
 
   const { data, error: readError } = await supabase.from(tables.homePhotos).select("slot, photo");
-  if (readError) return databaseFailure(readError, "home page photos");
+  if (readError) return databaseFailure(readError, "foto beranda");
   const before = homePhotosFromRows(data as HomePhotoRow[]);
 
   const chosen = homePhotoSlots.flatMap((slot) => (parsed.data[slot] ? [{ slot, photo: parsed.data[slot] }] : []));
@@ -24,11 +24,11 @@ export async function saveHomePhotos(formData: FormData): Promise<ActionResult> 
 
   if (chosen.length > 0) {
     const { error } = await supabase.from(tables.homePhotos).upsert(chosen);
-    if (error) return databaseFailure(error, "home page photos");
+    if (error) return databaseFailure(error, "foto beranda");
   }
   if (builtIn.length > 0) {
     const { error } = await supabase.from(tables.homePhotos).delete().in("slot", builtIn);
-    if (error) return databaseFailure(error, "home page photos");
+    if (error) return databaseFailure(error, "foto beranda");
   }
 
   for (const slot of homePhotoSlots) {
@@ -37,5 +37,5 @@ export async function saveHomePhotos(formData: FormData): Promise<ActionResult> 
   }
 
   contentChanged(contentTags.homePhotos);
-  return { ok: true, message: "Home page photos saved." };
+  return { ok: true, message: "Foto beranda disimpan." };
 }

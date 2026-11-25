@@ -10,40 +10,40 @@ export function SettingsForm({ settings }: { settings: SiteSettings | null }) {
 
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-6">
-      <FormSection title="Contact" description="Shown in the footer, and used for every WhatsApp button on the site.">
+      <FormSection title="Kontak" description="Tampil di footer, dan dipakai untuk setiap tombol WhatsApp di website.">
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField name="businessName" label="Business name" defaultValue={settings?.businessName} errors={errors} />
+          <TextField name="businessName" label="Nama usaha" defaultValue={settings?.businessName} errors={errors} />
           <TextField
             name="whatsappNumber"
-            label="WhatsApp number"
+            label="Nomor WhatsApp"
             inputMode="tel"
             defaultValue={settings?.whatsappNumber}
             errors={errors}
-            hint="International format without +, e.g. 628112653767."
+            hint="Format internasional tanpa +, misalnya 628112653767."
           />
-          <TextField name="phoneDisplay" label="Phone number as shown" defaultValue={settings?.phoneDisplay} errors={errors} hint="e.g. +62 811 2653 767" />
+          <TextField name="phoneDisplay" label="Nomor telepon yang ditampilkan" defaultValue={settings?.phoneDisplay} errors={errors} hint="Misalnya +62 811 2653 767" />
           <TextField name="email" label="Email" type="email" defaultValue={settings?.email} errors={errors} />
         </div>
-        <TextAreaField name="address" label="Address" rows={2} defaultValue={settings?.address} errors={errors} />
+        <TextAreaField name="address" label="Alamat" rows={2} defaultValue={settings?.address} errors={errors} />
       </FormSection>
 
-      <FormSection title="Links and rating">
+      <FormSection title="Link dan rating">
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField name="googleRating" label="Google rating" inputMode="decimal" defaultValue={settings?.googleRating} errors={errors} hint="Copy it from your Google Business Profile, e.g. 4.9." />
-          <TextField name="googleReviewsUrl" label="Google reviews link" type="url" defaultValue={settings?.googleReviewsUrl} errors={errors} />
-          <TextField name="instagramUrl" label="Instagram link" type="url" defaultValue={settings?.instagramUrl} errors={errors} />
-          <TextField name="siteUrl" label="Website address" type="url" defaultValue={settings?.siteUrl} errors={errors} hint="Used in links shared on social media." />
+          <TextField name="googleRating" label="Rating Google" inputMode="decimal" defaultValue={settings?.googleRating} errors={errors} hint="Salin dari Google Business Profile Anda, misalnya 4.9." />
+          <TextField name="googleReviewsUrl" label="Link ulasan Google" type="url" defaultValue={settings?.googleReviewsUrl} errors={errors} />
+          <TextField name="instagramUrl" label="Link Instagram" type="url" defaultValue={settings?.instagramUrl} errors={errors} />
+          <TextField name="siteUrl" label="Alamat website" type="url" defaultValue={settings?.siteUrl} errors={errors} hint="Dipakai di link yang dibagikan di media sosial." />
         </div>
       </FormSection>
 
-      <FormSection title="Prices" description="Foreign guests see a rough US dollar price next to each rupiah price.">
+      <FormSection title="Harga" description="Tamu asing melihat perkiraan harga dalam dolar AS di samping harga rupiah.">
         <TextField
           name="idrPerUsd"
-          label="Rupiah per US dollar"
+          label="Rupiah per dolar AS"
           inputMode="numeric"
           defaultValue={settings?.idrPerUsd}
           errors={errors}
-          hint="Update it now and then, e.g. 16500."
+          hint="Perbarui sesekali, misalnya 16500."
           className="max-w-xs"
         />
       </FormSection>

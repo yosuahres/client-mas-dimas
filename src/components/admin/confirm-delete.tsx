@@ -29,9 +29,9 @@ export function ConfirmDelete({ open, onOpenChange, title, description, onConfir
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>Batal</AlertDialogCancel>
           <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={onConfirm}>
-            Delete
+            Hapus
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

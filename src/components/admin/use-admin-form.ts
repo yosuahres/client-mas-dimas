@@ -12,7 +12,7 @@ type Options = {
 
 // Submits a form to a server action without React's automatic form reset, so a failed save keeps
 // everything the client typed. Shows the outcome as a toast and keeps field errors for the inputs.
-export function useAdminForm(action: (formData: FormData) => Promise<ActionResult>, { successMessage = "Saved.", onSuccess }: Options = {}) {
+export function useAdminForm(action: (formData: FormData) => Promise<ActionResult>, { successMessage = "Tersimpan.", onSuccess }: Options = {}) {
   const [result, setResult] = useState<ActionResult | null>(null);
   const [pending, startTransition] = useTransition();
 

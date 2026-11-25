@@ -33,12 +33,12 @@ export function UsersManager({ admins, currentUserId }: { admins: AdminAccount[]
                 {admin.email}
                 {admin.id === currentUserId ? (
                   <Badge variant="secondary" className="px-1.5 py-0 text-[10px] font-normal">
-                    You
+                    Anda
                   </Badge>
                 ) : null}
               </p>
               <p className="text-xs text-muted-foreground">
-                {admin.lastSignIn ? `Last signed in ${new Date(admin.lastSignIn).toLocaleDateString("en-GB", { dateStyle: "medium" })}` : "Hasn't signed in yet"}
+                {admin.lastSignIn ? `Terakhir masuk ${new Date(admin.lastSignIn).toLocaleDateString("id-ID", { dateStyle: "medium" })}` : "Belum pernah masuk"}
               </p>
             </div>
             {admin.id !== currentUserId ? (
@@ -46,7 +46,7 @@ export function UsersManager({ admins, currentUserId }: { admins: AdminAccount[]
                 variant="ghost"
                 size="icon"
                 className="size-10 shrink-0 text-muted-foreground hover:text-destructive md:size-8"
-                aria-label={`Remove ${admin.email}`}
+                aria-label={`Hapus ${admin.email}`}
                 onClick={() => setToRemove(admin)}
               >
                 <Trash2 />
@@ -57,15 +57,15 @@ export function UsersManager({ admins, currentUserId }: { admins: AdminAccount[]
       </ul>
 
       <form key={formKey} onSubmit={onSubmit} noValidate>
-        <FormSection title="Add an admin" description="They can sign in at /admin straight away. Send them the password privately.">
+        <FormSection title="Tambah admin" description="Mereka bisa langsung masuk di /admin. Kirim kata sandinya secara pribadi.">
           <div className="grid gap-4 sm:grid-cols-2">
             <TextField name="email" label="Email" type="email" autoComplete="off" errors={errors} />
-            <TextField name="password" label="First password" type="text" autoComplete="off" errors={errors} hint="At least 10 characters. They can change it in Settings → Account." />
+            <TextField name="password" label="Kata sandi awal" type="text" autoComplete="off" errors={errors} hint="Minimal 10 karakter. Mereka bisa menggantinya di Pengaturan → Akun." />
           </div>
           <div>
             <Button type="submit" disabled={pending}>
               <UserPlus />
-              {pending ? "Adding…" : "Add admin"}
+              {pending ? "Menambahkan…" : "Tambah admin"}
             </Button>
           </div>
         </FormSection>
@@ -76,8 +76,8 @@ export function UsersManager({ admins, currentUserId }: { admins: AdminAccount[]
         onOpenChange={(open) => {
           if (!open) setToRemove(null);
         }}
-        title={`Remove ${toRemove?.email ?? ""}?`}
-        description="Their account is deleted and they can no longer sign in to the admin panel."
+        title={`Hapus ${toRemove?.email ?? ""}?`}
+        description="Akunnya dihapus dan tidak bisa lagi masuk ke panel admin."
         onConfirm={() => {
           const admin = toRemove;
           setToRemove(null);

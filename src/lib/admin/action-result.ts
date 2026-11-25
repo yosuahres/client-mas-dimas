@@ -14,12 +14,12 @@ export function invalid(error: z.ZodError): ActionResult {
     const key = issue.path.join(".");
     fieldErrors[key] ??= issue.message;
   }
-  return failure("Some fields need fixing.", fieldErrors);
+  return failure("Ada isian yang perlu diperbaiki.", fieldErrors);
 }
 
 /** Postgres errors in words the client can act on. */
 export function databaseFailure(error: { code?: string; message: string }, what: string): ActionResult {
-  if (error.code === "23505") return failure(`That ${what} already exists. Use a different short name (URL).`);
-  if (error.code === "42501") return failure("Your account isn't allowed to change this.");
-  return failure(`Couldn't save the ${what}: ${error.message}`);
+  if (error.code === "23505") return failure(`Sudah ada ${what} dengan nama pendek ini. Pakai nama pendek (URL) lain.`);
+  if (error.code === "42501") return failure("Akun Anda tidak diizinkan mengubah ini.");
+  return failure(`Gagal menyimpan ${what}: ${error.message}`);
 }

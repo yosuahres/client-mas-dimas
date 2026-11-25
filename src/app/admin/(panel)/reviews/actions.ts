@@ -27,8 +27,8 @@ export async function saveReview(id: string | null, formData: FormData): Promise
     id === null
       ? await supabase.from(tables.reviews).insert({ ...row, position: await nextPosition(tables.reviews) })
       : await supabase.from(tables.reviews).update(row).eq("id", id);
-  if (error) return databaseFailure(error, "review");
+  if (error) return databaseFailure(error, "ulasan");
 
   contentChanged(contentTags.reviews);
-  return { ok: true, message: savedMessage(id === null ? "Review added." : "Review saved.", [origin.problem, quote.problem]) };
+  return { ok: true, message: savedMessage(id === null ? "Ulasan ditambahkan." : "Ulasan disimpan.", [origin.problem, quote.problem]) };
 }

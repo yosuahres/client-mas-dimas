@@ -79,7 +79,7 @@ function DialogContent({
           {children}
           <DialogPrimitive.Close className="ring-offset-background focus:ring-ring absolute top-4 right-4 z-20 rounded-sm after:absolute after:-inset-3 after:content-[''] opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden cursor-pointer disabled:pointer-events-none">
             <XIcon className="size-4" />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">Tutup</span>
           </DialogPrimitive.Close>
         </div>
       </DialogPrimitive.Content>

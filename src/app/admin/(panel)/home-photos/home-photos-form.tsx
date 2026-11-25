@@ -33,7 +33,7 @@ export function HomePhotosForm({ fields }: { fields: HomePhotoField[] }) {
         />
       </FormSection>
 
-      <FormSection title="Other photos" description="The four tiles and the drivers section further down the home page.">
+      <FormSection title="Foto lainnya" description="Empat kotak foto dan bagian sopir di bawahnya pada beranda.">
         <div className="grid gap-6 sm:grid-cols-2">
           {rest.map((field) => (
             <div key={field.slot} className="grid content-start gap-2">

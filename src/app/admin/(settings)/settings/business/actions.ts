@@ -14,8 +14,8 @@ export async function saveSettings(formData: FormData): Promise<ActionResult> {
   if (!parsed.success) return invalid(parsed.error);
 
   const { error } = await supabase.from(tables.settings).upsert(settingsToRow(parsed.data));
-  if (error) return databaseFailure(error, "business details");
+  if (error) return databaseFailure(error, "data usaha");
 
   contentChanged(contentTags.settings);
-  return { ok: true, message: "Business details saved." };
+  return { ok: true, message: "Data usaha disimpan." };
 }

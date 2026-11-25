@@ -19,15 +19,15 @@ export function FaqManager({ faqs }: { faqs: FaqRecord[] }) {
   return (
     <>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <p className="max-w-xl text-sm text-muted-foreground">The questions on the Questions page, in this order.</p>
+        <p className="max-w-xl text-sm text-muted-foreground">Pertanyaan di halaman Pertanyaan, sesuai urutan ini.</p>
         <Button size="sm" onClick={() => setEditing("new")}>
           <Plus />
-          Add question
+          Tambah pertanyaan
         </Button>
       </div>
       <ItemList
         list="faqs"
-        emptyText="No questions yet."
+        emptyText="Belum ada pertanyaan."
         onEdit={setEditing}
         items={faqs.map((candidate) => ({
           key: candidate.id,
@@ -55,24 +55,24 @@ function FaqDialog({ faq, onClose }: { faq: FaqRecord | null; onClose: () => voi
       onOpenChange={(open) => {
         if (!open) onClose();
       }}
-      title={faq ? "Edit question" : "Add a question"}
+      title={faq ? "Ubah pertanyaan" : "Tambah pertanyaan"}
       onSubmit={onSubmit}
       pending={pending}
-      submitLabel={faq ? "Save question" : "Add question"}
+      submitLabel={faq ? "Simpan pertanyaan" : "Tambah pertanyaan"}
     >
       <LocaleTabs errors={errors} prefixes={["question", "answer"]}>
         {(locale) => (
           <div className="grid gap-4">
             <TextField
               name={`question.${locale}`}
-              label="Question"
+              label="Pertanyaan"
               defaultValue={faq?.question[locale]}
               placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
               errors={errors}
             />
             <TextAreaField
               name={`answer.${locale}`}
-              label="Answer"
+              label="Jawaban"
               rows={5}
               defaultValue={faq?.answer[locale]}
               placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
@@ -81,7 +81,7 @@ function FaqDialog({ faq, onClose }: { faq: FaqRecord | null; onClose: () => voi
           </div>
         )}
       </LocaleTabs>
-      <SwitchField name="published" label="Show on the website" defaultChecked={faq?.published ?? true} />
+      <SwitchField name="published" label="Tampilkan di website" defaultChecked={faq?.published ?? true} />
     </RecordDialog>
   );
 }

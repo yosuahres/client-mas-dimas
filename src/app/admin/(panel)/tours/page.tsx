@@ -11,7 +11,7 @@ import { adminTours } from "@/lib/admin/queries";
 import { photoUrl } from "@/lib/photos";
 import { translateFields } from "@/lib/content/translate";
 
-export const metadata: Metadata = { title: "Tour packages" };
+export const metadata: Metadata = { title: "Paket tour" };
 
 export default async function ToursPage() {
   const tours = await adminTours();
@@ -19,24 +19,24 @@ export default async function ToursPage() {
   return (
     <>
       <PageHeader
-        title="Tour packages"
+        title="Paket tour"
         actions={
           <Button asChild size="sm">
             <Link href="/admin/tours/new">
               <Plus />
-              New package
+              Paket baru
             </Link>
           </Button>
         }
       />
       <PageBody>
         <p className="mb-4 text-sm text-muted-foreground">
-          The packages on the Tours page, in this order. The first one is the photo on the home page.
+          Paket di halaman Tour, sesuai urutan ini. Foto paket pertama dipakai di beranda.
         </p>
         <ItemList
           list="tours"
-          emptyText="No packages yet. Add the first one."
-          deleteNote="Reviews of this package stay, without the package name."
+          emptyText="Belum ada paket. Tambahkan paket pertama."
+          deleteNote="Ulasan untuk paket ini tetap ada, tanpa nama paketnya."
           items={tours.map((tour) => {
             const photo = photoUrl(tour.photo);
             return {
@@ -56,14 +56,14 @@ export default async function ToursPage() {
                       {translateFields(tour.text, "id").name}
                     </p>
                     <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                      {tour.length === "multi-day" ? "Multi-day" : "Day trip"} ·{" "}
-                      {tour.priceFromIdr === null ? "On request" : `from ${formatIdr(tour.priceFromIdr, "en")}`}
+                      {tour.length === "multi-day" ? "Beberapa hari" : "Perjalanan sehari"} ·{" "}
+                      {tour.priceFromIdr === null ? "Hubungi kami" : `mulai ${formatIdr(tour.priceFromIdr, "id")}`}
                       {tour.accommodationOffered
-                        ? ` · with accommodation ${tour.accommodationPriceFromIdr === null ? "on request" : `from ${formatIdr(tour.accommodationPriceFromIdr, "en")}`}`
+                        ? ` · termasuk akomodasi ${tour.accommodationPriceFromIdr === null ? "hubungi kami" : `mulai ${formatIdr(tour.accommodationPriceFromIdr, "id")}`}`
                         : null}
                       {!tour.text.id || !tour.text.fr ? (
                         <Badge variant="outline" className="px-1.5 py-0 text-[10px] font-normal">
-                          {!tour.text.id && !tour.text.fr ? "English only" : !tour.text.id ? "No Indonesian" : "No French"}
+                          {!tour.text.id && !tour.text.fr ? "Hanya bahasa Inggris" : !tour.text.id ? "Tanpa bahasa Indonesia" : "Tanpa bahasa Prancis"}
                         </Badge>
                       ) : null}
                     </p>

@@ -14,25 +14,24 @@ export function SetupNotice() {
         <Card className="w-full">
           <CardContent className="flex flex-col gap-4 pt-6 text-sm">
             <div>
-              <h1 className="text-xl font-semibold">Connect the database</h1>
+              <h1 className="text-xl font-semibold">Hubungkan database</h1>
               <p className="mt-1 text-muted-foreground">
-                The admin panel stores its content in Supabase. Until it&apos;s connected, the website shows the content it
-                launched with.
+                Panel admin menyimpan kontennya di Supabase. Selama belum terhubung, website menampilkan konten awalnya.
               </p>
             </div>
             <ol className="list-decimal space-y-2 pl-5">
               <li>
-                Create a Supabase project, then run <code className="rounded bg-muted px-1">supabase/migrations/*.sql</code>{" "}
-                and <code className="rounded bg-muted px-1">supabase/seed.sql</code> in its SQL editor.
+                Buat project Supabase, lalu jalankan <code className="rounded bg-muted px-1">supabase/migrations/*.sql</code>{" "}
+                dan <code className="rounded bg-muted px-1">supabase/seed.sql</code> di SQL editor-nya.
               </li>
               <li>
-                Copy <code className="rounded bg-muted px-1">.env.example</code> to{" "}
-                <code className="rounded bg-muted px-1">.env.local</code> and fill in the Supabase values.
+                Salin <code className="rounded bg-muted px-1">.env.example</code> menjadi{" "}
+                <code className="rounded bg-muted px-1">.env.local</code> dan isi nilai-nilai Supabase.
               </li>
-              <li>Restart the server and come back to /admin.</li>
+              <li>Jalankan ulang server dan buka /admin lagi.</li>
             </ol>
             <p className="text-muted-foreground">
-              Full steps, including creating the first admin account, are in <code className="rounded bg-muted px-1">docs/admin.md</code>.
+              Langkah lengkap, termasuk membuat akun admin pertama, ada di <code className="rounded bg-muted px-1">docs/admin.md</code>.
             </p>
           </CardContent>
         </Card>

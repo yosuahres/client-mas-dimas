@@ -10,10 +10,10 @@ import { isAdmin } from "@/lib/admin/session";
 import { createSessionClient } from "@/lib/supabase/clients";
 import { supabaseConfig } from "@/lib/supabase/config";
 
-export const metadata: Metadata = { title: "Sign in" };
+export const metadata: Metadata = { title: "Masuk" };
 
 const notices: Record<string, string> = {
-  "not-admin": "This account isn't an admin. Ask the site owner to give you access.",
+  "not-admin": "Akun ini bukan admin. Minta pemilik website memberi Anda akses.",
 };
 
 export default async function LoginPage({ searchParams }: PageProps<"/admin/login">) {
@@ -39,8 +39,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
         <Card className="w-full">
           <CardContent className="flex flex-col gap-4 pt-6">
             <div className="mb-2 text-center">
-              <h1 className="text-xl font-semibold">Sign in to the admin panel</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Manage tours, prices, reviews and the website text.</p>
+              <h1 className="text-xl font-semibold">Masuk ke panel admin</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Kelola tour, harga, ulasan, dan teks website.</p>
             </div>
             <LoginForm notice={notice} />
           </CardContent>

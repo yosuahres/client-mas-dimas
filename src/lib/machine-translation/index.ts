@@ -15,7 +15,7 @@ export function isTranslationConfigured() {
 /** Indonesian texts in the target language, in the same order. Throws with a readable message on failure. */
 export async function translateFromIndonesian(texts: string[], target: TranslationTarget): Promise<string[]> {
   if (texts.length === 0) return [];
-  if (!isTranslationConfigured()) throw new Error("automatic translation isn't set up yet (GEMINI_API_KEY is missing on the server)");
+  if (!isTranslationConfigured()) throw new Error("terjemahan otomatis belum disiapkan (GEMINI_API_KEY belum ada di server)");
   if (!isGeminiConfigured()) return translateWithGoogle(texts, target);
   try {
     return await translateWithGemini(texts, target);

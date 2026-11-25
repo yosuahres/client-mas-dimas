@@ -21,7 +21,7 @@ export async function saveTour(originalSlug: string | null, formData: FormData):
     originalSlug === null
       ? { data: null }
       : await supabase.from(tables.tours).select("photo, text").eq("slug", originalSlug).maybeSingle<Pick<TourRow, "photo" | "text">>();
-  if (originalSlug !== null && !before) return failure("This package no longer exists. It may have been deleted in another tab.");
+  if (originalSlug !== null && !before) return failure("Paket ini sudah tidak ada. Mungkin sudah dihapus di tab lain.");
 
   const text = await translateDraft(parsed.data.text, before?.text, completeTourText, "text");
   if (!text.ok) return text.result;
@@ -30,18 +30,18 @@ export async function saveTour(originalSlug: string | null, formData: FormData):
   if (originalSlug === null || !before) {
     const position = await nextPosition(tables.tours);
     const { error } = await supabase.from(tables.tours).insert({ ...tourToRow(tour), position });
-    if (error) return databaseFailure(error, "package");
+    if (error) return databaseFailure(error, "paket");
   } else {
     const problem = tour.published ? null : await lastShownTourProblem(originalSlug);
     if (problem) return failure(problem);
 
     const { error } = await supabase.from(tables.tours).update(tourToRow(tour)).eq("slug", originalSlug);
-    if (error) return databaseFailure(error, "package");
+    if (error) return databaseFailure(error, "paket");
     if (before.photo !== tour.photo) await discardPhoto(before.photo);
   }
 
   // Reviews show the package name, so they change too.
   contentChanged(contentTags.tours, contentTags.reviews);
   if (originalSlug !== tour.slug) redirect(`/admin/tours/${tour.slug}`);
-  return { ok: true, message: savedMessage("Package saved.", [text.problem]) };
+  return { ok: true, message: savedMessage("Paket disimpan.", [text.problem]) };
 }

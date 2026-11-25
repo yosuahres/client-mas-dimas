@@ -37,7 +37,7 @@ export async function translateDraft<T extends TextFields>(
       );
       filled[target] = withTranslations(draft, target, jobs, translations);
     } catch (error) {
-      problem = error instanceof Error ? error.message : "the translation service didn't answer";
+      problem = error instanceof Error ? error.message : "layanan terjemahan tidak merespons";
     }
   }
 
@@ -48,7 +48,7 @@ export async function translateDraft<T extends TextFields>(
     );
     return {
       ok: false,
-      result: failure(`The English is missing${problem ? ` because ${problem}` : ""}. Fill it in on the English tab, or try again.`, fieldErrors),
+      result: failure(`Teks bahasa Inggris belum ada${problem ? ` karena ${problem}` : ""}. Isi di tab Inggris, atau coba lagi.`, fieldErrors),
     };
   }
 
@@ -85,5 +85,5 @@ export async function translateText(
 /** The success message, with a note when English or French couldn't be updated. */
 export function savedMessage(message: string, problems: (string | null)[]) {
   const problem = problems.find(Boolean);
-  return problem ? `${message} English and French weren't updated: ${problem}.` : message;
+  return problem ? `${message} Bahasa Inggris dan Prancis tidak diperbarui: ${problem}.` : message;
 }

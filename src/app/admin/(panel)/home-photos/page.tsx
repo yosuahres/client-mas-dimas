@@ -11,7 +11,7 @@ import { adminHomePhotos, adminTours } from "@/lib/admin/queries";
 import { translateFields } from "@/lib/content/translate";
 import { photoUrl } from "@/lib/photos";
 
-export const metadata: Metadata = { title: "Home page photos" };
+export const metadata: Metadata = { title: "Foto beranda" };
 
 export default async function HomePhotosPage() {
   const [photos, tours] = await Promise.all([adminHomePhotos(), adminTours()]);
@@ -20,18 +20,18 @@ export default async function HomePhotosPage() {
   const slots: Omit<HomePhotoField, "photo" | "preview">[] = [
     {
       slot: "hero",
-      title: "Big photo at the top",
-      description: `Until you choose one, this is the photo of the first package${firstTour ? ` (${translateFields(firstTour.text, "id").name})` : ""}. After changing it, update “Photo description” under Website text → Home page → Big photo at the top.`,
+      title: "Foto besar di atas",
+      description: `Selama belum dipilih, yang tampil adalah foto paket pertama${firstTour ? ` (${translateFields(firstTour.text, "id").name})` : ""}. Setelah menggantinya, perbarui “Deskripsi foto” di Teks website → Beranda → Foto besar di atas.`,
       builtIn: photoUrl(firstTour?.photo ?? null),
     },
-    { slot: "temples", title: "Tile: Temples", builtIn: prambanan.src },
-    { slot: "culture", title: "Tile: Culture", builtIn: kraton.src },
-    { slot: "nature", title: "Tile: Nature", builtIn: merapi.src },
-    { slot: "adventure", title: "Tile: Adventure", builtIn: jomblang.src },
+    { slot: "temples", title: "Kotak: Candi", builtIn: prambanan.src },
+    { slot: "culture", title: "Kotak: Budaya", builtIn: kraton.src },
+    { slot: "nature", title: "Kotak: Alam", builtIn: merapi.src },
+    { slot: "adventure", title: "Kotak: Petualangan", builtIn: jomblang.src },
     {
       slot: "drivers",
-      title: "Drivers section",
-      description: "After changing it, update “Photo description” under Website text → Home page → Drivers.",
+      title: "Bagian sopir",
+      description: "Setelah menggantinya, perbarui “Deskripsi foto” di Teks website → Beranda → Sopir.",
       builtIn: batik.src,
     },
   ];
@@ -42,11 +42,11 @@ export default async function HomePhotosPage() {
 
   return (
     <>
-      <PageHeader title="Home page photos" />
+      <PageHeader title="Foto beranda" />
       <PageBody>
         {photos === null ? (
           <p className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-            Run <code>supabase/migrations/20261122000000_home_photos.sql</code> in the Supabase SQL Editor to change these photos.
+            Jalankan <code>supabase/migrations/20261122000000_home_photos.sql</code> di SQL Editor Supabase supaya foto-foto ini bisa diganti.
           </p>
         ) : (
           <HomePhotosForm fields={fields} />

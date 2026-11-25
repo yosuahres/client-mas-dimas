@@ -5,13 +5,13 @@ import { PageBody, PageHeader } from "@/components/admin/page-header";
 import { adminReviews, adminSettings, adminTours } from "@/lib/admin/queries";
 import { translateFields } from "@/lib/content/translate";
 
-export const metadata: Metadata = { title: "Reviews" };
+export const metadata: Metadata = { title: "Ulasan" };
 
 export default async function ReviewsPage() {
   const [reviews, tours, settings] = await Promise.all([adminReviews(), adminTours(), adminSettings()]);
   return (
     <>
-      <PageHeader title="Reviews" />
+      <PageHeader title="Ulasan" />
       <PageBody>
         <ReviewsManager
           reviews={reviews}

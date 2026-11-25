@@ -7,9 +7,9 @@ import type { Draft } from "@/lib/machine-translation/plan";
 export const slug = z
   .string()
   .trim()
-  .min(1, "Required.")
-  .max(80, "Keep it under 80 characters.")
-  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Use lowercase letters, numbers and dashes, e.g. borobudur-sunrise.");
+  .min(1, "Wajib diisi.")
+  .max(80, "Maksimal 80 karakter.")
+  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Pakai huruf kecil, angka, dan tanda strip, misalnya borobudur-sunrise.");
 
 /** A web link. z.url() alone also accepts "javascript:" and "data:", which must never reach an href. */
 const webUrl = (message: string) => z.httpUrl(message);
@@ -18,31 +18,31 @@ const webUrl = (message: string) => z.httpUrl(message);
 const photo = z
   .string()
   .trim()
-  .regex(/^(\/photos\/[A-Za-z0-9][A-Za-z0-9._-]*|tours\/[0-9a-f-]{36}\.webp)$/, "Upload the photo again.")
+  .regex(/^(\/photos\/[A-Za-z0-9][A-Za-z0-9._-]*|tours\/[0-9a-f-]{36}\.webp)$/, "Unggah fotonya sekali lagi.")
   .or(z.literal(""));
 
-const required = z.string().trim().min(1, "Required.");
+const required = z.string().trim().min(1, "Wajib diisi.");
 
 /** Rupiah typed as "550000", "550.000" or "Rp 550,000". */
 const rupiah = z.preprocess(
   (value) => (typeof value === "string" ? value.replace(/\D/g, "") : value),
   z
     .string()
-    .min(1, "Required.")
+    .min(1, "Wajib diisi.")
     .transform(Number)
-    .pipe(z.number().int().min(0, "Can't be negative.").max(1_000_000_000, "That's too much.")),
+    .pipe(z.number().int().min(0, "Tidak boleh minus.").max(1_000_000_000, "Angkanya terlalu besar.")),
 );
 
-const positiveRupiah = rupiah.pipe(z.number().min(1, "Must be more than 0."));
+const positiveRupiah = rupiah.pipe(z.number().min(1, "Harus lebih dari 0."));
 
 const coordinate = (min: number, max: number) =>
   z.preprocess(
     (value) => (typeof value === "string" ? value.trim().replace(",", ".") : value),
     z
       .string()
-      .min(1, "Required.")
+      .min(1, "Wajib diisi.")
       .transform(Number)
-      .pipe(z.number("Enter a number, e.g. -7.7956.").min(min, `Between ${min} and ${max}.`).max(max, `Between ${min} and ${max}.`)),
+      .pipe(z.number("Isi dengan angka, misalnya -7.7956.").min(min, `Antara ${min} dan ${max}.`).max(max, `Antara ${min} dan ${max}.`)),
   );
 
 /** An unchecked checkbox sends nothing; a checked one sends "on". */
@@ -98,7 +98,7 @@ export const completeTourText = z.object({
   name: required,
   summary: required,
   duration: required,
-  destinations: lines.pipe(z.array(z.string()).min(1, "Add at least one stop, one per line.")),
+  destinations: lines.pipe(z.array(z.string()).min(1, "Isi minimal satu tujuan, satu per baris.")),
   dropOffs: lines,
   parts: partNames,
   photoAlt: optionalText,
@@ -117,8 +117,8 @@ const optionalTourText = z.object({
 export const tourInput = z
   .object({
     slug,
-    code: z.string().trim().min(1, "Required.").max(4, "Up to 4 characters, e.g. A or P2."),
-    length: z.enum(tourLengths, "Choose day trip or multi-day."),
+    code: z.string().trim().min(1, "Wajib diisi.").max(4, "Maksimal 4 karakter, misalnya A atau P2."),
+    length: z.enum(tourLengths, "Pilih perjalanan sehari atau beberapa hari."),
     interests: z.array(z.enum(tourInterests)).optional().default([]),
     onRequest: checkbox,
     priceFromIdr: z.string().optional(),
@@ -191,11 +191,11 @@ export const vehicleInput = z
   .object({
     id: slug,
     name: required,
-    seatClass: z.enum(seatClasses, "Choose a seat group."),
+    seatClass: z.enum(seatClasses, "Pilih kelompok kursi."),
     seats: required,
-    maxPassengers: z.coerce.number().int("Whole number.").min(1, "At least 1.").max(60, "Up to 60."),
-    maxPassengersWithLuggage: z.coerce.number().int("Whole number.").min(1, "At least 1.").max(60, "Up to 60."),
-    tourPricePercent: z.coerce.number().int("Whole number.").min(50, "At least 50.").max(1000, "Up to 1000."),
+    maxPassengers: z.coerce.number().int("Harus bilangan bulat.").min(1, "Minimal 1.").max(60, "Maksimal 60."),
+    maxPassengersWithLuggage: z.coerce.number().int("Harus bilangan bulat.").min(1, "Minimal 1.").max(60, "Maksimal 60."),
+    tourPricePercent: z.coerce.number().int("Harus bilangan bulat.").min(50, "Minimal 50.").max(1000, "Maksimal 1000."),
     dayWithDriverIdr: positiveRupiah,
     dayWithDriverAndFuelIdr: positiveRupiah,
     offersTransfers: checkbox,
@@ -204,7 +204,7 @@ export const vehicleInput = z
   })
   .refine((input) => input.maxPassengersWithLuggage <= input.maxPassengers, {
     path: ["maxPassengersWithLuggage"],
-    message: "Can't be more than without luggage.",
+    message: "Tidak boleh lebih dari jumlah tanpa bagasi.",
   })
   .transform((input, context) => {
     const { offersTransfers, transferRate, ...vehicle } = input;
@@ -223,7 +223,7 @@ export const vehicleInput = z
 
 export const placeInput = z.object({
   id: slug,
-  kind: z.enum(placeKinds, "Choose a group."),
+  kind: z.enum(placeKinds, "Pilih kelompok."),
   lat: coordinate(-90, 90),
   lng: coordinate(-180, 180),
   name: translatedText,
@@ -232,7 +232,7 @@ export const placeInput = z.object({
 
 export const routeInput = z
   .object({ from: required, to: required })
-  .refine((route) => route.from !== route.to, { path: ["to"], message: "Choose two different places." });
+  .refine((route) => route.from !== route.to, { path: ["to"], message: "Pilih dua tempat yang berbeda." });
 
 export const reviewInput = z.object({
   guestName: required,
@@ -254,20 +254,20 @@ export const faqInput = z.object({
 
 export const settingsInput = z.object({
   businessName: required,
-  siteUrl: webUrl("Enter the full address, starting with https://"),
+  siteUrl: webUrl("Isi alamat lengkap, diawali https://"),
   whatsappNumber: z
     .string()
     .transform((value) => value.replace(/\D/g, ""))
-    .pipe(z.string().regex(/^62\d{7,13}$/, "Use the international format without +, starting with 62, e.g. 628112653767.")),
+    .pipe(z.string().regex(/^62\d{7,13}$/, "Pakai format internasional tanpa +, diawali 62, misalnya 628112653767.")),
   phoneDisplay: required,
-  email: z.email("Enter a valid email address."),
+  email: z.email("Isi alamat email yang benar."),
   address: required,
   googleRating: z
     .string()
     .trim()
-    .regex(/^[0-5](\.\d)?$/, "A number from 0 to 5, e.g. 4.9."),
-  googleReviewsUrl: webUrl("Enter the full link, starting with https://"),
-  instagramUrl: webUrl("Enter the full link, starting with https://"),
+    .regex(/^[0-5](\.\d)?$/, "Angka 0 sampai 5, misalnya 4.9."),
+  googleReviewsUrl: webUrl("Isi link lengkap, diawali https://"),
+  instagramUrl: webUrl("Isi link lengkap, diawali https://"),
   idrPerUsd: positiveRupiah,
 });
 
@@ -275,7 +275,7 @@ export const settingsInput = z.object({
 const homePhoto = z
   .string()
   .trim()
-  .regex(/^home\/[0-9a-f-]{36}\.webp$/, "Upload the photo again.")
+  .regex(/^home\/[0-9a-f-]{36}\.webp$/, "Unggah fotonya sekali lagi.")
   .or(z.literal(""))
   .optional()
   .default("");

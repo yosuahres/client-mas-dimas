@@ -27,7 +27,7 @@ import type { Locale } from "@/i18n/config";
 
 async function selectAll<Row>(table: string): Promise<Row[]> {
   const { data, error } = await readAsAdmin((supabase) => supabase.from(table).select("*").order("position"));
-  if (error) throw new Error(`Couldn't read ${table}: ${error.message}`);
+  if (error) throw new Error(`Gagal membaca ${table}: ${error.message}`);
   return data as Row[];
 }
 
@@ -39,7 +39,7 @@ export async function adminTour(slug: string) {
   const { data, error } = await readAsAdmin((supabase) =>
     supabase.from(tables.tours).select("*").eq("slug", slug).maybeSingle<TourRow>(),
   );
-  if (error) throw new Error(`Couldn't read the package: ${error.message}`);
+  if (error) throw new Error(`Gagal membaca paket: ${error.message}`);
   return data ? tourFromRow(data) : null;
 }
 
@@ -67,7 +67,7 @@ export async function adminSettings() {
   const { data, error } = await readAsAdmin((supabase) =>
     supabase.from(tables.settings).select("*").eq("id", 1).maybeSingle<SettingsRow>(),
   );
-  if (error) throw new Error(`Couldn't read the business details: ${error.message}`);
+  if (error) throw new Error(`Gagal membaca data usaha: ${error.message}`);
   return data ? settingsFromRow(data) : null;
 }
 
@@ -76,7 +76,7 @@ export async function adminHomePhotos() {
   const { data, error } = await readAsAdmin((supabase) => supabase.from(tables.homePhotos).select("slot, photo"));
   if (error) {
     if (error.code === "42P01" || error.code === "PGRST205") return null;
-    throw new Error(`Couldn't read the home page photos: ${error.message}`);
+    throw new Error(`Gagal membaca foto beranda: ${error.message}`);
   }
   return homePhotosFromRows(data as HomePhotoRow[]);
 }
@@ -84,7 +84,7 @@ export async function adminHomePhotos() {
 /** Saved page-text edits, by locale then dotted key. */
 export async function adminTextOverrides() {
   const { data, error } = await readAsAdmin((supabase) => supabase.from(tables.text).select("locale, key, value"));
-  if (error) throw new Error(`Couldn't read the website text: ${error.message}`);
+  if (error) throw new Error(`Gagal membaca teks website: ${error.message}`);
   const byLocale: Record<Locale, Record<string, string>> = { en: {}, id: {}, fr: {} };
   for (const row of data as { locale: Locale; key: string; value: string }[]) byLocale[row.locale][row.key] = row.value;
   return byLocale;

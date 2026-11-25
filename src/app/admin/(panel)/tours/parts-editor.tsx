@@ -32,10 +32,10 @@ export function PartsEditor({ names, prices, errors }: PartsEditorProps) {
   return (
     <div className="grid gap-2">
       <div>
-        <p className="text-[13px] font-medium">Split options</p>
+        <p className="text-[13px] font-medium">Pilihan sebagian paket</p>
         <p className="text-xs text-muted-foreground">
-          Parts of this package a guest can book on their own, e.g. &quot;Borobudur saja&quot;. Price for the cheapest car; leave it
-          empty for &quot;On request&quot;. Bigger cars cost more by their price level in Fleet.
+          Bagian paket yang bisa dipesan terpisah, misalnya &quot;Borobudur saja&quot;. Isi harga untuk mobil termurah; kosongkan untuk
+          &quot;Hubungi kami&quot;. Mobil yang lebih besar lebih mahal sesuai level harganya di Mobil &amp; harga.
         </p>
       </div>
       {rows.length > 0 ? (
@@ -49,15 +49,15 @@ export function PartsEditor({ names, prices, errors }: PartsEditorProps) {
                   <Input
                     className="col-span-2 sm:col-span-1"
                     name="text.id.parts[]"
-                    aria-label={`Option ${index + 1} name (Indonesian)`}
+                    aria-label={`Nama pilihan ${index + 1} (bahasa Indonesia)`}
                     placeholder="Borobudur saja"
                     defaultValue={row.name}
                   />
                   <Input
                     name="partPrices[]"
-                    aria-label={`Option ${index + 1} price (Rp)`}
+                    aria-label={`Harga pilihan ${index + 1} (Rp)`}
                     inputMode="numeric"
-                    placeholder="Rp, or empty"
+                    placeholder="Rp, atau kosong"
                     defaultValue={row.price}
                     aria-invalid={error ? true : undefined}
                   />
@@ -65,7 +65,7 @@ export function PartsEditor({ names, prices, errors }: PartsEditorProps) {
                     type="button"
                     variant="ghost"
                     size="icon"
-                    aria-label={`Remove option ${index + 1}`}
+                    aria-label={`Hapus pilihan ${index + 1}`}
                     onClick={() => setRows((current) => current.filter((candidate) => candidate.key !== row.key))}
                   >
                     <Trash2 />
@@ -83,7 +83,7 @@ export function PartsEditor({ names, prices, errors }: PartsEditorProps) {
       ) : null}
       <Button type="button" variant="outline" size="sm" className="justify-self-start" onClick={addRow}>
         <Plus />
-        Add split option
+        Tambah pilihan
       </Button>
     </div>
   );

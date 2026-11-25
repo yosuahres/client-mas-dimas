@@ -8,7 +8,7 @@ import { dictionaries } from "@/i18n/server";
 import { textEntries } from "@/i18n/text-paths";
 import { adminTextOverrides } from "@/lib/admin/queries";
 
-export const metadata: Metadata = { title: "Website text" };
+export const metadata: Metadata = { title: "Teks website" };
 
 export default async function TextPage({ searchParams }: PageProps<"/admin/text">) {
   const { lang } = await searchParams;
@@ -30,7 +30,7 @@ export default async function TextPage({ searchParams }: PageProps<"/admin/text"
 
   return (
     <>
-      <PageHeader title="Website text" />
+      <PageHeader title="Teks website" />
       <PageBody>
         <TextEditor key={locale} locale={locale} fields={fields} />
       </PageBody>

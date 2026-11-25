@@ -11,12 +11,12 @@ import { contentTags } from "@/lib/content/store";
 // Publish, reorder and delete, shared by every list in the admin panel.
 
 const lists = {
-  tours: { table: tables.tours, key: "slug", what: "package", tags: [contentTags.tours] },
-  vehicles: { table: tables.vehicles, key: "id", what: "car", tags: [contentTags.vehicles] },
-  places: { table: tables.places, key: "id", what: "place", tags: [contentTags.places, contentTags.routes] },
-  routes: { table: tables.routes, key: "id", what: "route", tags: [contentTags.routes] },
-  reviews: { table: tables.reviews, key: "id", what: "review", tags: [contentTags.reviews] },
-  faqs: { table: tables.faqs, key: "id", what: "question", tags: [contentTags.faqs] },
+  tours: { table: tables.tours, key: "slug", what: "paket", tags: [contentTags.tours] },
+  vehicles: { table: tables.vehicles, key: "id", what: "mobil", tags: [contentTags.vehicles] },
+  places: { table: tables.places, key: "id", what: "tempat", tags: [contentTags.places, contentTags.routes] },
+  routes: { table: tables.routes, key: "id", what: "rute", tags: [contentTags.routes] },
+  reviews: { table: tables.reviews, key: "id", what: "ulasan", tags: [contentTags.reviews] },
+  faqs: { table: tables.faqs, key: "id", what: "pertanyaan", tags: [contentTags.faqs] },
 } as const;
 
 export type ListName = keyof typeof lists;
@@ -42,42 +42,42 @@ async function removalProblem(name: ListName, key: string) {
 export async function setPublished(name: ListName, key: string, published: boolean): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   const list = listFor(name);
-  if (!itemKey.safeParse(key).success || typeof published !== "boolean") return failure("That request wasn't valid.");
+  if (!itemKey.safeParse(key).success || typeof published !== "boolean") return failure("Permintaan tidak valid.");
   const problem = published ? null : await removalProblem(name, key);
   if (problem) return failure(problem);
   const { error } = await supabase.from(list.table).update({ published }).eq(list.key, key);
-  if (error) return failure(`Couldn't update the ${list.what}: ${error.message}`);
+  if (error) return failure(`Gagal mengubah ${list.what}: ${error.message}`);
   contentChanged(...list.tags);
-  return { ok: true, message: published ? "Shown on the website." : "Hidden from the website." };
+  return { ok: true, message: published ? "Ditampilkan di website." : "Disembunyikan dari website." };
 }
 
 /** Saves a new order: keys from first to last. */
 export async function reorder(name: ListName, keys: string[]): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   const list = listFor(name);
-  if (!itemKeys.safeParse(keys).success) return failure("That request wasn't valid.");
+  if (!itemKeys.safeParse(keys).success) return failure("Permintaan tidak valid.");
   const results = await Promise.all(
     keys.map((key, position) => supabase.from(list.table).update({ position }).eq(list.key, key)),
   );
   const failed = results.find((result) => result.error);
-  if (failed?.error) return failure(`Couldn't save the order: ${failed.error.message}`);
+  if (failed?.error) return failure(`Gagal menyimpan urutan: ${failed.error.message}`);
   contentChanged(...list.tags);
-  return { ok: true, message: "Order saved." };
+  return { ok: true, message: "Urutan disimpan." };
 }
 
 export async function deleteItem(name: ListName, key: string): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   const list = listFor(name);
-  if (!itemKey.safeParse(key).success) return failure("That request wasn't valid.");
+  if (!itemKey.safeParse(key).success) return failure("Permintaan tidak valid.");
   const problem = await removalProblem(name, key);
   if (problem) return failure(problem);
   const { data, error } = await supabase.from(list.table).delete().eq(list.key, key).select();
-  if (error) return failure(`Couldn't delete the ${list.what}: ${error.message}`);
-  if (!data?.length) return failure(`That ${list.what} was already deleted.`);
+  if (error) return failure(`Gagal menghapus ${list.what}: ${error.message}`);
+  if (!data?.length) return failure(`${list.what[0].toUpperCase()}${list.what.slice(1)} ini sudah dihapus.`);
 
   // An uploaded package photo goes with its package.
   if (name === "tours") await discardPhoto((data[0] as { photo: string | null }).photo);
 
   contentChanged(...list.tags);
-  return { ok: true, message: "Deleted." };
+  return { ok: true, message: "Dihapus." };
 }

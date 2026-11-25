@@ -23,7 +23,7 @@ const phoneScreen =
 const phoneFrame = "max-sm:min-h-full max-sm:w-full max-sm:max-w-none max-sm:overflow-visible max-sm:rounded-none max-sm:border-0";
 
 // Add/edit form in a dialog, like the CRM's record dialogs: header, scrolling fields, Cancel and Save.
-export function RecordDialog({ open, onOpenChange, title, description, onSubmit, pending, submitLabel = "Save", children }: RecordDialogProps) {
+export function RecordDialog({ open, onOpenChange, title, description, onSubmit, pending, submitLabel = "Simpan", children }: RecordDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`max-w-2xl ${phoneFrame}`} positionClassName={phoneScreen}>
@@ -36,11 +36,11 @@ export function RecordDialog({ open, onOpenChange, title, description, onSubmit,
           <DialogFooter className="z-10 flex-row bg-background p-4 max-sm:sticky max-sm:bottom-0 sm:p-6">
             <DialogClose asChild>
               <Button type="button" variant="outline" className="flex-1 sm:flex-none">
-                Cancel
+                Batal
               </Button>
             </DialogClose>
             <Button type="submit" disabled={pending} className="flex-1 sm:flex-none">
-              {pending ? "Saving…" : submitLabel}
+              {pending ? "Menyimpan…" : submitLabel}
             </Button>
           </DialogFooter>
         </form>

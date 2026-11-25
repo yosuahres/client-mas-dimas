@@ -27,8 +27,8 @@ export async function saveFaq(id: string | null, formData: FormData): Promise<Ac
     id === null
       ? await supabase.from(tables.faqs).insert({ ...row, position: await nextPosition(tables.faqs) })
       : await supabase.from(tables.faqs).update(row).eq("id", id);
-  if (error) return databaseFailure(error, "question");
+  if (error) return databaseFailure(error, "pertanyaan");
 
   contentChanged(contentTags.faqs);
-  return { ok: true, message: savedMessage(id === null ? "Question added." : "Question saved.", [question.problem, answer.problem]) };
+  return { ok: true, message: savedMessage(id === null ? "Pertanyaan ditambahkan." : "Pertanyaan disimpan.", [question.problem, answer.problem]) };
 }

@@ -25,42 +25,199 @@ export type TextField = {
 };
 
 const languages: { locale: Locale; name: string }[] = [
-  { locale: "id", name: "Indonesian" },
-  { locale: "en", name: "English" },
-  { locale: "fr", name: "French" },
+  { locale: "id", name: "Indonesia" },
+  { locale: "en", name: "Inggris" },
+  { locale: "fr", name: "Prancis" },
 ];
 
-const whatsappMessage = "WhatsApp message (filled in for the visitor)";
+const whatsappMessage = "Pesan WhatsApp (otomatis terisi untuk pengunjung)";
 
 // Plain names for the words used in the dictionary files.
 const names: Record<string, string> = {
-  title: "Heading",
-  kicker: "Small line above the heading",
-  lede: "Text under the heading",
-  intro: "Text under the heading",
-  body: "Text",
-  cta: "Button",
-  button: "Button",
-  link: "Link text",
-  after: "Text after the link",
-  prompt: "Question",
-  detail: "Details",
-  metaDescription: "Description on Google",
-  photoAlt: "Photo description (read aloud to blind visitors)",
+  title: "Judul",
+  kicker: "Baris kecil di atas judul",
+  lede: "Teks di bawah judul",
+  intro: "Teks di bawah judul",
+  body: "Teks",
+  cta: "Tombol",
+  button: "Tombol",
+  link: "Teks link",
+  after: "Teks setelah link",
+  prompt: "Pertanyaan",
+  detail: "Rincian",
+  metaDescription: "Deskripsi di Google",
+  photoAlt: "Deskripsi foto (dibacakan untuk pengunjung tunanetra)",
   message: whatsappMessage,
   chatMessage: whatsappMessage,
   planMessage: whatsappMessage,
   nav: "Menu",
-  faq: "Questions",
-  tiles: "Tile",
-  facts: "Fact",
-  steps: "Step",
-  left: "Left text",
-  right: "Right text",
-  sticker: "Sticker line",
-  columns: "Column heading",
-  seeTours: "Button: see tours",
-  planOnWhatsapp: "Button: plan on WhatsApp",
+  faq: "Pertanyaan",
+  tiles: "Kotak",
+  facts: "Fakta",
+  steps: "Langkah",
+  left: "Teks kiri",
+  right: "Teks kanan",
+  sticker: "Baris stiker",
+  columns: "Judul kolom",
+  seeTours: "Tombol: lihat tour",
+  planOnWhatsapp: "Tombol: rencanakan lewat WhatsApp",
+  accommodation: "Akomodasi",
+  accommodationNote: "Catatan akomodasi",
+  adults: "Dewasa",
+  adventure: "Petualangan",
+  airport: "Bandara",
+  allTours: "Semua tour",
+  anyDate: "Tanggal bebas",
+  anyLength: "Semua durasi",
+  anythingElse: "Ada pertanyaan lain",
+  around: "Sekitar Jogja",
+  askCustom: "Minta rute sendiri",
+  back: "Tombol kembali",
+  biggerVehicle: "Mobil lebih besar",
+  biggerVehicleLink: "Link mobil lebih besar",
+  cantFind: "Tidak ketemu",
+  carNote: "Catatan mobil",
+  cardTitle: "Judul kartu",
+  change: "Tombol ubah",
+  chat: "Tombol chat",
+  choose: "Pilih",
+  city: "Kota",
+  clear: "Tombol hapus",
+  clearRecent: "Hapus pencarian terakhir",
+  close: "Tombol tutup",
+  closeChange: "Tutup ubah pencarian",
+  countAll: "Jumlah semua",
+  countSome: "Jumlah sebagian",
+  counts: "Jumlah",
+  culture: "Budaya",
+  date: "Tanggal",
+  dateUnknown: "Tanggal belum pasti",
+  description: "Deskripsi",
+  destinations: "Tujuan",
+  distance: "Jarak",
+  done: "Tombol selesai",
+  dropOff: "Titik antar",
+  dropOffChoice: "Pilihan titik antar",
+  dropOffDefault: "Titik antar biasa",
+  dropOffs: "Tujuan akhir",
+  duration: "Durasi",
+  emptyBody: "Teks saat kosong",
+  emptyTitle: "Judul saat kosong",
+  estimateBody: "Teks perkiraan",
+  estimateTitle: "Judul perkiraan",
+  everything: "Semua",
+  excludedAccommodation: "Tidak termasuk (dengan akomodasi)",
+  excludedItems: "Yang tidak termasuk",
+  excludedMultiDay: "Tidak termasuk (beberapa hari)",
+  fewer: "Lebih sedikit",
+  figure: "Angka",
+  floatingLabel: "Label tombol melayang",
+  from: "Dari",
+  fromPrice: "Harga mulai",
+  fromPriceAccommodation: "Harga mulai (dengan akomodasi)",
+  groups: "Kelompok",
+  hour: "Jam",
+  howLong: "Berapa lama",
+  included: "Termasuk",
+  includedAccommodation: "Termasuk (dengan akomodasi)",
+  includedItems: "Yang termasuk",
+  includedMultiDay: "Termasuk (beberapa hari)",
+  infants: "Bayi",
+  interests: "Minat",
+  interestsLegend: "Judul pilihan minat",
+  java: "Antarkota di Jawa",
+  kids: "Anak",
+  label: "Label",
+  language: "Bahasa",
+  lengths: "Durasi",
+  lowestPrice: "Harga terendah",
+  luggage: "Bagasi",
+  luggageHint: "Keterangan bagasi",
+  menu: "Menu",
+  minute: "Menit",
+  minuteHint: "Keterangan menit",
+  more: "Lebih banyak",
+  mostBooked: "Paling banyak dipesan",
+  nature: "Alam",
+  nextMonth: "Bulan berikutnya",
+  nights: "Malam",
+  noLuggage: "Tanpa bagasi",
+  notIncluded: "Tidak termasuk",
+  onGoogle: "Di Google",
+  onRequest: "Tanpa harga (Hubungi kami)",
+  orEmail: "Atau email",
+  otherTours: "Tour lainnya",
+  part: "Bagian paket",
+  party: "Rombongan",
+  passengers: "Penumpang",
+  perCar: "Per mobil",
+  pickTwo: "Pilih dua",
+  pickup: "Jemput",
+  pickupValue: "Isi jemput",
+  placeGroups: "Kelompok tempat",
+  placeholder: "Contoh teks di kolom isian",
+  popularPrices: "Harga rute populer",
+  popularTitle: "Judul rute populer",
+  previousMonth: "Bulan sebelumnya",
+  price: "Harga",
+  priceAccommodation: "Harga dengan akomodasi",
+  rating: "Rating",
+  ratingCount: "Jumlah rating",
+  readReviews: "Baca ulasan",
+  recentTitle: "Judul pencarian terakhir",
+  recommended: "Disarankan",
+  request: "Tombol pesan",
+  resultsTitle: "Judul hasil",
+  samePlace: "Tempat sama",
+  searchTour: "Cari tour",
+  searchTransfer: "Cari antar jemput",
+  seatClasses: "Kelompok kursi",
+  seats: "Kursi",
+  showAll: "Tampilkan semua",
+  sight: "Wisata dan pulau",
+  sortBy: "Urutkan",
+  stars: "Bintang",
+  stay: "Menginap",
+  stayHints: "Keterangan pilihan menginap",
+  stayLabel: "Label menginap",
+  stayTitle: "Judul menginap",
+  stays: "Pilihan menginap",
+  sticky: "Baris tempel",
+  swap: "Tombol tukar",
+  tabs: "Tab",
+  teaser: "Teks pembuka",
+  teaserAccommodation: "Teks pembuka (dengan akomodasi)",
+  temples: "Candi",
+  time: "Jam",
+  to: "Ke",
+  tooBig: "Rombongan terlalu besar",
+  total: "Total",
+  tour: "Tour",
+  tours: "Tour",
+  transfer: "Antar jemput",
+  transfers: "Antar jemput",
+  translated: "Diterjemahkan",
+  transport: "Transport saja",
+  unknown: "Belum diketahui",
+  vehicle: "Kendaraan",
+  viewAll: "Lihat semua",
+  viewAllPackages: "Lihat semua paket",
+  visit: "Yang dikunjungi",
+  wholePackage: "Seluruh paket",
+  withLuggage: "Dengan bagasi",
+  contact: "Kontak",
+  "day-trip": "Perjalanan sehari",
+  "multi-day": "Beberapa hari",
+  five: "5 kursi",
+  seven: "7 kursi",
+  large: "Lebih dari 7 kursi",
+  hint: "Keterangan",
+  hours: "Jam",
+  minutes: "Menit",
+  hoursMinutes: "Jam dan menit",
+  one: "Satu",
+  other: "Lebih dari satu",
+  shown: "Tampil",
 };
 
 function humanize(word: string) {
@@ -68,10 +225,13 @@ function humanize(word: string) {
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
-function nameOf(word: string) {
+function nameOf(word: string): string {
   if (names[word]) return names[word];
-  if (/^message[A-Z]/.test(word)) return `WhatsApp message: ${humanize(word.slice("message".length)).toLowerCase()}`;
-  if (/Message$/.test(word)) return `${humanize(word.slice(0, -"Message".length))}: WhatsApp message`;
+  if (/^message[A-Z]/.test(word)) {
+    const rest = word.slice("message".length);
+    return `Pesan WhatsApp: ${nameOf(rest.charAt(0).toLowerCase() + rest.slice(1)).toLowerCase()}`;
+  }
+  if (/Message$/.test(word)) return `${nameOf(word.slice(0, -"Message".length))}: pesan WhatsApp`;
   return humanize(word);
 }
 
@@ -121,13 +281,13 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Find words on the website"
-            aria-label="Find text"
+            placeholder="Cari kata di website"
+            aria-label="Cari teks"
             className="pl-9"
           />
         </div>
         <div className="ml-auto flex items-center gap-2 text-[13px]">
-          <span className="text-muted-foreground">Language:</span>
+          <span className="text-muted-foreground">Bahasa:</span>
           <div className="inline-flex rounded-lg bg-muted p-1">
             {languages.map((language) => (
               <Link
@@ -153,13 +313,13 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
       >
         {locale === "id" ? (
           <>
-            Change the words, then press <strong>Save</strong>. English and French are translated for you. Keep words in curly
-            brackets, like {"{price}"}, exactly as they are: the website fills them in.
+            Ubah kata-katanya, lalu tekan <strong>Simpan</strong>. Bahasa Inggris dan Prancis diterjemahkan otomatis. Kata di
+            dalam kurung kurawal, seperti {"{price}"}, jangan diubah: website yang mengisinya.
           </>
         ) : (
           <>
-            You&apos;re fixing the {locale === "en" ? "English" : "French"} translation. It&apos;s made from the Indonesian
-            automatically, so only change it if it&apos;s wrong. Your fix stays until that Indonesian text changes.
+            Anda sedang memperbaiki terjemahan bahasa {locale === "en" ? "Inggris" : "Prancis"}. Terjemahan ini dibuat otomatis
+            dari bahasa Indonesia, jadi ubah hanya kalau salah. Perbaikan Anda tetap dipakai sampai teks Indonesianya berubah.
           </>
         )}
       </p>
@@ -167,17 +327,17 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
       {search ? (
         <div className="flex items-center gap-2 text-sm">
           <span>
-            Showing text with <strong>“{query.trim()}”</strong> on every page.
+            Menampilkan teks berisi <strong>“{query.trim()}”</strong> di semua halaman.
           </span>
           <Button type="button" variant="ghost" size="sm" onClick={() => setQuery("")}>
             <X />
-            Clear
+            Hapus pencarian
           </Button>
         </div>
       ) : (
         <div
           role="tablist"
-          aria-label="Part of the website"
+          aria-label="Bagian website"
           className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
         >
           {textPages.map((candidate) => (
@@ -199,7 +359,7 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
       )}
 
       {shown.length === 0 ? (
-        <p className="rounded-xl border px-4 py-10 text-center text-sm text-muted-foreground">No text found with “{query.trim()}”.</p>
+        <p className="rounded-xl border px-4 py-10 text-center text-sm text-muted-foreground">Tidak ada teks berisi “{query.trim()}”.</p>
       ) : (
         shown.map(({ section, fields: sectionFields }) => (
           <section key={section.key} className="rounded-xl border">
@@ -241,21 +401,21 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
         <div className="flex items-center justify-end gap-2">
           <span className="mr-auto min-w-0 text-sm text-muted-foreground">
             {unsaved.length === 0 ? (
-              "No changes"
+              "Belum ada perubahan"
             ) : (
               <>
-                {unsaved.length} change{unsaved.length === 1 ? "" : "s"}
-                <span className="hidden sm:inline"> not saved yet</span>
+                {unsaved.length} perubahan
+                <span className="hidden sm:inline"> belum disimpan</span>
               </>
             )}
           </span>
           {unsaved.length > 0 ? (
             <Button type="button" variant="ghost" onClick={discard} disabled={pending}>
-              Undo<span className="hidden sm:inline"> changes</span>
+              Batalkan<span className="hidden sm:inline"> perubahan</span>
             </Button>
           ) : null}
           <Button type="submit" disabled={pending || unsaved.length === 0}>
-            {pending ? "Saving…" : "Save"}
+            {pending ? "Menyimpan…" : "Simpan"}
           </Button>
         </div>
       </div>
@@ -280,7 +440,7 @@ function TextRow({ field, value, unsaved, error, onChange }: TextRowProps) {
         <Label htmlFor={id} className="text-[13px]">
           {fieldLabel(field.key)}
         </Label>
-        {unsaved ? <span className="rounded bg-amber-100 px-1.5 text-[11px] text-amber-900">Not saved yet</span> : null}
+        {unsaved ? <span className="rounded bg-amber-100 px-1.5 text-[11px] text-amber-900">Belum disimpan</span> : null}
         {value !== field.original ? (
           <button
             type="button"
@@ -288,7 +448,7 @@ function TextRow({ field, value, unsaved, error, onChange }: TextRowProps) {
             className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="size-3" />
-            Back to original
+            Kembalikan teks asli
           </button>
         ) : null}
       </div>
@@ -305,7 +465,7 @@ function TextRow({ field, value, unsaved, error, onChange }: TextRowProps) {
           {error}
         </p>
       ) : field.indonesian ? (
-        <p className="text-xs text-muted-foreground">From the Indonesian: {field.indonesian}</p>
+        <p className="text-xs text-muted-foreground">Dari bahasa Indonesia: {field.indonesian}</p>
       ) : null}
     </div>
   );

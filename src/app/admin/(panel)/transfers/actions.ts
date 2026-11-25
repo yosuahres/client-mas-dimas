@@ -25,10 +25,10 @@ export async function savePlace(originalId: string | null, formData: FormData): 
     originalId === null
       ? await supabase.from(tables.places).insert({ ...row, position: await nextPosition(tables.places) })
       : await supabase.from(tables.places).update(row).eq("id", originalId);
-  if (error) return databaseFailure(error, "place");
+  if (error) return databaseFailure(error, "tempat");
 
   contentChanged(contentTags.places, contentTags.routes);
-  return { ok: true, message: savedMessage(originalId === null ? "Place added." : "Place saved.", [name.problem]) };
+  return { ok: true, message: savedMessage(originalId === null ? "Tempat ditambahkan." : "Tempat disimpan.", [name.problem]) };
 }
 
 export async function addRoute(formData: FormData): Promise<ActionResult> {
@@ -41,9 +41,9 @@ export async function addRoute(formData: FormData): Promise<ActionResult> {
     to_place: parsed.data.to,
     position: await nextPosition(tables.routes),
   });
-  if (error?.code === "23505") return failure("That route is already in the list.");
-  if (error) return databaseFailure(error, "route");
+  if (error?.code === "23505") return failure("Rute itu sudah ada di daftar.");
+  if (error) return databaseFailure(error, "rute");
 
   contentChanged(contentTags.routes);
-  return { ok: true, message: "Route added." };
+  return { ok: true, message: "Rute ditambahkan." };
 }

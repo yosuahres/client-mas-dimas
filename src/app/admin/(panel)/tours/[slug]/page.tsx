@@ -7,7 +7,7 @@ import { adminTour } from "@/lib/admin/queries";
 import { photoUrl } from "@/lib/photos";
 import { translateFields } from "@/lib/content/translate";
 
-export const metadata: Metadata = { title: "Edit package" };
+export const metadata: Metadata = { title: "Ubah paket" };
 
 export default async function EditTourPage({ params }: PageProps<"/admin/tours/[slug]">) {
   const { slug } = await params;
@@ -16,7 +16,7 @@ export default async function EditTourPage({ params }: PageProps<"/admin/tours/[
 
   return (
     <>
-      <PageHeader title={translateFields(tour.text, "id").name} parent={{ href: "/admin/tours", title: "Tour packages" }} />
+      <PageHeader title={translateFields(tour.text, "id").name} parent={{ href: "/admin/tours", title: "Paket tour" }} />
       <PageBody>
         {/* Keyed so the form starts fresh after a save that renames the package */}
         <TourForm key={tour.slug} tour={tour} photoPreview={photoUrl(tour.photo)} />

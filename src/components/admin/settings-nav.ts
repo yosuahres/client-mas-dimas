@@ -23,12 +23,12 @@ export const LAST_PANEL_PATH_KEY = "lastAdminPath";
 // The settings area's own sidebar, and the heading of each of its pages.
 export const settingsGroups: SettingsGroup[] = [
   {
-    title: "My account",
+    title: "Akun saya",
     pages: [
       {
         href: "/admin/settings/account",
-        title: "Account",
-        description: "Your sign-in email and password.",
+        title: "Akun",
+        description: "Email dan kata sandi untuk masuk.",
         icon: KeyRound,
       },
     ],
@@ -38,14 +38,14 @@ export const settingsGroups: SettingsGroup[] = [
     pages: [
       {
         href: "/admin/settings/business",
-        title: "Business details",
-        description: "Contact details, links and the exchange rate used across the website.",
+        title: "Data usaha",
+        description: "Kontak, link, dan kurs yang dipakai di seluruh website.",
         icon: SlidersHorizontal,
       },
       {
         href: "/admin/settings/users",
-        title: "Admin users",
-        description: "Everyone who can sign in to this admin panel.",
+        title: "Pengguna admin",
+        description: "Semua orang yang bisa masuk ke panel admin ini.",
         icon: Users,
       },
     ],

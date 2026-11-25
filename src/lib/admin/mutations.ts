@@ -36,7 +36,7 @@ export async function discardPhoto(photo: string | null) {
 export async function lastShownTourProblem(slug: string): Promise<string | null> {
   const { supabase } = await requireAdmin();
   const { count } = await supabase.from(tables.tours).select("slug", { count: "exact", head: true }).eq("published", true).neq("slug", slug);
-  return count === 0 ? "The website needs at least one package shown. Show another package first." : null;
+  return count === 0 ? "Website butuh minimal satu paket yang tampil. Tampilkan paket lain dulu." : null;
 }
 
 /** Would hiding, deleting or taking transfers off this car leave no car to price transfers with? */
@@ -48,5 +48,5 @@ export async function lastTransferCarProblem(id: string): Promise<string | null>
     .eq("published", true)
     .not("transfer_base_idr", "is", null)
     .neq("id", id);
-  return count === 0 ? "The website needs at least one shown car offered for transfers. Set up another car first." : null;
+  return count === 0 ? "Website butuh minimal satu mobil tampil yang melayani antar jemput. Atur mobil lain dulu." : null;
 }

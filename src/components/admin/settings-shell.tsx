@@ -92,10 +92,10 @@ function SettingsSidebar() {
         <SidebarMenu>
           <SidebarSeparator className="mx-0" />
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="sm" tooltip="Back to admin" className="pl-1 max-md:h-10">
+            <SidebarMenuButton asChild size="sm" tooltip="Kembali ke admin" className="pl-1 max-md:h-10">
               <Link href={backHref} onClick={closeMobileSidebar}>
                 <ChevronLeft />
-                <span className="text-[13px] font-medium">Back to admin</span>
+                <span className="text-[13px] font-medium">Kembali ke admin</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -113,7 +113,7 @@ export function SettingsShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const page = settingsPages.find((candidate) => candidate.href === pathname);
   const Icon = page?.icon ?? Settings;
-  const title = page?.title ?? "Settings";
+  const title = page?.title ?? "Pengaturan";
 
   return (
     <SidebarProvider className="h-svh overflow-hidden">

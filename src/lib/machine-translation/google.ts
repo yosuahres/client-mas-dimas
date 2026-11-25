@@ -20,7 +20,7 @@ export function isTranslationConfigured() {
 export async function translateFromIndonesian(texts: string[], target: TranslationTarget): Promise<string[]> {
   if (texts.length === 0) return [];
   const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
-  if (!apiKey) throw new Error("automatic translation isn't set up yet (GOOGLE_TRANSLATE_API_KEY is missing on the server)");
+  if (!apiKey) throw new Error("terjemahan otomatis belum disiapkan (GOOGLE_TRANSLATE_API_KEY belum ada di server)");
 
   const translated: string[] = [];
   for (let start = 0; start < texts.length; start += BATCH_SIZE) {
@@ -32,13 +32,13 @@ export async function translateFromIndonesian(texts: string[], target: Translati
     });
     if (!response.ok) {
       const body = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
-      throw new Error(`Google Translate refused the request (${response.status}${body?.error?.message ? `: ${body.error.message}` : ""})`);
+      throw new Error(`Google Translate menolak permintaan (${response.status}${body?.error?.message ? `: ${body.error.message}` : ""})`);
     }
     const { data } = (await response.json()) as { data: { translations: { translatedText: string }[] } };
     translated.push(...data.translations.map((translation) => fromTranslatedHtml(translation.translatedText)));
   }
 
   const broken = texts.findIndex((text, index) => placeholdersOf(text) !== placeholdersOf(translated[index]));
-  if (broken !== -1) throw new Error(`the translation lost a word in curly brackets in "${texts[broken]}"`);
+  if (broken !== -1) throw new Error(`hasil terjemahan kehilangan kata dalam kurung kurawal di "${texts[broken]}"`);
   return translated;
 }

@@ -15,12 +15,12 @@ export type PhotoUpload = { ok: true; key: string; uploadUrl: string; previewUrl
  */
 export async function requestPhotoUpload(folder: PhotoFolder): Promise<PhotoUpload> {
   const { supabase } = await requireAdmin();
-  if (!folders.includes(folder)) return { ok: false, error: "Unknown photo folder." };
+  if (!folders.includes(folder)) return { ok: false, error: "Folder foto tidak dikenal." };
   const key = `${folder}/${crypto.randomUUID()}.webp`;
   const { data, error } = await supabase.storage.from(PHOTO_BUCKET).createSignedUploadUrl(key);
   if (error) {
     console.error(`Couldn't sign an upload to the "${PHOTO_BUCKET}" bucket.`, error);
-    return { ok: false, error: "Photo uploads aren't set up yet: run the photos bucket migration in Supabase." };
+    return { ok: false, error: "Unggah foto belum disiapkan: jalankan migrasi bucket foto di Supabase." };
   }
   return { ok: true, key, uploadUrl: data.signedUrl, previewUrl: photoUrl(key)! };
 }

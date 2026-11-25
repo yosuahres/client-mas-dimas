@@ -132,10 +132,10 @@ export function SwitchField({ name, label, hint, defaultChecked, onCheckedChange
 
 // The client writes in Indonesian; English and French are translated from it on save.
 const tabOrder: Locale[] = ["id", "en", "fr"];
-const localeLabels: Record<Locale, string> = { id: "Indonesia", en: "English", fr: "Français" };
+const localeLabels: Record<Locale, string> = { id: "Indonesia", en: "Inggris", fr: "Prancis" };
 
 /** Placeholder for an empty English or French field. */
-export const autoTranslatedPlaceholder = "Translated from the Indonesian when you save";
+export const autoTranslatedPlaceholder = "Diterjemahkan dari bahasa Indonesia saat disimpan";
 
 /**
  * One tab per language for translated fields, Indonesian first. Every tab stays in the page (hidden, not
@@ -152,19 +152,19 @@ export function LocaleTabs({ errors, prefixes, children }: { errors: FieldErrors
           {tabOrder.map((locale) => (
             <TabsTrigger key={locale} value={locale} className="flex-1 gap-1.5 text-[13px] sm:flex-none">
               {localeLabels[locale]}
-              {locale === "id" ? null : <span className="hidden text-[10px] font-normal text-muted-foreground sm:inline">auto</span>}
-              {hasError(locale) ? <span aria-label="has errors" className="size-1.5 rounded-full bg-destructive" /> : null}
+              {locale === "id" ? null : <span className="hidden text-[10px] font-normal text-muted-foreground sm:inline">otomatis</span>}
+              {hasError(locale) ? <span aria-label="ada kesalahan" className="size-1.5 rounded-full bg-destructive" /> : null}
             </TabsTrigger>
           ))}
         </TabsList>
-        <p className="text-xs text-muted-foreground">Write in Indonesian. English and French are translated when you save.</p>
+        <p className="text-xs text-muted-foreground">Tulis dalam bahasa Indonesia. Bahasa Inggris dan Prancis diterjemahkan saat disimpan.</p>
       </div>
       {tabOrder.map((locale) => (
         <TabsContent key={locale} value={locale} forceMount className="mt-4 data-[state=inactive]:hidden">
           {locale === "id" ? null : (
             <p className="mb-4 rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-              Translated automatically from the Indonesian each time it changes. Edit here only to correct the translation;
-              your correction stays until the Indonesian changes again.
+              Diterjemahkan otomatis dari bahasa Indonesia setiap kali teksnya berubah. Ubah di sini hanya untuk memperbaiki
+              terjemahan; perbaikan Anda tetap dipakai sampai teks Indonesianya berubah lagi.
             </p>
           )}
           {children(locale)}
@@ -193,7 +193,7 @@ export function FormSection({ title, description, children }: { title: string; d
  */
 export function SaveBar({
   pending,
-  label = "Save changes",
+  label = "Simpan perubahan",
   className,
   children,
 }: {
@@ -211,7 +211,7 @@ export function SaveBar({
     >
       {children}
       <Button type="submit" disabled={pending}>
-        {pending ? "Saving…" : label}
+        {pending ? "Menyimpan…" : label}
       </Button>
     </div>
   );

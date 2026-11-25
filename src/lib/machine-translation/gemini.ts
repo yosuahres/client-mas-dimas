@@ -39,15 +39,15 @@ export function isGeminiConfigured() {
 export async function translateWithGemini(texts: string[], target: Target): Promise<string[]> {
   if (texts.length === 0) return [];
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("automatic translation isn't set up yet (GEMINI_API_KEY is missing on the server)");
+  if (!apiKey) throw new Error("terjemahan otomatis belum disiapkan (GEMINI_API_KEY belum ada di server)");
 
   const translated: string[] = [];
   for (const batch of batches(texts)) translated.push(...(await translateBatch(batch, target, apiKey)));
 
   const broken = texts.findIndex((text, index) => placeholdersOf(text) !== placeholdersOf(translated[index]));
-  if (broken !== -1) throw new Error(`the translation lost a word in curly brackets in "${texts[broken]}"`);
+  if (broken !== -1) throw new Error(`hasil terjemahan kehilangan kata dalam kurung kurawal di "${texts[broken]}"`);
   const merged = texts.findIndex((text, index) => lineCount(text) !== lineCount(translated[index]));
-  if (merged !== -1) throw new Error(`the translation changed the lines of "${texts[merged].split("\n")[0]}…", try saving again`);
+  if (merged !== -1) throw new Error(`hasil terjemahan mengubah baris "${texts[merged].split("\n")[0]}…", coba simpan lagi`);
   return translated;
 }
 
@@ -94,21 +94,21 @@ async function translateBatch(texts: string[], target: Target, apiKey: string): 
   const body = (await response.json().catch(() => null)) as GeminiResponse | null;
   if (!response.ok) {
     if (response.status === 429) {
-      throw new Error("Gemini's free limit was reached (too many saves in a minute, or the day's limit). Try again in a minute; the daily limit resets at 15:00 WIB");
+      throw new Error("batas gratis Gemini tercapai (terlalu banyak simpan dalam semenit, atau batas harian). Coba lagi semenit lagi; batas harian direset pukul 15.00 WIB");
     }
-    throw new Error(`Gemini refused the request (${response.status}${body?.error?.message ? `: ${body.error.message}` : ""})`);
+    throw new Error(`Gemini menolak permintaan (${response.status}${body?.error?.message ? `: ${body.error.message}` : ""})`);
   }
 
   const candidate = body?.candidates?.[0];
   const answer = candidate?.content?.parts?.map((part) => part.text ?? "").join("") ?? "";
   if (!answer) {
     const reason = body?.promptFeedback?.blockReason ?? candidate?.finishReason ?? "empty answer";
-    throw new Error(`Gemini didn't translate the text (${reason})`);
+    throw new Error(`Gemini tidak menerjemahkan teksnya (${reason})`);
   }
 
   const translations = parseTranslations(answer);
   if (!translations || translations.length !== texts.length) {
-    throw new Error("Gemini's answer didn't match the text that was sent, try saving again");
+    throw new Error("jawaban Gemini tidak cocok dengan teks yang dikirim, coba simpan lagi");
   }
   return translations.map((text) => text.replaceAll("\r\n", "\n").trim());
 }
