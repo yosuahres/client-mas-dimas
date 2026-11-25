@@ -2,7 +2,7 @@
 
 The admin panel lives at `/admin`. Everything a guest reads can be changed there: tour packages and their photos, the photos on the home page, cars and prices, transfer places and popular routes, reviews, the questions page, contact details, and every heading and sentence on the site.
 
-The client writes in **Indonesian only**. When they save, English and French are translated automatically with Gemini (Google AI Studio, free), with Google Cloud Translation as an optional fallback.
+The admin itself is in **Indonesian** and is laid out for a phone, which is where the client does most of the editing (see [Using the admin](#using-the-admin)). The client writes content in **Indonesian only**. When they save, English and French are translated automatically with Gemini (Google AI Studio, free), with Google Cloud Translation as an optional fallback.
 
 Content, admin logins and photos are all stored in **Supabase** (database, Auth and Storage). See `docs/costs.md` for what each costs. Until Supabase is connected, the website shows the content it launched with and `/admin` shows the setup steps.
 
@@ -32,7 +32,7 @@ Content, admin logins and photos are all stored in **Supabase** (database, Auth 
    where email = 'yarkasi@jogja-transport.com';
    ```
 
-3. Sign in at `/admin/login`. Further admins can be added from **Settings → Admin users**.
+3. Sign in at `/admin/login`. Further admins can be added from **Pengaturan → Pengguna admin** (Settings → Admin users).
 
 Only accounts with that role can sign in, and the database checks the same role before any change, so a leaked publishable key can't be used to edit the site.
 
@@ -54,7 +54,7 @@ The free plan holds 1 GB of files and about 5 GB of downloads a month (see `docs
 
 Limits: the free tier allows a number of requests per minute and per day (AI Studio shows the project's current numbers under its rate-limit page). The daily count resets at midnight Pacific time, 15:00 WIB in winter (14:00 WIB in summer). A save is about one request per language, so normal editing stays far below it. Text sent on the free tier may be used by Google to improve its models; it's public website text, so that's fine, but never paste customer details into the admin text fields.
 
-The model is `gemini-3.5-flash-lite`. If Google retires it or takes it off the free tier (saves then say "Gemini refused the request (404 …)"), set `GEMINI_MODEL` to a current Flash-Lite id from ai.google.dev/gemini-api/docs/models.
+The model is `gemini-3.5-flash-lite`. If Google retires it or takes it off the free tier (saves then say "Gemini menolak permintaan (404 …)"), set `GEMINI_MODEL` to a current Flash-Lite id from ai.google.dev/gemini-api/docs/models.
 
 ### Google Cloud Translation (optional fallback, needs billing)
 
@@ -68,15 +68,15 @@ Only if the client is ever fine with a card on file. With both keys set, Google 
 
 How it works for the client:
 
-- Every form opens on the **Indonesia** tab. The English and French tabs are marked "auto".
-- On save, a field's English and French are translated when its Indonesian changed, or when they're empty. A translation corrected by hand on the English or French tab stays until that Indonesian text changes again.
+- Every form opens on the **Indonesia** tab. The **Inggris** (English) and **Prancis** (French) tabs are marked "otomatis" (the label is hidden on phones).
+- On save, a field's English and French are translated when its Indonesian changed, or when they're empty. A translation corrected by hand on the Inggris or Prancis tab stays until that Indonesian text changes again.
 - Words in curly brackets like `{price}` are protected from translation.
-- If translation fails (no key, free limit reached, Gemini down), the Indonesian still saves and a notice says English and French weren't updated. A brand-new item can't be saved without English, since it's the language the site falls back to: try again later or type the English.
-- In **Website text**, saving the Indonesian also updates English and French; "Back to original" on the Indonesian puts all three back.
+- If translation fails (no key, free limit reached, Gemini down), the Indonesian still saves and a notice says English and French weren't updated ("Bahasa Inggris dan Prancis tidak diperbarui: …"). A brand-new item can't be saved without English, since it's the language the site falls back to: try again later or type the English on the Inggris tab.
+- In **Teks website** (Website text), saving the Indonesian also updates English and French; **Kembalikan teks asli** (back to original) on the Indonesian puts all three back.
 
 ## 4. Google reviews (optional)
 
-The home page can show the business's live Google rating, review count and its best recent reviews, straight from its Google Maps listing. Without this, it shows the rating typed in **Settings → Business** and the quotes from **Reviews** in the admin.
+The home page can show the business's live Google rating, review count and its best recent reviews, straight from its Google Maps listing. Without this, it shows the rating typed in **Pengaturan → Data usaha** (Settings → Business details) and the quotes from **Ulasan** (Reviews) in the admin.
 
 1. At console.cloud.google.com, in a project with billing on (the Gemini project from step 3 works once billing is turned on, but then Gemini is no longer on the free tier, so a separate project is safer), **APIs & Services → Library**: enable **Places API (New)**.
 2. **Credentials → Create credentials → API key**. Restrict it to **Places API (New)** and copy it into `GOOGLE_PLACES_API_KEY`. (A separate key from translation, so each can be turned off on its own.)
@@ -93,6 +93,38 @@ How it behaves:
 
 Copy `.env.example` to `.env.local` for development. In production, enter the same names in **cPanel → Setup Node.js App → Environment variables**, then restart the app. `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are read at build time too, so set them where the site is built (GitHub Actions secrets, or your machine) as well.
 
+## Using the admin
+
+### In Indonesian
+
+Everything in the admin is written in Indonesian: the menu, forms, hints, validation errors, save messages and the login page. There's no language switch. The menu, with the English names this guide also uses:
+
+| Menu | Means | Path |
+| --- | --- | --- |
+| Dasbor | Dashboard: counts and a setup checklist | `/admin` |
+| Paket tour | Tour packages | `/admin/tours` |
+| Ulasan | Reviews | `/admin/reviews` |
+| Pertanyaan | Questions (FAQ) | `/admin/faq` |
+| Teks website | Website text | `/admin/text` |
+| Foto beranda | Home page photos | `/admin/home-photos` |
+| Mobil & harga | Cars & prices | `/admin/fleet` |
+| Tempat & rute | Places & routes | `/admin/transfers` |
+| Pengaturan | Settings: Akun (account and password), Data usaha (business details), Pengguna admin (admin users) | `/admin/settings/…` |
+
+The admin uses the website's own Indonesian terms, so the client sees one vocabulary in both: Transport saja / Termasuk akomodasi, Titik antar (drop-off), "5 kursi" for seat groups, sopir, BBM, antar jemput, and "Hubungi kami" where a package has no price. Write any new admin text in Indonesian with these terms.
+
+### On a phone
+
+Below 768 px wide:
+
+- The menu opens from the button at the top left of every page.
+- In lists, tapping a row opens it for editing. The switch shows or hides the item on the website, and the **⋯** button opens a sheet from the bottom with Ubah (edit), Naikkan / Turunkan (move up / down), Pindah ke paling atas / bawah (move to the top / bottom) and Hapus (delete). The sheet stays open while moving, so an item can be moved several places in a row.
+- Add and edit forms (cars, places, reviews, questions) fill the screen, with the title at the top and Batal / Simpan (cancel / save) pinned at the bottom while the fields scroll.
+- Fields, buttons and switches are at least 40 px tall, and save messages appear at the top so they don't cover the Save button.
+- Photos can be taken or picked straight from the phone; they're shrunk before upload (see [Photos](#2-photos-supabase-storage)).
+
+On a computer the same pages show the full layout: arrows to reorder, and edit and delete buttons on each row.
+
 ## How changes reach the website
 
 Saving in the admin updates the website straight away: each save expires the cached copy of what it changed. Edits made directly in the Supabase dashboard show within an hour.
@@ -103,7 +135,7 @@ New packages get their page on first visit. Renaming a package's short name chan
 
 - The website needs at least one shown package and one shown car with a transfer price, so the admin won't hide or delete the last one.
 - Indonesian is required everywhere; English is filled by translation, and an empty French field shows the English.
-- In **Website text**, words in curly brackets such as `{price}` are filled in by the site; the editor refuses a save that drops or renames them. "Back to original" puts back the text from `src/i18n/dictionaries`.
+- In **Teks website**, words in curly brackets such as `{price}` are filled in by the site; the editor refuses a save that drops or renames them. **Kembalikan teks asli** puts back the text from `src/i18n/dictionaries`.
 
 ## Backups
 
@@ -113,5 +145,5 @@ The Supabase free plan has no backups and pauses after 7 days without activity. 
 
 - Schema: `supabase/migrations/`. Seed: `node scripts/generate-seed.ts > supabase/seed.sql`, generated from `src/lib/content/defaults.ts` (also the fallback before Supabase is connected).
 - Public reads: `src/lib/content/public.ts` (cached with `use cache`, tagged per table in `src/lib/content/store.ts`).
-- Admin: `src/app/admin/`. Server actions validate with `src/lib/admin/schemas.ts`, write as the signed-in admin (row-level security applies), then call `contentChanged()` to expire the tags.
+- Admin: `src/app/admin/`, with shared parts in `src/components/admin/` and the shadcn primitives in `src/components/ui/` (used only by the admin). Its Indonesian text is written straight into these files and into the messages in `src/lib/admin/` (no dictionary); field labels on Teks website come from the `names` map in `src/app/admin/(panel)/text/text-form.tsx`. Check new screens at 375 px. Server actions validate with `src/lib/admin/schemas.ts`, write as the signed-in admin (row-level security applies), then call `contentChanged()` to expire the tags.
 - Page text edits are stored as dotted paths (`hero.title`) in `page_text` and laid over the dictionaries by `getDictionary()`. Removing a key from the dictionaries simply ignores old edits to it.
