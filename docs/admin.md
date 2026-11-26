@@ -162,15 +162,17 @@ The Supabase free plan has no backups and pauses after 7 days without activity. 
 
 ## Before handover: try it with the client
 
-Give the client their phone, signed in to `/admin`, and these five jobs without explaining anything first. Change things back afterwards.
+Give the client their phone, signed in and on the dashboard (`/admin`), and these five jobs without explaining anything first. Change things back afterwards.
 
 1. Change a package's price (**Paket tour**).
 2. Hide a package from the website, then show it again.
 3. Add a place from a link copied in the Google Maps app (**Tempat & rute → Tambah tempat**).
-4. Change a sentence on the home page (**Teks website**, tab **Beranda**), then check it with **Lihat**.
+4. Change a sentence on the home page (**Teks website**, tab **Beranda**, then the section it's in), and check it with **Lihat**.
 5. Change a car's per-km rate (**Mobil & harga**) and look at the example prices.
 
-Note where they hesitate, tap the wrong thing or ask what something means; those are the next things to fix.
+Note where they hesitate, tap the wrong thing or ask what something means; those are the next things to fix. Also note whether they start from **Mau mengubah apa?** on the dashboard or from the menu: if nobody uses the list, it can go.
+
+Afterwards, tell them the one rule the screens can't show on their own: an empty price on a package shows "Hubungi kami" on the website, so clearing a price by mistake doesn't give an error. The **Yang dilihat tamu** box under the prices shows it before saving.
 
 Job 3 is the first real test of short `maps.app.goo.gl` links, which couldn't be tried during development. If the place won't save, note the link and the message shown, and use the numbers from a long press in the meantime (`-7.7956, 110.3695`).
 
