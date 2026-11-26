@@ -157,6 +157,20 @@ New packages get their page on first visit. Web addresses and ids are made from 
 
 The Supabase free plan has no backups and pauses after 7 days without activity. Set up the weekly `pg_dump` and daily ping described in `docs/costs.md` before handover.
 
+## Before handover: try it with the client
+
+Give the client their phone, signed in to `/admin`, and these five jobs without explaining anything first. Change things back afterwards.
+
+1. Change a package's price (**Paket tour**).
+2. Hide a package from the website, then show it again.
+3. Add a place from a link copied in the Google Maps app (**Tempat & rute → Tambah tempat**).
+4. Change a sentence on the home page (**Teks website**, tab **Beranda**), then check it with **Lihat**.
+5. Change a car's per-km rate (**Mobil & harga**) and look at the example prices.
+
+Note where they hesitate, tap the wrong thing or ask what something means; those are the next things to fix.
+
+Job 3 is the first real test of short `maps.app.goo.gl` links, which couldn't be tried during development. If the place won't save, note the link and the message shown, and use the numbers from a long press in the meantime (`-7.7956, 110.3695`).
+
 ## For developers
 
 - Schema: `supabase/migrations/`. Seed: `node scripts/generate-seed.ts > supabase/seed.sql`, generated from `src/lib/content/defaults.ts` (also the fallback before Supabase is connected).
