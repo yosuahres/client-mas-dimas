@@ -21,6 +21,34 @@ export async function nextPosition(table: string) {
   return ((data?.[0] as { position: number } | undefined)?.position ?? -1) + 1;
 }
 
+/** "Toyota Avanza" → "toyota-avanza": lowercase letters, digits and single dashes, accents dropped. */
+function webName(name: string) {
+  return name
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+    .replace(/-+$/g, "");
+}
+
+/**
+ * A new item's key (a package's slug, a car's or place's id), made from its name so the client never has to
+ * invent one. Taken keys get "-2", "-3"… Keys never change after that: links and routes point at them.
+ */
+export async function newKey(table: string, column: "slug" | "id", name: string, fallback: string) {
+  const { supabase } = await requireAdmin();
+  const base = webName(name) || fallback;
+  const { data } = await supabase.from(table).select(column).like(column, `${base}%`);
+  const taken = new Set((data ?? []).map((row) => (row as Record<string, string>)[column]));
+  if (!taken.has(base)) return base;
+  let suffix = 2;
+  while (taken.has(`${base}-${suffix}`)) suffix += 1;
+  return `${base}-${suffix}`;
+}
+
 /** Removes a photo that's no longer used, if it was uploaded from the admin. A failure only leaves an unused file behind. */
 export async function discardPhoto(photo: string | null) {
   if (!photo || isBundledPhoto(photo)) return;

@@ -38,16 +38,20 @@ export default async function DashboardPage() {
   const untranslated = tours.filter((tour) => !tour.text.id || !tour.text.fr);
   const sampleReviews = reviews.filter((review) => review.guestName === "Sample guest" && review.published);
 
-  const checks = [
+  // Written for the client. Server setup gets a plain sentence to pass on, and the technical name only in small print
+  // for whoever sets up the server.
+  const checks: { ok: boolean; good: string; bad: string; forDeveloper?: string }[] = [
     {
       ok: isTranslationConfigured(),
       good: "Bahasa Inggris dan Prancis diterjemahkan otomatis dari bahasa Indonesia.",
-      bad: "Terjemahan otomatis belum disiapkan: tambahkan GEMINI_API_KEY di server (lihat docs/admin.md).",
+      bad: "Terjemahan otomatis belum aktif, jadi teks Inggris dan Prancis harus diisi sendiri. Minta pembuat website mengaktifkannya.",
+      forDeveloper: "GEMINI_API_KEY, lihat docs/admin.md",
     },
     {
       ok: Boolean(process.env.SUPABASE_SECRET_KEY),
-      good: "Pengguna admin bisa dikelola di sini.",
-      bad: "Tambahkan SUPABASE_SECRET_KEY di server supaya pengguna admin bisa dikelola di sini.",
+      good: "Admin lain bisa ditambahkan di Pengaturan → Pengguna admin.",
+      bad: "Menambah admin lain dari sini belum bisa. Minta pembuat website mengaktifkannya.",
+      forDeveloper: "SUPABASE_SECRET_KEY, lihat docs/admin.md",
     },
     {
       ok: sampleReviews.length === 0,
@@ -106,7 +110,12 @@ export default async function DashboardPage() {
                 ) : (
                   <CircleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" />
                 )}
-                {check.ok ? check.good : check.bad}
+                <span>
+                  {check.ok ? check.good : check.bad}
+                  {!check.ok && check.forDeveloper ? (
+                    <span className="mt-0.5 block text-xs text-muted-foreground">Untuk pembuat website: {check.forDeveloper}</span>
+                  ) : null}
+                </span>
               </li>
             ))}
           </ul>

@@ -19,7 +19,7 @@ export function invalid(error: z.ZodError): ActionResult {
 
 /** Postgres errors in words the client can act on. */
 export function databaseFailure(error: { code?: string; message: string }, what: string): ActionResult {
-  if (error.code === "23505") return failure(`Sudah ada ${what} dengan nama pendek ini. Pakai nama pendek (URL) lain.`);
+  if (error.code === "23505") return failure(`Sudah ada ${what} dengan nama yang sama. Coba simpan sekali lagi.`);
   if (error.code === "42501") return failure("Akun Anda tidak diizinkan mengubah ini.");
   return failure(`Gagal menyimpan ${what}: ${error.message}`);
 }

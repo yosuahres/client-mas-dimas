@@ -12,8 +12,8 @@ export default async function UsersPage() {
   if (!process.env.SUPABASE_SECRET_KEY) {
     return (
       <p className="rounded-xl border px-4 py-6 text-sm text-muted-foreground">
-        Untuk mengelola admin, server perlu pengaturan <code className="rounded bg-muted px-1">SUPABASE_SECRET_KEY</code>.
-        Selama belum diisi, tambahkan admin lewat dashboard Supabase (lihat docs/admin.md).
+        Menambah admin lain dari sini belum bisa. Minta pembuat website mengaktifkannya.
+        <span className="mt-1 block text-xs">Untuk pembuat website: SUPABASE_SECRET_KEY, lihat docs/admin.md.</span>
       </p>
     );
   }

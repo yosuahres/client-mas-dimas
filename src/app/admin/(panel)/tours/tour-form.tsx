@@ -29,15 +29,8 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-6">
       <FormSection title="Paket" description="Cara paket ditampilkan dan difilter di halaman Tour.">
-        <div className="grid gap-4 sm:grid-cols-[6rem_1fr]">
-          <TextField name="code" label="Huruf" defaultValue={tour?.code} errors={errors} hint="Misalnya A" maxLength={4} />
-          <TextField
-            name="slug"
-            label="Nama pendek untuk alamat web"
-            defaultValue={tour?.slug}
-            errors={errors}
-            hint={`jogja-transport.com/en/tours/${tour?.slug ?? "borobudur-sunrise"}. Kalau diganti, link lama tidak bisa dibuka.`}
-          />
+        <div className="max-w-40">
+          <TextField name="code" label="Huruf paket" defaultValue={tour?.code} errors={errors} hint="Misalnya A atau P2" maxLength={4} />
         </div>
 
         <Field label="Lama perjalanan" error={errors.length}>

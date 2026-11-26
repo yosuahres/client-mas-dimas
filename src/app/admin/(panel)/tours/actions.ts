@@ -5,13 +5,13 @@ import { redirect } from "next/navigation";
 import { databaseFailure, failure, invalid, type ActionResult } from "@/lib/admin/action-result";
 import { savedMessage, translateDraft } from "@/lib/admin/auto-translate";
 import { formObject } from "@/lib/admin/form-data";
-import { contentChanged, discardPhoto, lastShownTourProblem, nextPosition } from "@/lib/admin/mutations";
+import { contentChanged, discardPhoto, lastShownTourProblem, newKey, nextPosition } from "@/lib/admin/mutations";
 import { completeTourText, tourInput } from "@/lib/admin/schemas";
 import { requireAdmin } from "@/lib/admin/session";
 import { tables, tourToRow, type TourRow } from "@/lib/content/rows";
 import { contentTags } from "@/lib/content/store";
 
-/** Creates a package (originalSlug null) or updates the one at originalSlug, which may get a new slug. */
+/** Creates a package (originalSlug null) or updates the one at originalSlug. A new package's slug comes from its English name. */
 export async function saveTour(originalSlug: string | null, formData: FormData): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   const parsed = tourInput.safeParse(formObject(formData));
@@ -25,7 +25,8 @@ export async function saveTour(originalSlug: string | null, formData: FormData):
 
   const text = await translateDraft(parsed.data.text, before?.text, completeTourText, "text");
   if (!text.ok) return text.result;
-  const tour = { ...parsed.data, text: text.value };
+  const slug = originalSlug ?? (await newKey(tables.tours, "slug", text.value.en.name || parsed.data.text.id.name, "paket"));
+  const tour = { ...parsed.data, slug, text: text.value };
 
   if (originalSlug === null || !before) {
     const position = await nextPosition(tables.tours);

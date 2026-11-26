@@ -129,7 +129,11 @@ On a computer the same pages show the full layout: arrows to reorder, and edit a
 
 Saving in the admin updates the website straight away: each save expires the cached copy of what it changed. Edits made directly in the Supabase dashboard show within an hour.
 
-New packages get their page on first visit. Renaming a package's short name changes its web address and breaks old links to it, so the editor warns about it.
+New packages get their page on first visit. Web addresses and ids are made from the name when a package, car or place is added (the package from its English name, e.g. `/en/tours/borobudur-sunrise`; a taken one gets `-2`). They never change afterwards, even when the item is renamed, so old links keep working. To change one, edit the `slug` or `id` in Supabase (a place's routes point at its id).
+
+A place's position is pasted as a Google Maps link (the app's **Bagikan → Salin link**) or as `lat, lng`. Short `maps.app.goo.gl` links are followed on the server to the full link, which holds the coordinates (`src/lib/admin/map-location.ts`). A link to a search with no pin is refused with a hint to long-press the spot instead. Positions outside Indonesia are refused, which catches swapped numbers.
+
+The car form shows live examples of what a guest pays: the first priced package at that car's tour price %, and the first two popular routes at its transfer rate, using the same functions as the site (`src/lib/pricing.ts`).
 
 ## Safety rails
 

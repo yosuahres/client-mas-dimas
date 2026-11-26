@@ -2,18 +2,19 @@
 
 import { databaseFailure, failure, invalid, type ActionResult } from "@/lib/admin/action-result";
 import { formObject } from "@/lib/admin/form-data";
-import { contentChanged, lastTransferCarProblem, nextPosition } from "@/lib/admin/mutations";
+import { contentChanged, lastTransferCarProblem, newKey, nextPosition } from "@/lib/admin/mutations";
 import { vehicleInput } from "@/lib/admin/schemas";
 import { requireAdmin } from "@/lib/admin/session";
 import { tables, vehicleToRow } from "@/lib/content/rows";
 import { contentTags } from "@/lib/content/store";
 
-/** Adds a car (originalId null) or updates the one at originalId. */
+/** Adds a car (originalId null; its id comes from its name) or updates the one at originalId. */
 export async function saveVehicle(originalId: string | null, formData: FormData): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   const parsed = vehicleInput.safeParse(formObject(formData));
   if (!parsed.success) return invalid(parsed.error);
-  const row = vehicleToRow(parsed.data);
+  const id = originalId ?? (await newKey(tables.vehicles, "id", parsed.data.name, "mobil"));
+  const row = vehicleToRow({ ...parsed.data, id });
   const stopsTransfers = !parsed.data.published || parsed.data.transferRate === null;
   const problem = originalId !== null && stopsTransfers ? await lastTransferCarProblem(originalId) : null;
   if (problem) return failure(problem);

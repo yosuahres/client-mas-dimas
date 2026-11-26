@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, MapPin, Plus } from "lucide-react";
 import { useState } from "react";
 
 import { addRoute, savePlace } from "@/app/admin/(panel)/transfers/actions";
@@ -134,7 +134,6 @@ function PlaceDialog({ place, onClose }: { place: PlaceRecord | null; onClose: (
       submitLabel={place ? "Simpan tempat" : "Tambah tempat"}
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField name="id" label="Nama pendek" placeholder="parangtritis" defaultValue={place?.id} errors={errors} hint="Huruf kecil, dipakai di link." />
         <SelectField
           name="kind"
           label="Kelompok"
@@ -142,12 +141,29 @@ function PlaceDialog({ place, onClose }: { place: PlaceRecord | null; onClose: (
           defaultValue={place?.kind ?? "around"}
           errors={errors}
         />
-        <TextField name="lat" label="Latitude" inputMode="decimal" placeholder="-7.7956" defaultValue={place?.lat} errors={errors} />
-        <TextField name="lng" label="Longitude" inputMode="decimal" placeholder="110.3695" defaultValue={place?.lng} errors={errors} />
-        <p className="text-xs text-muted-foreground sm:col-span-2">
-          Di Google Maps, klik kanan tempatnya lalu klik angka di paling atas untuk menyalinnya: angka pertama latitude, yang
-          kedua longitude. Di HP: tekan lama tempatnya, angkanya muncul di kolom pencarian.
-        </p>
+        <div className="grid gap-1.5 sm:col-span-2">
+          <TextField
+            name="location"
+            label="Lokasi di Google Maps"
+            inputMode="url"
+            autoComplete="off"
+            placeholder="https://maps.app.goo.gl/…"
+            defaultValue={place ? `${place.lat}, ${place.lng}` : ""}
+            errors={errors}
+            hint="Di aplikasi Google Maps, buka tempatnya, ketuk Bagikan, lalu Salin link dan tempel di sini. Angka posisi seperti -7.7956, 110.3695 juga bisa."
+          />
+          {place ? (
+            <a
+              href={`https://www.google.com/maps?q=${place.lat},${place.lng}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-10 w-fit items-center gap-1.5 text-xs font-medium text-primary underline-offset-4 hover:underline md:min-h-0"
+            >
+              <MapPin className="size-3.5" />
+              Lihat posisi yang tersimpan di Google Maps
+            </a>
+          ) : null}
+        </div>
       </div>
       <LocaleTabs errors={errors} prefixes={["name"]}>
         {(locale) => (

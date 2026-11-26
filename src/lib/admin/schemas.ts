@@ -4,13 +4,6 @@ import { z } from "zod";
 import { homePhotoSlots, placeKinds, seatClasses, tourInterests, tourLengths, type HomePhotoSlot } from "@/lib/content/schema";
 import type { Draft } from "@/lib/machine-translation/plan";
 
-export const slug = z
-  .string()
-  .trim()
-  .min(1, "Wajib diisi.")
-  .max(80, "Maksimal 80 karakter.")
-  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Pakai huruf kecil, angka, dan tanda strip, misalnya borobudur-sunrise.");
-
 /** A web link. z.url() alone also accepts "javascript:" and "data:", which must never reach an href. */
 const webUrl = (message: string) => z.httpUrl(message);
 
@@ -34,16 +27,6 @@ const rupiah = z.preprocess(
 );
 
 const positiveRupiah = rupiah.pipe(z.number().min(1, "Harus lebih dari 0."));
-
-const coordinate = (min: number, max: number) =>
-  z.preprocess(
-    (value) => (typeof value === "string" ? value.trim().replace(",", ".") : value),
-    z
-      .string()
-      .min(1, "Wajib diisi.")
-      .transform(Number)
-      .pipe(z.number("Isi dengan angka, misalnya -7.7956.").min(min, `Antara ${min} dan ${max}.`).max(max, `Antara ${min} dan ${max}.`)),
-  );
 
 /** An unchecked checkbox sends nothing; a checked one sends "on". */
 const checkbox = z.preprocess((value) => value === "on" || value === "true", z.boolean());
@@ -116,7 +99,6 @@ const optionalTourText = z.object({
 
 export const tourInput = z
   .object({
-    slug,
     code: z.string().trim().min(1, "Wajib diisi.").max(4, "Maksimal 4 karakter, misalnya A atau P2."),
     length: z.enum(tourLengths, "Pilih perjalanan sehari atau beberapa hari."),
     interests: z.array(z.enum(tourInterests)).optional().default([]),
@@ -172,7 +154,6 @@ export const tourInput = z
     const text = { ...input.text, id: { ...input.text.id, parts: kept.map((index) => names[index]) } };
     const credit = input.credit;
     return {
-      slug: input.slug,
       code: input.code.toUpperCase(),
       length: input.length,
       interests: input.interests,
@@ -189,7 +170,6 @@ export const tourInput = z
 
 export const vehicleInput = z
   .object({
-    id: slug,
     name: required,
     seatClass: z.enum(seatClasses, "Pilih kelompok kursi."),
     seats: required,
@@ -222,10 +202,9 @@ export const vehicleInput = z
   });
 
 export const placeInput = z.object({
-  id: slug,
   kind: z.enum(placeKinds, "Pilih kelompok."),
-  lat: coordinate(-90, 90),
-  lng: coordinate(-180, 180),
+  /** A Google Maps link or "lat, lng"; the save action turns it into coordinates (src/lib/admin/map-location.ts). */
+  location: z.string().trim().min(1, "Tempel link Google Maps tempat ini."),
   name: translatedText,
   published: checkbox,
 });

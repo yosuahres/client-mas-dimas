@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { saveVehicle } from "@/app/admin/(panel)/fleet/actions";
 import { SelectField, SwitchField, TextField } from "@/components/admin/form-fields";
@@ -11,10 +11,19 @@ import { useAdminForm } from "@/components/admin/use-admin-form";
 import { Button } from "@/components/ui/button";
 import { seatClasses, type SeatClass, type VehicleRecord } from "@/lib/content/schema";
 import { formatIdr } from "@/lib/money";
+import { cn } from "@/lib/utils";
+import { tourPriceInVehicle, transferFare } from "@/lib/pricing";
+
+export type PriceSamples = {
+  /** A package and its price for the cheapest car, or null when no package has a price. */
+  tour: { name: string; priceIdr: number } | null;
+  /** Popular routes with their estimated road distance. */
+  routes: { name: string; distanceKm: number }[];
+};
 
 const seatClassLabels: Record<SeatClass, string> = { five: "5 kursi", seven: "7 kursi", large: "Lebih dari 7 kursi" };
 
-export function FleetManager({ vehicles }: { vehicles: VehicleRecord[] }) {
+export function FleetManager({ vehicles, samples }: { vehicles: VehicleRecord[]; samples: PriceSamples }) {
   // null: closed; "new": adding; otherwise the id being edited.
   const [editing, setEditing] = useState<string | null>(null);
   const vehicle = vehicles.find((candidate) => candidate.id === editing) ?? null;
@@ -53,15 +62,35 @@ export function FleetManager({ vehicles }: { vehicles: VehicleRecord[] }) {
         }))}
       />
       {editing !== null ? (
-        <VehicleDialog key={editing} vehicle={vehicle} onClose={() => setEditing(null)} />
+        <VehicleDialog key={editing} vehicle={vehicle} samples={samples} onClose={() => setEditing(null)} />
       ) : null}
     </>
   );
 }
 
-function VehicleDialog({ vehicle, onClose }: { vehicle: VehicleRecord | null; onClose: () => void }) {
+/** A typed rupiah or percent ("550.000", "Rp 550,000"), or null while it's empty. */
+function typedNumber(value: string): number | null {
+  const digits = value.replace(/\D/g, "");
+  return digits ? Number(digits) : null;
+}
+
+function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord | null; samples: PriceSamples; onClose: () => void }) {
   const { onSubmit, pending, fieldErrors: errors } = useAdminForm(saveVehicle.bind(null, vehicle?.id ?? null), { onSuccess: onClose });
   const [offersTransfers, setOffersTransfers] = useState(vehicle ? vehicle.transferRate !== null : true);
+  // Typed values, read live for the price examples.
+  const [percent, setPercent] = useState(String(vehicle?.tourPricePercent ?? 100));
+  const [rate, setRate] = useState({
+    baseIdr: String(vehicle?.transferRate?.baseIdr ?? ""),
+    perKmIdr: String(vehicle?.transferRate?.perKmIdr ?? ""),
+    minimumIdr: String(vehicle?.transferRate?.minimumIdr ?? ""),
+  });
+
+  const percentValue = typedNumber(percent);
+  const tourExample =
+    samples.tour && percentValue ? tourPriceInVehicle(samples.tour.priceIdr, { tourPricePercent: percentValue }) : null;
+  const perKm = typedNumber(rate.perKmIdr);
+  const fareRate = perKm ? { baseIdr: typedNumber(rate.baseIdr) ?? 0, perKmIdr: perKm, minimumIdr: typedNumber(rate.minimumIdr) ?? 0 } : null;
+  const routes = samples.routes.length > 0 ? samples.routes : [{ name: "Perjalanan 20 km", distanceKm: 20 }];
 
   return (
     <RecordDialog
@@ -77,7 +106,6 @@ function VehicleDialog({ vehicle, onClose }: { vehicle: VehicleRecord | null; on
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField name="name" label="Nama" placeholder="Toyota Avanza" defaultValue={vehicle?.name} errors={errors} />
-        <TextField name="id" label="Nama pendek" placeholder="avanza" defaultValue={vehicle?.id} errors={errors} hint="Huruf kecil, dipakai di link." />
         <SelectField
           name="seatClass"
           label="Kelompok kursi"
@@ -103,15 +131,6 @@ function VehicleDialog({ vehicle, onClose }: { vehicle: VehicleRecord | null; on
           errors={errors}
           hint="Kalau membawa koper atau tas besar."
         />
-        <TextField
-          name="tourPricePercent"
-          label="Level harga paket (%)"
-          inputMode="numeric"
-          placeholder="100"
-          defaultValue={vehicle?.tourPricePercent ?? 100}
-          errors={errors}
-          hint="100 = harga yang tertulis di setiap paket. 150 = satu setengah kali harga itu untuk mobil ini."
-        />
         <TextField name="dayWithDriverIdr" label="Tarif harian dengan sopir" inputMode="numeric" defaultValue={vehicle?.dayWithDriverIdr} errors={errors} />
         <TextField
           name="dayWithDriverAndFuelIdr"
@@ -120,6 +139,30 @@ function VehicleDialog({ vehicle, onClose }: { vehicle: VehicleRecord | null; on
           defaultValue={vehicle?.dayWithDriverAndFuelIdr}
           errors={errors}
         />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <TextField
+          name="tourPricePercent"
+          label="Harga paket tour untuk mobil ini (%)"
+          inputMode="numeric"
+          placeholder="100"
+          value={percent}
+          onChange={(event) => setPercent(event.target.value)}
+          errors={errors}
+          hint="Harga di setiap paket berlaku untuk mobil termurah. 100 = sama, 150 = satu setengah kalinya."
+        />
+        <PriceExample title="Contoh harga paket untuk tamu">
+          {samples.tour ? (
+            <p>
+              {samples.tour.name}: <span className="text-muted-foreground">harga di paket {formatIdr(samples.tour.priceIdr, "id")}</span>
+              <br />
+              Dengan mobil ini: <strong>{tourExample ? formatIdr(tourExample, "id") : "—"}</strong>
+            </p>
+          ) : (
+            <p className="text-muted-foreground">Belum ada paket dengan harga untuk contoh.</p>
+          )}
+        </PriceExample>
       </div>
 
       <SwitchField
@@ -131,23 +174,59 @@ function VehicleDialog({ vehicle, onClose }: { vehicle: VehicleRecord | null; on
       />
       {offersTransfers ? (
         <div className="grid gap-4 sm:grid-cols-3">
-          <TextField name="transferRate.baseIdr" label="Biaya awal" inputMode="numeric" defaultValue={vehicle?.transferRate?.baseIdr} errors={errors} />
-          <TextField name="transferRate.perKmIdr" label="Per km" inputMode="numeric" defaultValue={vehicle?.transferRate?.perKmIdr} errors={errors} />
+          <TextField
+            name="transferRate.baseIdr"
+            label="Biaya awal"
+            inputMode="numeric"
+            value={rate.baseIdr}
+            onChange={(event) => setRate({ ...rate, baseIdr: event.target.value })}
+            errors={errors}
+          />
+          <TextField
+            name="transferRate.perKmIdr"
+            label="Per km"
+            inputMode="numeric"
+            value={rate.perKmIdr}
+            onChange={(event) => setRate({ ...rate, perKmIdr: event.target.value })}
+            errors={errors}
+          />
           <TextField
             name="transferRate.minimumIdr"
             label="Harga terendah"
             inputMode="numeric"
-            defaultValue={vehicle?.transferRate?.minimumIdr}
+            value={rate.minimumIdr}
+            onChange={(event) => setRate({ ...rate, minimumIdr: event.target.value })}
             errors={errors}
             hint="Untuk perjalanan pendek."
           />
-          <p className="text-xs text-muted-foreground sm:col-span-3">
-            Harga antar jemput = biaya awal + per km × jarak, tidak pernah di bawah harga terendah, dibulatkan ke atas ke Rp 5.000 terdekat.
-          </p>
+          <PriceExample title="Contoh harga antar jemput untuk tamu" className="sm:col-span-3">
+            <ul className="grid gap-1">
+              {routes.map((route) => (
+                <li key={route.name} className="flex flex-wrap justify-between gap-x-3">
+                  <span>
+                    {route.name} <span className="text-muted-foreground">(± {route.distanceKm} km)</span>
+                  </span>
+                  <strong>{fareRate ? formatIdr(transferFare(fareRate, route.distanceKm), "id") : "—"}</strong>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Biaya awal + per km × jarak, minimal harga terendah, dibulatkan ke atas ke Rp 5.000.
+            </p>
+          </PriceExample>
         </div>
       ) : null}
 
       <SwitchField name="published" label="Tampilkan di website" defaultChecked={vehicle?.published ?? true} />
     </RecordDialog>
+  );
+}
+
+function PriceExample({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
+  return (
+    <div className={cn("rounded-lg border border-dashed bg-muted/40 px-3 py-2.5 text-sm", className)} aria-live="polite">
+      <p className="mb-1 text-xs font-medium text-muted-foreground">{title}</p>
+      {children}
+    </div>
   );
 }
