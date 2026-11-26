@@ -14,6 +14,16 @@ import { cn } from "@/lib/utils";
 
 export type FieldErrors = Record<string, string>;
 
+/** A dashed box under fields that shows, as they're typed, what guests will see. */
+export function GuestExample({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
+  return (
+    <div className={cn("rounded-lg border border-dashed bg-muted/40 px-3 py-2.5 text-sm", className)} aria-live="polite">
+      <p className="mb-1 text-xs font-medium text-muted-foreground">{title}</p>
+      {children}
+    </div>
+  );
+}
+
 type FieldProps = {
   label: string;
   htmlFor?: string;

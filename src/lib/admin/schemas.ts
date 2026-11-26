@@ -28,6 +28,9 @@ const rupiah = z.preprocess(
 
 const positiveRupiah = rupiah.pipe(z.number().min(1, "Harus lebih dari 0."));
 
+/** A price field left empty (or with no digits in it) means the price is on request. */
+const hasDigits = (value: string | undefined): value is string => /\d/.test(value ?? "");
+
 /** An unchecked checkbox sends nothing; a checked one sends "on". */
 const checkbox = z.preprocess((value) => value === "on" || value === "true", z.boolean());
 
@@ -102,10 +105,9 @@ export const tourInput = z
     code: z.string().trim().min(1, "Wajib diisi.").max(4, "Maksimal 4 karakter, misalnya A atau P2."),
     length: z.enum(tourLengths, "Pilih perjalanan sehari atau beberapa hari."),
     interests: z.array(z.enum(tourInterests)).optional().default([]),
-    onRequest: checkbox,
+    // An empty price shows "Hubungi kami" (contact us) instead.
     priceFromIdr: z.string().optional(),
     accommodationOffered: checkbox,
-    accommodationOnRequest: checkbox,
     accommodationPriceFromIdr: z.string().optional(),
     partPrices: z.array(z.string()).optional().default([]),
     photo: photo.optional().default(""),
@@ -117,8 +119,8 @@ export const tourInput = z
   })
   .transform((input, context) => {
     let priceFromIdr: number | null = null;
-    if (!input.onRequest) {
-      const price = positiveRupiah.safeParse(input.priceFromIdr ?? "");
+    if (hasDigits(input.priceFromIdr)) {
+      const price = positiveRupiah.safeParse(input.priceFromIdr);
       if (!price.success) {
         context.addIssue({ code: "custom", path: ["priceFromIdr"], message: price.error.issues[0].message });
         return z.NEVER;
@@ -126,8 +128,8 @@ export const tourInput = z
       priceFromIdr = price.data;
     }
     let accommodationPriceFromIdr: number | null = null;
-    if (input.accommodationOffered && !input.accommodationOnRequest) {
-      const price = positiveRupiah.safeParse(input.accommodationPriceFromIdr ?? "");
+    if (input.accommodationOffered && hasDigits(input.accommodationPriceFromIdr)) {
+      const price = positiveRupiah.safeParse(input.accommodationPriceFromIdr);
       if (!price.success) {
         context.addIssue({ code: "custom", path: ["accommodationPriceFromIdr"], message: price.error.issues[0].message });
         return z.NEVER;

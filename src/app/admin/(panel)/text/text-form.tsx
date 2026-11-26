@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, RotateCcw, Search, X } from "lucide-react";
+import { ChevronDown, ExternalLink, RotateCcw, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -267,6 +267,15 @@ export function TextEditor({ locale, fields, examples }: { locale: Locale; field
   );
   const [page, setPage] = useState<TextPageKey>(textPages[0].key);
   const [query, setQuery] = useState("");
+  // Sections start folded, so a tab is a short list of where text appears; tap one to edit its text.
+  const [openSections, setOpenSections] = useState<ReadonlySet<string>>(() => new Set());
+  const toggleSection = (key: string) =>
+    setOpenSections((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   const bySection = useMemo(
     () => new Map(textSections.map((section) => [section.key, fields.filter((field) => field.key.startsWith(`${section.key}.`))])),
@@ -328,9 +337,9 @@ export function TextEditor({ locale, fields, examples }: { locale: Locale; field
       >
         {locale === "id" ? (
           <>
-            Ubah kata-katanya, lalu tekan <strong>Simpan</strong>. Bahasa Inggris dan Prancis diterjemahkan otomatis. Tidak yakin
-            teks mana yang muncul di mana? Tekan <strong>Lihat</strong> di bagiannya untuk membuka halaman itu di website. Kata di
-            dalam kurung kurawal, seperti {"{price}"}, jangan diubah: website yang mengisinya.
+            Pilih halaman, lalu ketuk bagian yang mau diubah, atau cari katanya di kotak pencarian. Tekan <strong>Lihat</strong> untuk
+            membuka bagian itu di website. Setelah selesai, tekan <strong>Simpan</strong>; bahasa Inggris dan Prancis diterjemahkan
+            otomatis. Kata di dalam kurung kurawal, seperti {"{price}"}, jangan diubah: website yang mengisinya.
           </>
         ) : (
           <>
@@ -377,29 +386,52 @@ export function TextEditor({ locale, fields, examples }: { locale: Locale; field
       {shown.length === 0 ? (
         <p className="rounded-xl border px-4 py-10 text-center text-sm text-muted-foreground">Tidak ada teks berisi “{query.trim()}”.</p>
       ) : (
-        shown.map(({ section, fields: sectionFields }) => (
-          <section key={section.key} className="rounded-xl border">
-            <div className="flex items-center gap-3 border-b py-2 pr-2 pl-4 sm:py-3 sm:pr-3">
-              <div className="min-w-0 flex-1">
-                <h2 className="text-sm font-semibold">{section.title}</h2>
-                <p className="text-xs text-muted-foreground">{section.where}</p>
+        shown.map(({ section, fields: sectionFields }) => {
+          const hasError = sectionFields.some((field) => errors[`text:${field.key}`]);
+          // Searching shows the matching text straight away, and a section with a problem opens by itself.
+          const open = Boolean(search) || hasError || openSections.has(section.key);
+          const changed = sectionFields.filter((field) => field.saved !== null && field.saved !== field.original).length;
+          const pending = sectionFields.filter((field) => values[field.key] !== baseline(field)).length;
+          const bodyId = `section-${section.key}`;
+          return (
+            <section key={section.key} className="rounded-xl border">
+              <div className="flex items-center gap-2 py-1 pr-2 pl-1 sm:pr-3">
+                <button
+                  type="button"
+                  aria-expanded={open}
+                  aria-controls={bodyId}
+                  onClick={() => toggleSection(section.key)}
+                  className="flex min-h-12 min-w-0 flex-1 items-center gap-2 rounded-lg px-3 py-1.5 text-left hover:bg-accent/60"
+                >
+                  <ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold">{section.title}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {section.where} · {sectionFields.length} teks
+                      {changed > 0 ? ` · ${changed} sudah diubah` : ""}
+                    </span>
+                  </span>
+                  {pending > 0 ? <span className="shrink-0 rounded bg-amber-100 px-1.5 text-[11px] text-amber-900">{pending} belum disimpan</span> : null}
+                </button>
+                <SectionLink href={sectionHref(section, locale, examples)} />
               </div>
-              <SectionLink href={sectionHref(section, locale, examples)} />
-            </div>
-            <div className="grid gap-5 p-4">
-              {sectionFields.map((field) => (
-                <TextRow
-                  key={field.key}
-                  field={field}
-                  value={values[field.key]}
-                  unsaved={values[field.key] !== baseline(field)}
-                  error={errors[`text:${field.key}`]}
-                  onChange={(value) => setValue(field.key, value)}
-                />
-              ))}
-            </div>
-          </section>
-        ))
+              {open ? (
+                <div id={bodyId} className="grid gap-5 border-t p-4">
+                  {sectionFields.map((field) => (
+                    <TextRow
+                      key={field.key}
+                      field={field}
+                      value={values[field.key]}
+                      unsaved={values[field.key] !== baseline(field)}
+                      error={errors[`text:${field.key}`]}
+                      onChange={(value) => setValue(field.key, value)}
+                    />
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          );
+        })
       )}
 
       {/* Only changed fields are sent, wherever they are in the tabs. */}

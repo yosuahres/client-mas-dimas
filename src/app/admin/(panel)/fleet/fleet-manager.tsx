@@ -4,14 +4,13 @@ import { Plus } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { saveVehicle } from "@/app/admin/(panel)/fleet/actions";
-import { SelectField, SwitchField, TextField } from "@/components/admin/form-fields";
+import { GuestExample, SelectField, SwitchField, TextField } from "@/components/admin/form-fields";
 import { ItemList } from "@/components/admin/item-list";
 import { RecordDialog } from "@/components/admin/record-dialog";
 import { useAdminForm } from "@/components/admin/use-admin-form";
 import { Button } from "@/components/ui/button";
 import { seatClasses, type SeatClass, type VehicleRecord } from "@/lib/content/schema";
 import { formatIdr } from "@/lib/money";
-import { cn } from "@/lib/utils";
 import { tourPriceInVehicle, transferFare } from "@/lib/pricing";
 
 export type PriceSamples = {
@@ -264,15 +263,6 @@ function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord |
 
       <SwitchField name="published" label="Tampilkan di website" defaultChecked={vehicle?.published ?? true} />
     </RecordDialog>
-  );
-}
-
-function GuestExample({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
-  return (
-    <div className={cn("rounded-lg border border-dashed bg-muted/40 px-3 py-2.5 text-sm", className)} aria-live="polite">
-      <p className="mb-1 text-xs font-medium text-muted-foreground">{title}</p>
-      {children}
-    </div>
   );
 }
 

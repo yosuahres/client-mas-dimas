@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ElementType } from "react";
 
+import { CommonJobs } from "@/components/admin/common-jobs";
 import { PageBody, PageHeader } from "@/components/admin/page-header";
 import { adminFaqs, adminPlaces, adminReviews, adminTextOverrides, adminTours, adminVehicles } from "@/lib/admin/queries";
 import { isTranslationConfigured } from "@/lib/machine-translation";
@@ -69,6 +70,9 @@ export default async function DashboardPage() {
     <>
       <PageHeader title="Dasbor" />
       <PageBody>
+        <CommonJobs />
+
+        <h2 className="mb-3 text-sm font-semibold">Isi website</h2>
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
           {counts.map((count) => (
             <li key={count.href}>

@@ -5,15 +5,22 @@ import { useState } from "react";
 
 import { saveTour } from "@/app/admin/(panel)/tours/actions";
 import { PartsEditor } from "@/app/admin/(panel)/tours/parts-editor";
-import { autoTranslatedPlaceholder, Field, FormSection, LocaleTabs, SaveBar, SwitchField, TextAreaField, TextField } from "@/components/admin/form-fields";
+import { autoTranslatedPlaceholder, Field, FormSection, GuestExample, LocaleTabs, SaveBar, SwitchField, TextAreaField, TextField } from "@/components/admin/form-fields";
 import { PhotoField } from "@/components/admin/photo-field";
 import { useAdminForm } from "@/components/admin/use-admin-form";
 import { Button } from "@/components/ui/button";
 import type { TourRecord } from "@/lib/content/schema";
 import { tourInterests, tourLengths } from "@/lib/content/schema";
+import { formatIdr } from "@/lib/money";
 
 const lengthLabels = { "day-trip": "Perjalanan sehari", "multi-day": "Beberapa hari" } as const;
 const interestLabels = { temples: "Candi", culture: "Sejarah dan budaya", nature: "Alam dan gunung api", adventure: "Petualangan" } as const;
+
+/** "550.000" → "Mulai Rp 550.000"; empty → "Hubungi kami", as on the website. */
+function priceLabel(typed: string) {
+  const digits = typed.replace(/\D/g, "");
+  return digits && Number(digits) > 0 ? `Mulai ${formatIdr(Number(digits), "id")}` : "Hubungi kami";
+}
 
 type TourFormProps = {
   tour: TourRecord | null;
@@ -22,9 +29,10 @@ type TourFormProps = {
 
 export function TourForm({ tour, photoPreview }: TourFormProps) {
   const { onSubmit, pending, fieldErrors: errors } = useAdminForm(saveTour.bind(null, tour?.slug ?? null));
-  const [onRequest, setOnRequest] = useState(tour ? tour.priceFromIdr === null : false);
+  // Typed prices, read live for the "what guests see" box.
+  const [price, setPrice] = useState(String(tour?.priceFromIdr ?? ""));
   const [accommodationOffered, setAccommodationOffered] = useState(tour?.accommodationOffered ?? true);
-  const [accommodationOnRequest, setAccommodationOnRequest] = useState(tour ? tour.accommodationPriceFromIdr === null : true);
+  const [accommodationPrice, setAccommodationPrice] = useState(String(tour?.accommodationPriceFromIdr ?? ""));
   const creditHasError = Object.keys(errors).some((key) => key.startsWith("credit."));
 
   return (
@@ -62,65 +70,54 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
           </div>
         </Field>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <TextField
-            name="priceFromIdr"
-            label="Transport saja: harga mulai (Rp, per kendaraan)"
-            inputMode="numeric"
-            placeholder="550000"
-            defaultValue={tour?.priceFromIdr ?? ""}
-            disabled={onRequest}
-            errors={errors}
-            hint="Mobil termurah, termasuk sopir, BBM, dan parkir."
-          />
-          <SwitchField
-            name="onRequest"
-            label="Tanpa harga (Hubungi kami)"
-            hint='Menampilkan "Hubungi kami" sebagai ganti harga.'
-            defaultChecked={onRequest}
-            onCheckedChange={setOnRequest}
-          />
-        </div>
-
-        <div className="grid gap-3">
-          <SwitchField
-            name="accommodationOffered"
-            label="Juga dijual termasuk akomodasi"
-            hint='Paket tampil di bagian "Termasuk akomodasi" di halaman Tour, dan tamu bisa memilihnya saat memesan.'
-            defaultChecked={accommodationOffered}
-            onCheckedChange={setAccommodationOffered}
-          />
-          {accommodationOffered ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <TextField
-                name="accommodationPriceFromIdr"
-                label="Termasuk akomodasi: harga mulai (Rp)"
-                inputMode="numeric"
-                placeholder="3500000"
-                defaultValue={tour?.accommodationPriceFromIdr ?? ""}
-                disabled={accommodationOnRequest}
-                errors={errors}
-                hint="Mobil dan hotel termurah, dijumlahkan."
-              />
-              <SwitchField
-                name="accommodationOnRequest"
-                label="Harga akomodasi: Hubungi kami"
-                hint='Menampilkan "Hubungi kami"; Anda kirim pilihan hotel lewat WhatsApp.'
-                defaultChecked={accommodationOnRequest}
-                onCheckedChange={setAccommodationOnRequest}
-              />
-            </div>
-          ) : null}
-        </div>
-
-        <PartsEditor names={tour?.text.id?.parts ?? []} prices={tour?.partPrices ?? []} errors={errors} />
-
         <SwitchField
           name="published"
           label="Tampilkan di website"
           hint="Matikan untuk menyimpan sebagai draf atau menyembunyikan paket sementara."
           defaultChecked={tour?.published ?? true}
         />
+      </FormSection>
+
+      <FormSection title="Harga" description="Per mobil, untuk mobil termurah. Kosongkan harga untuk menampilkan “Hubungi kami”.">
+        <TextField
+          name="priceFromIdr"
+          label="Transport saja: harga mulai (Rp)"
+          inputMode="numeric"
+          placeholder="Kosong: Hubungi kami"
+          value={price}
+          onChange={(event) => setPrice(event.target.value)}
+          errors={errors}
+          hint="Mobil, sopir, BBM, dan parkir."
+        />
+        <SwitchField
+          name="accommodationOffered"
+          label="Juga dijual termasuk akomodasi"
+          hint="Tamu bisa memilih paket ini dengan hotel, di halaman Tour dan saat memesan."
+          defaultChecked={accommodationOffered}
+          onCheckedChange={setAccommodationOffered}
+        />
+        {accommodationOffered ? (
+          <TextField
+            name="accommodationPriceFromIdr"
+            label="Termasuk akomodasi: harga mulai (Rp)"
+            inputMode="numeric"
+            placeholder="Kosong: Hubungi kami"
+            value={accommodationPrice}
+            onChange={(event) => setAccommodationPrice(event.target.value)}
+            errors={errors}
+            hint="Mobil dan hotel termurah, dijumlahkan. Kosongkan kalau Anda mengirim pilihan hotel lewat WhatsApp."
+          />
+        ) : null}
+        <GuestExample title="Yang dilihat tamu">
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
+            <dt className="text-muted-foreground">Transport saja</dt>
+            <dd className="font-medium">{priceLabel(price)}</dd>
+            <dt className="text-muted-foreground">Termasuk akomodasi</dt>
+            <dd className="font-medium">{accommodationOffered ? priceLabel(accommodationPrice) : "Tidak dijual"}</dd>
+          </dl>
+        </GuestExample>
+
+        <PartsEditor names={tour?.text.id?.parts ?? []} prices={tour?.partPrices ?? []} errors={errors} />
       </FormSection>
 
       <FormSection title="Foto" description="Foto besar di atas halaman paket dan di kartunya.">
