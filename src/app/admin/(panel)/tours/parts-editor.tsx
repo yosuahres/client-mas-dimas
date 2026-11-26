@@ -35,7 +35,7 @@ export function PartsEditor({ names, prices, errors }: PartsEditorProps) {
         <p className="text-[13px] font-medium">Pilihan sebagian paket</p>
         <p className="text-xs text-muted-foreground">
           Bagian paket yang bisa dipesan terpisah, misalnya &quot;Borobudur saja&quot;. Isi harga untuk mobil termurah; kosongkan untuk
-          &quot;Hubungi kami&quot;. Mobil yang lebih besar lebih mahal sesuai level harganya di Mobil &amp; harga.
+          &quot;Hubungi kami&quot;. Mobil yang lebih besar mengikuti &quot;Harga paket tour untuk mobil ini&quot; di Mobil &amp; harga.
         </p>
       </div>
       {rows.length > 0 ? (

@@ -77,6 +77,14 @@ function typedNumber(value: string): number | null {
 function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord | null; samples: PriceSamples; onClose: () => void }) {
   const { onSubmit, pending, fieldErrors: errors } = useAdminForm(saveVehicle.bind(null, vehicle?.id ?? null), { onSuccess: onClose });
   const [offersTransfers, setOffersTransfers] = useState(vehicle ? vehicle.transferRate !== null : true);
+  const [seating, setSeating] = useState({
+    seatClass: vehicle?.seatClass ?? ("seven" as SeatClass),
+    seats: vehicle?.seats ?? "",
+    maxPassengers: String(vehicle?.maxPassengers ?? ""),
+    withLuggage: String(vehicle?.maxPassengersWithLuggage ?? ""),
+  });
+  const maxPassengers = typedNumber(seating.maxPassengers);
+  const withLuggage = typedNumber(seating.withLuggage);
   // Typed values, read live for the price examples.
   const [percent, setPercent] = useState(String(vehicle?.tourPricePercent ?? 100));
   const [rate, setRate] = useState({
@@ -104,33 +112,68 @@ function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord |
       pending={pending}
       submitLabel={vehicle ? "Simpan mobil" : "Tambah mobil"}
     >
+      <TextField name="name" label="Nama mobil" placeholder="Toyota Avanza" defaultValue={vehicle?.name} errors={errors} />
+
+      <FormGroup title="Kursi dan muatan">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <SelectField
+            name="seatClass"
+            label="Kelompok di website"
+            options={seatClasses.map((value) => ({ value, label: seatClassLabels[value] }))}
+            defaultValue={seating.seatClass}
+            onValueChange={(value) => setSeating({ ...seating, seatClass: value as SeatClass })}
+            errors={errors}
+            hint="Tamu memilih kelompok, bukan nama mobil."
+          />
+          <TextField
+            name="seats"
+            label="Jumlah kursi"
+            placeholder="7 atau 10–12"
+            value={seating.seats}
+            onChange={(event) => setSeating({ ...seating, seats: event.target.value })}
+            errors={errors}
+            hint="Ditulis di hasil pencarian, misalnya “7 kursi”."
+          />
+          <TextField
+            name="maxPassengers"
+            label="Muat berapa orang"
+            inputMode="numeric"
+            value={seating.maxPassengers}
+            onChange={(event) => setSeating({ ...seating, maxPassengers: event.target.value })}
+            errors={errors}
+            hint="Tanpa koper besar. Dewasa dan anak; bayi dipangku tidak dihitung."
+          />
+          <TextField
+            name="maxPassengersWithLuggage"
+            label="Muat berapa orang dengan koper"
+            inputMode="numeric"
+            value={seating.withLuggage}
+            onChange={(event) => setSeating({ ...seating, withLuggage: event.target.value })}
+            errors={errors}
+            hint="Kalau semua membawa koper atau tas besar."
+          />
+        </div>
+        <GuestExample title="Yang dilihat tamu">
+          <p>
+            Tampil di kelompok <strong>{seatClassLabels[seating.seatClass]}</strong>
+            {seating.seats.trim() ? <>, ditulis “{seating.seats.trim()} kursi”</> : null}.
+            {maxPassengers ? (
+              <>
+                {" "}
+                Ditawarkan untuk rombongan sampai <strong>{maxPassengers} orang</strong>
+                {withLuggage ? (
+                  <>
+                    , atau <strong>{withLuggage} orang</strong> kalau membawa koper
+                  </>
+                ) : null}
+                .
+              </>
+            ) : null}
+          </p>
+        </GuestExample>
+      </FormGroup>
+
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField name="name" label="Nama" placeholder="Toyota Avanza" defaultValue={vehicle?.name} errors={errors} />
-        <SelectField
-          name="seatClass"
-          label="Kelompok kursi"
-          options={seatClasses.map((value) => ({ value, label: seatClassLabels[value] }))}
-          defaultValue={vehicle?.seatClass ?? "seven"}
-          errors={errors}
-          hint="Tamu melihat harga per kelompok."
-        />
-        <TextField name="seats" label="Jumlah kursi (yang ditampilkan)" placeholder="7 atau 10–12" defaultValue={vehicle?.seats} errors={errors} />
-        <TextField
-          name="maxPassengers"
-          label="Maksimal orang, tanpa bagasi besar"
-          inputMode="numeric"
-          defaultValue={vehicle?.maxPassengers}
-          errors={errors}
-          hint="Dewasa dan anak. Bayi yang dipangku tidak dihitung."
-        />
-        <TextField
-          name="maxPassengersWithLuggage"
-          label="Maksimal orang dengan bagasi"
-          inputMode="numeric"
-          defaultValue={vehicle?.maxPassengersWithLuggage}
-          errors={errors}
-          hint="Kalau membawa koper atau tas besar."
-        />
         <TextField name="dayWithDriverIdr" label="Tarif harian dengan sopir" inputMode="numeric" defaultValue={vehicle?.dayWithDriverIdr} errors={errors} />
         <TextField
           name="dayWithDriverAndFuelIdr"
@@ -152,7 +195,7 @@ function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord |
           errors={errors}
           hint="Harga di setiap paket berlaku untuk mobil termurah. 100 = sama, 150 = satu setengah kalinya."
         />
-        <PriceExample title="Contoh harga paket untuk tamu">
+        <GuestExample title="Contoh harga paket untuk tamu">
           {samples.tour ? (
             <p>
               {samples.tour.name}: <span className="text-muted-foreground">harga di paket {formatIdr(samples.tour.priceIdr, "id")}</span>
@@ -162,7 +205,7 @@ function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord |
           ) : (
             <p className="text-muted-foreground">Belum ada paket dengan harga untuk contoh.</p>
           )}
-        </PriceExample>
+        </GuestExample>
       </div>
 
       <SwitchField
@@ -199,7 +242,7 @@ function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord |
             errors={errors}
             hint="Untuk perjalanan pendek."
           />
-          <PriceExample title="Contoh harga antar jemput untuk tamu" className="sm:col-span-3">
+          <GuestExample title="Contoh harga antar jemput untuk tamu" className="sm:col-span-3">
             <ul className="grid gap-1">
               {routes.map((route) => (
                 <li key={route.name} className="flex flex-wrap justify-between gap-x-3">
@@ -213,7 +256,7 @@ function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord |
             <p className="mt-1.5 text-xs text-muted-foreground">
               Biaya awal + per km × jarak, minimal harga terendah, dibulatkan ke atas ke Rp 5.000.
             </p>
-          </PriceExample>
+          </GuestExample>
         </div>
       ) : null}
 
@@ -222,11 +265,21 @@ function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord |
   );
 }
 
-function PriceExample({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
+function GuestExample({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
   return (
     <div className={cn("rounded-lg border border-dashed bg-muted/40 px-3 py-2.5 text-sm", className)} aria-live="polite">
       <p className="mb-1 text-xs font-medium text-muted-foreground">{title}</p>
       {children}
     </div>
+  );
+}
+
+/** A titled group of fields, divided from the rest by a hairline. */
+function FormGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <fieldset className="grid gap-3 border-t pt-4">
+      <legend className="float-left mb-1 w-full text-sm font-semibold">{title}</legend>
+      {children}
+    </fieldset>
   );
 }

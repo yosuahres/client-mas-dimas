@@ -84,14 +84,15 @@ type SelectFieldProps = {
   hint?: ReactNode;
   errors: FieldErrors;
   className?: string;
+  onValueChange?: (value: string) => void;
 };
 
 /** Radix select (no native <select>), which still submits with the form under its name. */
-export function SelectField({ name, label, options, defaultValue, placeholder, hint, errors, className }: SelectFieldProps) {
+export function SelectField({ name, label, options, defaultValue, placeholder, hint, errors, className, onValueChange }: SelectFieldProps) {
   const error = errors[name];
   return (
     <Field label={label} htmlFor={name} hint={hint} error={error} className={className}>
-      <Select name={name} defaultValue={defaultValue}>
+      <Select name={name} defaultValue={defaultValue} onValueChange={onValueChange}>
         <SelectTrigger id={name} className="w-full" aria-invalid={error ? true : undefined}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

@@ -1,11 +1,11 @@
 "use client";
 
-import { RotateCcw, Search, X } from "lucide-react";
+import { ExternalLink, RotateCcw, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { saveText } from "@/app/admin/(panel)/text/actions";
-import { textPages, textSections, type TextPageKey } from "@/app/admin/(panel)/text/sections";
+import { textPages, textSections, type TextPageKey, type TextSection } from "@/app/admin/(panel)/text/sections";
 import { useAdminForm } from "@/components/admin/use-admin-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,9 +55,9 @@ const names: Record<string, string> = {
   tiles: "Kotak",
   facts: "Fakta",
   steps: "Langkah",
-  left: "Teks kiri",
-  right: "Teks kanan",
-  sticker: "Baris stiker",
+  left: "Judul, bagian pertama",
+  right: "Judul, bagian kedua (abu-abu)",
+  sticker: "Baris kecil di atas judul",
   columns: "Judul kolom",
   seeTours: "Tombol: lihat tour",
   planOnWhatsapp: "Tombol: rencanakan lewat WhatsApp",
@@ -111,7 +111,6 @@ const names: Record<string, string> = {
   excludedMultiDay: "Tidak termasuk (beberapa hari)",
   fewer: "Lebih sedikit",
   figure: "Angka",
-  floatingLabel: "Label tombol melayang",
   from: "Dari",
   fromPrice: "Harga mulai",
   fromPriceAccommodation: "Harga mulai (dengan akomodasi)",
@@ -182,11 +181,11 @@ const names: Record<string, string> = {
   stayLabel: "Label menginap",
   stayTitle: "Judul menginap",
   stays: "Pilihan menginap",
-  sticky: "Baris tempel",
+  sticky: "Label kecil di kartu rute",
   swap: "Tombol tukar",
   tabs: "Tab",
-  teaser: "Teks pembuka",
-  teaserAccommodation: "Teks pembuka (dengan akomodasi)",
+  teaser: "Baris di bawah nama paket",
+  teaserAccommodation: "Baris di bawah nama paket (termasuk akomodasi)",
   temples: "Candi",
   time: "Jam",
   to: "Ke",
@@ -245,7 +244,23 @@ export function fieldLabel(key: string) {
   return parts.join(" · ");
 }
 
-export function TextEditor({ locale, fields }: { locale: Locale; fields: TextField[] }) {
+export type TextExamples = {
+  /** A package's slug, for sections on a package page. */
+  tour: string | null;
+  /** A transfer search ("from=yia&to=jogja"), for sections on the transfer results. */
+  route: string | null;
+};
+
+/** Where a section can be seen on the website, in the language being edited. */
+function sectionHref(section: TextSection, locale: Locale, examples: TextExamples) {
+  if (!section.path) return null;
+  let path = section.path;
+  if (path.includes("{tour}")) path = examples.tour ? path.replace("{tour}", examples.tour) : "/tours";
+  if (path.includes("{route}")) path = examples.route ? path.replace("{route}", examples.route) : "/transfer";
+  return `/${locale}${path === "/" ? "" : path}`;
+}
+
+export function TextEditor({ locale, fields, examples }: { locale: Locale; fields: TextField[]; examples: TextExamples }) {
   const { onSubmit, pending, fieldErrors: errors } = useAdminForm(saveText.bind(null, locale));
   const [values, setValues] = useState<Record<string, string>>(() =>
     Object.fromEntries(fields.map((field) => [field.key, field.saved ?? field.original])),
@@ -313,7 +328,8 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
       >
         {locale === "id" ? (
           <>
-            Ubah kata-katanya, lalu tekan <strong>Simpan</strong>. Bahasa Inggris dan Prancis diterjemahkan otomatis. Kata di
+            Ubah kata-katanya, lalu tekan <strong>Simpan</strong>. Bahasa Inggris dan Prancis diterjemahkan otomatis. Tidak yakin
+            teks mana yang muncul di mana? Tekan <strong>Lihat</strong> di bagiannya untuk membuka halaman itu di website. Kata di
             dalam kurung kurawal, seperti {"{price}"}, jangan diubah: website yang mengisinya.
           </>
         ) : (
@@ -363,9 +379,12 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
       ) : (
         shown.map(({ section, fields: sectionFields }) => (
           <section key={section.key} className="rounded-xl border">
-            <div className="border-b px-4 py-3">
-              <h2 className="text-sm font-semibold">{section.title}</h2>
-              <p className="text-xs text-muted-foreground">{section.where}</p>
+            <div className="flex items-center gap-3 border-b py-2 pr-2 pl-4 sm:py-3 sm:pr-3">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-sm font-semibold">{section.title}</h2>
+                <p className="text-xs text-muted-foreground">{section.where}</p>
+              </div>
+              <SectionLink href={sectionHref(section, locale, examples)} />
             </div>
             <div className="grid gap-5 p-4">
               {sectionFields.map((field) => (
@@ -420,6 +439,18 @@ export function TextEditor({ locale, fields }: { locale: Locale; fields: TextFie
         </div>
       </div>
     </form>
+  );
+}
+
+function SectionLink({ href }: { href: string | null }) {
+  if (!href) return null;
+  return (
+    <Button asChild variant="outline" size="sm" className="shrink-0 max-md:h-10">
+      <a href={href} target="_blank" rel="noreferrer">
+        <ExternalLink />
+        Lihat<span className="hidden sm:inline"> di website</span>
+      </a>
+    </Button>
   );
 }
 

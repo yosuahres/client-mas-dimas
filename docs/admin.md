@@ -139,7 +139,7 @@ The car form shows live examples of what a guest pays: the first priced package 
 
 - The website needs at least one shown package and one shown car with a transfer price, so the admin won't hide or delete the last one.
 - Indonesian is required everywhere; English is filled by translation, and an empty French field shows the English.
-- In **Teks website**, words in curly brackets such as `{price}` are filled in by the site; the editor refuses a save that drops or renames them. **Kembalikan teks asli** puts back the text from `src/i18n/dictionaries`.
+- In **Teks website**, words in curly brackets such as `{price}` are filled in by the site; the editor refuses a save that drops or renames them. **Kembalikan teks asli** puts back the text from `src/i18n/dictionaries`. Each section has a **Lihat** (view) button that opens the page where its text appears; the pages are the `path` of each section in `src/app/admin/(panel)/text/sections.ts`. Dictionary text the site doesn't show is left out of the editor (`unusedKeys` in `text/page.tsx`).
 
 ## Backups
 

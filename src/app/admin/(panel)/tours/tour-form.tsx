@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
+import { ChevronDown, ExternalLink } from "lucide-react";
 import { useState } from "react";
 
 import { saveTour } from "@/app/admin/(panel)/tours/actions";
@@ -25,6 +25,7 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
   const [onRequest, setOnRequest] = useState(tour ? tour.priceFromIdr === null : false);
   const [accommodationOffered, setAccommodationOffered] = useState(tour?.accommodationOffered ?? true);
   const [accommodationOnRequest, setAccommodationOnRequest] = useState(tour ? tour.accommodationPriceFromIdr === null : true);
+  const creditHasError = Object.keys(errors).some((key) => key.startsWith("credit."));
 
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-6">
@@ -118,12 +119,19 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
 
       <FormSection title="Foto" description="Foto besar di atas halaman paket dan di kartunya.">
         <PhotoField name="photo" defaultValue={tour?.photo ?? null} defaultPreview={photoPreview} error={errors.photo} />
-        <details className="rounded-lg border px-3 py-2 text-sm" open={Boolean(tour?.photoCredit)}>
-          <summary className="text-[13px] font-medium">Kredit foto</summary>
+        {/* Rarely needed, so folded; the summary says what's there. Opens by itself when a field in it has an error. */}
+        <details className="group rounded-lg border px-3 text-sm" open={creditHasError}>
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-[13px] [&::-webkit-details-marker]:hidden">
+            <span className="font-medium">Kredit foto</span>
+            <span className="min-w-0 flex-1 truncate text-muted-foreground">
+              {tour?.photoCredit ? `${tour.photoCredit.author}${tour.photoCredit.license ? `, ${tour.photoCredit.license}` : ""}` : "Tidak ada (foto sendiri)"}
+            </span>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+          </summary>
           <p className="mt-1 text-xs text-muted-foreground">
             Hanya untuk foto yang bukan milik Anda, misalnya dari Wikimedia Commons. Kosongkan nama pembuat untuk foto sendiri.
           </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 mb-3 grid gap-3 sm:grid-cols-2">
             <TextField name="credit.author" label="Pembuat" defaultValue={tour?.photoCredit?.author} errors={errors} />
             <TextField name="credit.license" label="Lisensi" placeholder="CC BY-SA 4.0" defaultValue={tour?.photoCredit?.license} errors={errors} />
             <TextField name="credit.subject" label="Isi foto" placeholder="Borobudur" defaultValue={tour?.photoCredit?.subject} errors={errors} />
