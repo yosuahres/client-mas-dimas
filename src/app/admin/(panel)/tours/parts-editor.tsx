@@ -32,9 +32,11 @@ export function PartsEditor({ names, prices, errors }: PartsEditorProps) {
   return (
     <div className="grid gap-2">
       <div>
-        <p className="text-[13px] font-medium">Pilihan sebagian paket</p>
+        <p className="text-[13px] font-medium">
+          Pilihan sebagian paket <span className="font-normal text-muted-foreground">(opsional)</span>
+        </p>
         <p className="text-xs text-muted-foreground">
-          Bagian paket yang bisa dipesan terpisah, misalnya &quot;Borobudur saja&quot;. Isi harga untuk mobil termurah; kosongkan untuk
+          Bagian paket yang bisa dipesan terpisah, misalnya &quot;Borobudur saja&quot;. Lewati kalau paket ini hanya dijual utuh. Isi harga untuk mobil termurah; kosongkan untuk
           &quot;Hubungi kami&quot;. Mobil yang lebih besar mengikuti &quot;Harga paket tour untuk mobil ini&quot; di Mobil &amp; harga.
         </p>
       </div>
