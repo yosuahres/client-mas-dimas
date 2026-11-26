@@ -30,9 +30,15 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-6">
       <FormSection title="Paket" description="Cara paket ditampilkan dan difilter di halaman Tour.">
-        <div className="max-w-40">
-          <TextField name="code" label="Huruf paket" defaultValue={tour?.code} errors={errors} hint="Misalnya A atau P2" maxLength={4} />
-        </div>
+        <TextField
+          name="code"
+          label="Huruf paket"
+          defaultValue={tour?.code}
+          errors={errors}
+          maxLength={4}
+          className="max-w-md"
+          hint="Misalnya A atau P2. Hanya terlihat di admin, untuk mengenali paket di daftar, seperti Paket A–O di website lama. Tamu tidak melihatnya."
+        />
 
         <Field label="Lama perjalanan" error={errors.length}>
           <div className="flex flex-wrap gap-2">

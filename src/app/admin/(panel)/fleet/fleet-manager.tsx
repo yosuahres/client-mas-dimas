@@ -254,7 +254,9 @@ function VehicleDialog({ vehicle, samples, onClose }: { vehicle: VehicleRecord |
               ))}
             </ul>
             <p className="mt-1.5 text-xs text-muted-foreground">
-              Biaya awal + per km × jarak, minimal harga terendah, dibulatkan ke atas ke Rp 5.000.
+              Biaya awal + per km × jarak, minimal harga terendah, dibulatkan ke atas ke Rp 5.000. Jaraknya perkiraan website
+              (garis lurus di peta × 1,35), jadi bisa sedikit beda dengan jarak di Google Maps; tamu melihat harga yang sama
+              dengan contoh ini.
             </p>
           </GuestExample>
         </div>
