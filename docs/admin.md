@@ -32,7 +32,7 @@ Content, admin logins and photos are all stored in **Supabase** (database, Auth 
    where email = 'yarkasi@jogja-transport.com';
    ```
 
-3. Sign in at `/admin/login`. Further admins can be added from **Pengaturan → Pengguna admin** (Settings → Admin users).
+3. Sign in at `/admin/login`. Further admins can be added from **Pengaturan → Pengguna admin** (Settings → Admin users), once `SUPABASE_SECRET_KEY` is set.
 
 Only accounts with that role can sign in, and the database checks the same role before any change, so a leaked publishable key can't be used to edit the site.
 
@@ -125,21 +125,33 @@ Below 768 px wide:
 
 On a computer the same pages show the full layout: arrows to reorder, and edit and delete buttons on each row.
 
+### Help built into the forms
+
+The forms avoid asking for anything technical, and show what a change means for guests before it's saved:
+
+- **No web addresses or ids.** Packages, cars and places get theirs from the name when they're added (see [How changes reach the website](#how-changes-reach-the-website)). A package's letter (**Huruf paket**, e.g. A or P2) is the only code left to fill in.
+- **Tempat (places): Lokasi di Google Maps.** On the phone: open the place in the Google Maps app, tap **Bagikan** (Share), then **Salin link** (Copy link), and paste it. Numbers such as `-7.7956, 110.3695` also work. If a link only searches for a name, the form asks to long-press the spot until a pin appears and share that instead. When editing, **Lihat posisi yang tersimpan di Google Maps** opens the saved position to check it.
+- **Mobil (cars): Kursi dan muatan.** The seat group guests choose from (**Kelompok di website**), the seat count written in search results (**Jumlah kursi**), and how many people fit with and without suitcases are grouped together. A **Yang dilihat tamu** (what guests see) box sums them up as they're typed, e.g. *Tampil di kelompok 5 kursi, ditulis “7 kursi”. Ditawarkan untuk rombongan sampai 7 orang, atau 5 orang kalau membawa koper.*
+- **Mobil (cars): prices.** Under **Harga paket tour untuk mobil ini (%)** a box shows a real package at that percentage. Under the transfer rates, another shows the first two popular routes with what a guest pays. Both update while typing.
+- **Teks website (Website text).** Each section's **Lihat** button opens the page where that text appears, in the language being edited. Field labels say where the text shows (e.g. "Label kecil di kartu rute", "Baris di bawah nama paket"), not the name it has in the code.
+- **Paket tour (packages).** **Kredit foto** (photo credit, only for photos that aren't the client's own) is folded into one line showing the author and licence. It opens by itself if one of its fields has an error.
+
+### The dashboard checklist
+
+**Dasbor** ends with a short checklist: whether automatic translation works, whether more admins can be added from the admin, whether sample reviews are still shown, and whether any package lacks Indonesian or French. Setup problems are written for the client ("… Minta pembuat website mengaktifkannya": ask whoever built the website to turn it on), with the setting a developer needs in small print underneath, **Untuk pembuat website**: `GEMINI_API_KEY` ([step 3](#3-automatic-translation-english-and-french)) or `SUPABASE_SECRET_KEY` ([step 1](#1-supabase)). If the client forwards one of these, that line says what to set.
+
 ## How changes reach the website
 
 Saving in the admin updates the website straight away: each save expires the cached copy of what it changed. Edits made directly in the Supabase dashboard show within an hour.
 
 New packages get their page on first visit. Web addresses and ids are made from the name when a package, car or place is added (the package from its English name, e.g. `/en/tours/borobudur-sunrise`; a taken one gets `-2`). They never change afterwards, even when the item is renamed, so old links keep working. To change one, edit the `slug` or `id` in Supabase (a place's routes point at its id).
 
-A place's position is pasted as a Google Maps link (the app's **Bagikan → Salin link**) or as `lat, lng`. Short `maps.app.goo.gl` links are followed on the server to the full link, which holds the coordinates (`src/lib/admin/map-location.ts`). A link to a search with no pin is refused with a hint to long-press the spot instead. Positions outside Indonesia are refused, which catches swapped numbers.
-
-The car form shows live examples of what a guest pays: the first priced package at that car's tour price %, and the first two popular routes at its transfer rate, using the same functions as the site (`src/lib/pricing.ts`).
-
 ## Safety rails
 
 - The website needs at least one shown package and one shown car with a transfer price, so the admin won't hide or delete the last one.
 - Indonesian is required everywhere; English is filled by translation, and an empty French field shows the English.
-- In **Teks website**, words in curly brackets such as `{price}` are filled in by the site; the editor refuses a save that drops or renames them. **Kembalikan teks asli** puts back the text from `src/i18n/dictionaries`. Each section has a **Lihat** (view) button that opens the page where its text appears; the pages are the `path` of each section in `src/app/admin/(panel)/text/sections.ts`. Dictionary text the site doesn't show is left out of the editor (`unusedKeys` in `text/page.tsx`).
+- In **Teks website**, words in curly brackets such as `{price}` are filled in by the site; the editor refuses a save that drops or renames them. **Kembalikan teks asli** puts back the text from `src/i18n/dictionaries`.
+- A place's position must be in Indonesia, which catches swapped numbers and wrong links.
 
 ## Backups
 
@@ -151,3 +163,6 @@ The Supabase free plan has no backups and pauses after 7 days without activity. 
 - Public reads: `src/lib/content/public.ts` (cached with `use cache`, tagged per table in `src/lib/content/store.ts`).
 - Admin: `src/app/admin/`, with shared parts in `src/components/admin/` and the shadcn primitives in `src/components/ui/` (used only by the admin). Its Indonesian text is written straight into these files and into the messages in `src/lib/admin/` (no dictionary); field labels on Teks website come from the `names` map in `src/app/admin/(panel)/text/text-form.tsx`. Check new screens at 375 px. Server actions validate with `src/lib/admin/schemas.ts`, write as the signed-in admin (row-level security applies), then call `contentChanged()` to expire the tags.
 - Page text edits are stored as dotted paths (`hero.title`) in `page_text` and laid over the dictionaries by `getDictionary()`. Removing a key from the dictionaries simply ignores old edits to it.
+- Teks website: each section's **Lihat** page is its `path` in `src/app/admin/(panel)/text/sections.ts` (`{tour}` and `{route}` are filled with a real package and popular route). Dictionary text the site doesn't show is left out of the editor with `unusedKeys` in `text/page.tsx`; add a key there when a component stops using it.
+- Place positions: `src/lib/admin/map-location.ts` reads coordinates from Google Maps links (the place's pin `!3d…!4d…` first, then `q=`/`ll=`, then the map centre `@…`) and follows short `maps.app.goo.gl` links on the server, only through Google hosts.
+- The car form's examples use the site's own price functions (`src/lib/pricing.ts`), so they match what guests see.
