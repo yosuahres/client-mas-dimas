@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import { ArrowRightIcon } from "@/components/icons";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getPlaces, getPopularRoutes, getTransferVehicles } from "@/lib/content/public";
 import { formatIdr } from "@/lib/money";
-import { estimateRoute, findPlace, quoteTransfer, transferHref } from "@/lib/transfers";
+import { cheapestCarPrice } from "@/lib/pricing";
+import { findPlace, transferHref } from "@/lib/transfers";
 
 // Text on the left; on the right a soft card of popular fares with a small badge.
 export async function TransfersFeature() {
@@ -19,28 +19,25 @@ export async function TransfersFeature() {
     // getPopularRoutes only returns routes whose both ends are published
     const from = findPlace(places, route.from)!;
     const to = findPlace(places, route.to)!;
-    const { distanceKm } = estimateRoute(from, to);
-    const [cheapest] = quoteTransfer(vehicles, distanceKm);
-    return { ...route, fromName: from.name, toName: to.name, distanceKm, price: formatIdr(cheapest.totalIdr, locale) };
+    const cheapest = cheapestCarPrice(route.carPrices, vehicles);
+    return { ...route, fromName: from.name, toName: to.name, price: cheapest === null ? dict.tourPage.onRequest : formatIdr(cheapest, locale) };
   });
 
   return (
-    <section aria-labelledby="transfers-title" className="sm:px-3">
-      <div className="mx-auto grid max-w-[90rem] items-center gap-14 bg-cream px-5 py-16 sm:rounded-3xl sm:px-12 sm:py-24 lg:grid-cols-2 lg:px-20">
+    <section aria-labelledby="transfers-title" className="bg-peach">
+      <div className="mx-auto grid max-w-7xl items-center gap-6 px-5 py-9 sm:gap-14 sm:px-8 sm:py-20 lg:grid-cols-2">
         <div>
           <p className="kicker text-ink-muted">{t.label}</p>
-          <h2 id="transfers-title" className="display mt-3 text-[clamp(2.5rem,5vw,4rem)]">
+          <h2 id="transfers-title" className="display mt-2 text-[1.85rem] sm:mt-3 sm:text-[clamp(2.5rem,5vw,4rem)]">
             {t.title}
           </h2>
-          <p className="mt-6 max-w-xl text-[1.15rem] leading-[1.55]">{t.body}</p>
-          <Link href={transferPath} className="pill mt-9 bg-jade text-white hover:bg-jade/90">
+          <Link href={transferPath} className="pill mt-5 bg-jade sm:mt-9 text-white hover:bg-jade/90">
             {t.cta}
-            <ArrowRightIcon className="size-4" />
           </Link>
         </div>
 
         <div className="relative">
-          <div className="bg-white p-5 sm:rounded-3xl sm:p-9 sm:shadow-[0_24px_60px_-30px_rgb(0_0_0/0.25)]">
+          <div className="rounded-2xl bg-white p-5 sm:rounded-3xl sm:p-9 sm:shadow-[0_24px_60px_-30px_rgb(0_0_0/0.25)]">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-lg font-medium">{t.cardTitle}</p>
               <p className="label rounded-full bg-wheat px-3 py-1 text-[0.8rem]">{t.sticky}</p>

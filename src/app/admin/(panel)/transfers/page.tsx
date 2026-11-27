@@ -2,17 +2,17 @@ import type { Metadata } from "next";
 
 import { PlacesManager } from "@/app/admin/(panel)/transfers/places-manager";
 import { PageBody, PageHeader } from "@/components/admin/page-header";
-import { adminPlaces, adminRoutes } from "@/lib/admin/queries";
+import { adminPlaces, adminRoutes, adminVehicles } from "@/lib/admin/queries";
 
-export const metadata: Metadata = { title: "Tempat & rute" };
+export const metadata: Metadata = { title: "Antar jemput" };
 
 export default async function TransfersPage() {
-  const [places, routes] = await Promise.all([adminPlaces(), adminRoutes()]);
+  const [places, routes, cars] = await Promise.all([adminPlaces(), adminRoutes(), adminVehicles()]);
   return (
     <>
-      <PageHeader title="Tempat & rute" />
+      <PageHeader title="Antar jemput" />
       <PageBody>
-        <PlacesManager places={places} routes={routes} />
+        <PlacesManager places={places} routes={routes} cars={cars} />
       </PageBody>
     </>
   );

@@ -67,14 +67,13 @@ export async function lastShownTourProblem(slug: string): Promise<string | null>
   return count === 0 ? "Website butuh minimal satu paket yang tampil. Tampilkan paket lain dulu." : null;
 }
 
-/** Would hiding, deleting or taking transfers off this car leave no car to price transfers with? */
-export async function lastTransferCarProblem(id: string): Promise<string | null> {
+/** Would hiding or deleting this car leave the website with no car to offer? */
+export async function lastShownCarProblem(id: string): Promise<string | null> {
   const { supabase } = await requireAdmin();
   const { count } = await supabase
     .from(tables.vehicles)
     .select("id", { count: "exact", head: true })
     .eq("published", true)
-    .not("transfer_base_idr", "is", null)
     .neq("id", id);
-  return count === 0 ? "Website butuh minimal satu mobil tampil yang melayani antar jemput. Atur mobil lain dulu." : null;
+  return count === 0 ? "Website butuh minimal satu mobil yang tampil. Tampilkan mobil lain dulu." : null;
 }

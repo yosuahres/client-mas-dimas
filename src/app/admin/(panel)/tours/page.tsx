@@ -7,14 +7,17 @@ import { PageBody, PageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatIdr } from "@/lib/money";
-import { adminTours } from "@/lib/admin/queries";
+import { adminTours, adminVehicles } from "@/lib/admin/queries";
+import { cheapestCarPrice } from "@/lib/pricing";
 import { photoUrl } from "@/lib/photos";
 import { translateFields } from "@/lib/content/translate";
 
 export const metadata: Metadata = { title: "Paket tour" };
 
 export default async function ToursPage() {
-  const tours = await adminTours();
+  const [tours, vehicles] = await Promise.all([adminTours(), adminVehicles()]);
+  // The same "from" price guests see: the lowest across the cars on the website.
+  const shownCars = vehicles.filter((vehicle) => vehicle.published);
 
   return (
     <>
@@ -30,15 +33,13 @@ export default async function ToursPage() {
         }
       />
       <PageBody>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Paket di halaman Tour, sesuai urutan ini. Foto paket pertama dipakai di beranda.
-        </p>
         <ItemList
           list="tours"
           emptyText="Belum ada paket. Tambahkan paket pertama."
           deleteNote="Ulasan untuk paket ini tetap ada, tanpa nama paketnya."
           items={tours.map((tour) => {
             const photo = photoUrl(tour.photo);
+            const priceFrom = cheapestCarPrice(tour.carPrices, shownCars);
             return {
               key: tour.slug,
               label: translateFields(tour.text, "id").name,
@@ -51,16 +52,20 @@ export default async function ToursPage() {
                     {photo ? <img src={photo} alt="" className="size-full object-cover" /> : null}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
+                    <p className="line-clamp-2 text-sm font-medium sm:line-clamp-1">
                       <span className="mr-1.5 text-muted-foreground">{tour.code}</span>
                       {translateFields(tour.text, "id").name}
                     </p>
                     <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
                       {tour.length === "multi-day" ? "Beberapa hari" : "Perjalanan sehari"} ·{" "}
-                      {tour.priceFromIdr === null ? "Hubungi kami" : `mulai ${formatIdr(tour.priceFromIdr, "id")}`}
-                      {tour.accommodationOffered
-                        ? ` · termasuk akomodasi ${tour.accommodationPriceFromIdr === null ? "hubungi kami" : `mulai ${formatIdr(tour.accommodationPriceFromIdr, "id")}`}`
-                        : null}
+                      {priceFrom === null ? "Hubungi kami" : `mulai ${formatIdr(priceFrom, "id")}`}
+                      {/* Left out on phones, where it wrapped the row to four lines; the edit page has it. */}
+                      {tour.accommodationOffered ? (
+                        <span className="hidden sm:inline">
+                          · termasuk akomodasi{" "}
+                          {tour.accommodationPriceFromIdr === null ? "hubungi kami" : `mulai ${formatIdr(tour.accommodationPriceFromIdr, "id")}`}
+                        </span>
+                      ) : null}
                       {!tour.text.id || !tour.text.fr ? (
                         <Badge variant="outline" className="px-1.5 py-0 text-[10px] font-normal">
                           {!tour.text.id && !tour.text.fr ? "Hanya bahasa Inggris" : !tour.text.id ? "Tanpa bahasa Indonesia" : "Tanpa bahasa Prancis"}

@@ -2,16 +2,20 @@
 // It seeds Supabase (scripts/generate-seed.ts) and is what the site shows until Supabase is connected.
 // After that, edit content in the admin panel, not here.
 //
-// Still PLACEHOLDERS to confirm with the client: per-km transfer rates, the three sample reviews,
+// Still PLACEHOLDERS to confirm with the client: the transfer route prices (worked out from per-km rates the
+// client never confirmed), the three sample reviews,
 // the Ijen price (read as Rp 3,500,000), and whether the Bali/Karimunjawa price includes the ferry.
 // DUMMY until the client sends real numbers: the split-package prices (partPrices, e.g. "Borobudur only"),
-// each car's passengers with luggage, its tourPricePercent (from the day rates with fuel), and its seat group
-// (Avanza and Xenia counted as the 5 seater, as the user decided on 2026-11-20).
+// every package price in the bigger cars (carPrices, worked out from the old day rates with fuel), each car's
+// passengers with luggage, and its seat group (Avanza and Xenia counted as the 5 seater, as the user decided on
+// 2026-11-20).
 import type { SiteContent } from "./schema";
 
 export const defaultContent: SiteContent = {
   "settings": {
     "businessName": "Jogja Travel",
+    "companyName": "PT Jogja Transport Sukses Mandiri",
+    "companyUrl": "https://www.jogja-transport.com",
     "siteUrl": "https://www.jogja-transport.com",
     "whatsappNumber": "628112653767",
     "phoneDisplay": "+62 811 2653 767",
@@ -30,12 +34,30 @@ export const defaultContent: SiteContent = {
       "interests": [
         "temples"
       ],
-      "priceFromIdr": 550000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 550000,
+        "xenia": 550000,
+        "innova-reborn": 750000,
+        "innova-zenix": 830000,
+        "hiace": 1190000
+      },
       "partPrices": [
-        450000,
-        400000
+        {
+          "avanza": 450000,
+          "xenia": 450000,
+          "innova-reborn": 610000,
+          "innova-zenix": 680000,
+          "hiace": 970000
+        },
+        {
+          "avanza": 400000,
+          "xenia": 400000,
+          "innova-reborn": 540000,
+          "innova-zenix": 600000,
+          "hiace": 860000
+        }
       ],
       "photo": "/photos/borobudur.jpg",
       "photoCredit": {
@@ -101,12 +123,30 @@ export const defaultContent: SiteContent = {
         "temples",
         "culture"
       ],
-      "priceFromIdr": 550000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 550000,
+        "xenia": 550000,
+        "innova-reborn": 750000,
+        "innova-zenix": 830000,
+        "hiace": 1190000
+      },
       "partPrices": [
-        450000,
-        400000
+        {
+          "avanza": 450000,
+          "xenia": 450000,
+          "innova-reborn": 610000,
+          "innova-zenix": 680000,
+          "hiace": 970000
+        },
+        {
+          "avanza": 400000,
+          "xenia": 400000,
+          "innova-reborn": 540000,
+          "innova-zenix": 600000,
+          "hiace": 860000
+        }
       ],
       "photo": "/photos/kraton.jpg",
       "photoCredit": {
@@ -175,12 +215,30 @@ export const defaultContent: SiteContent = {
         "adventure",
         "nature"
       ],
-      "priceFromIdr": 500000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 500000,
+        "xenia": 500000,
+        "innova-reborn": 680000,
+        "innova-zenix": 750000,
+        "hiace": 1080000
+      },
       "partPrices": [
-        400000,
-        400000
+        {
+          "avanza": 400000,
+          "xenia": 400000,
+          "innova-reborn": 540000,
+          "innova-zenix": 600000,
+          "hiace": 860000
+        },
+        {
+          "avanza": 400000,
+          "xenia": 400000,
+          "innova-reborn": 540000,
+          "innova-zenix": 600000,
+          "hiace": 860000
+        }
       ],
       "photo": "/photos/jomblang.jpg",
       "photoCredit": {
@@ -247,12 +305,30 @@ export const defaultContent: SiteContent = {
         "culture",
         "adventure"
       ],
-      "priceFromIdr": 750000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 750000,
+        "xenia": 750000,
+        "innova-reborn": 1020000,
+        "innova-zenix": 1130000,
+        "hiace": 1620000
+      },
       "partPrices": [
-        500000,
-        500000
+        {
+          "avanza": 500000,
+          "xenia": 500000,
+          "innova-reborn": 680000,
+          "innova-zenix": 750000,
+          "hiace": 1080000
+        },
+        {
+          "avanza": 500000,
+          "xenia": 500000,
+          "innova-reborn": 680000,
+          "innova-zenix": 750000,
+          "hiace": 1080000
+        }
       ],
       "photo": "/photos/prambanan.jpg",
       "photoCredit": {
@@ -321,11 +397,23 @@ export const defaultContent: SiteContent = {
         "nature",
         "adventure"
       ],
-      "priceFromIdr": 2700000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 2700000,
+        "xenia": 2700000,
+        "innova-reborn": 3650000,
+        "innova-zenix": 4050000,
+        "hiace": 5810000
+      },
       "partPrices": [
-        2400000
+        {
+          "avanza": 2400000,
+          "xenia": 2400000,
+          "innova-reborn": 3240000,
+          "innova-zenix": 3600000,
+          "hiace": 5160000
+        }
       ],
       "photo": "/photos/bromo.jpg",
       "photoCredit": {
@@ -399,9 +487,9 @@ export const defaultContent: SiteContent = {
       "interests": [
         "nature"
       ],
-      "priceFromIdr": null,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {},
       "partPrices": [],
       "photo": "/photos/tumpak-sewu.jpg",
       "photoCredit": {
@@ -473,11 +561,23 @@ export const defaultContent: SiteContent = {
         "nature",
         "adventure"
       ],
-      "priceFromIdr": 3500000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 3500000,
+        "xenia": 3500000,
+        "innova-reborn": 4730000,
+        "innova-zenix": 5250000,
+        "hiace": 7530000
+      },
       "partPrices": [
-        3000000
+        {
+          "avanza": 3000000,
+          "xenia": 3000000,
+          "innova-reborn": 4050000,
+          "innova-zenix": 4500000,
+          "hiace": 6450000
+        }
       ],
       "photo": "/photos/ijen.jpg",
       "photoCredit": {
@@ -552,9 +652,15 @@ export const defaultContent: SiteContent = {
         "nature",
         "temples"
       ],
-      "priceFromIdr": 1500000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 1500000,
+        "xenia": 1500000,
+        "innova-reborn": 2030000,
+        "innova-zenix": 2250000,
+        "hiace": 3230000
+      },
       "partPrices": [],
       "photo": "/photos/dieng.jpg",
       "photoCredit": {
@@ -617,9 +723,15 @@ export const defaultContent: SiteContent = {
         "nature",
         "culture"
       ],
-      "priceFromIdr": 500000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 500000,
+        "xenia": 500000,
+        "innova-reborn": 680000,
+        "innova-zenix": 750000,
+        "hiace": 1080000
+      },
       "partPrices": [],
       "photo": "/photos/parangtritis.jpg",
       "photoCredit": {
@@ -682,9 +794,15 @@ export const defaultContent: SiteContent = {
         "adventure",
         "nature"
       ],
-      "priceFromIdr": 450000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 450000,
+        "xenia": 450000,
+        "innova-reborn": 610000,
+        "innova-zenix": 680000,
+        "hiace": 970000
+      },
       "partPrices": [],
       "photo": "/photos/merapi.jpg",
       "photoCredit": {
@@ -741,9 +859,15 @@ export const defaultContent: SiteContent = {
         "nature",
         "adventure"
       ],
-      "priceFromIdr": 700000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 700000,
+        "xenia": 700000,
+        "innova-reborn": 950000,
+        "innova-zenix": 1050000,
+        "hiace": 1510000
+      },
       "partPrices": [],
       "photo": "/photos/timang.jpg",
       "photoCredit": {
@@ -804,9 +928,15 @@ export const defaultContent: SiteContent = {
         "adventure",
         "culture"
       ],
-      "priceFromIdr": 550000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 550000,
+        "xenia": 550000,
+        "innova-reborn": 750000,
+        "innova-zenix": 830000,
+        "hiace": 1190000
+      },
       "partPrices": [],
       "photo": "/photos/setumbu.jpg",
       "photoCredit": {
@@ -865,9 +995,15 @@ export const defaultContent: SiteContent = {
       "interests": [
         "nature"
       ],
-      "priceFromIdr": 650000,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {
+        "avanza": 650000,
+        "xenia": 650000,
+        "innova-reborn": 880000,
+        "innova-zenix": 980000,
+        "hiace": 1400000
+      },
       "partPrices": [],
       "photo": "/photos/breksi.jpg",
       "photoCredit": {
@@ -930,9 +1066,9 @@ export const defaultContent: SiteContent = {
         "adventure",
         "nature"
       ],
-      "priceFromIdr": null,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {},
       "partPrices": [],
       "photo": "/photos/kedung-pedut.jpg",
       "photoCredit": {
@@ -994,9 +1130,9 @@ export const defaultContent: SiteContent = {
       "interests": [
         "nature"
       ],
-      "priceFromIdr": null,
       "accommodationOffered": true,
       "accommodationPriceFromIdr": null,
+      "carPrices": {},
       "partPrices": [],
       "photo": "/photos/menoreh.jpg",
       "photoCredit": {
@@ -1063,14 +1199,6 @@ export const defaultContent: SiteContent = {
       "seats": "7",
       "maxPassengers": 7,
       "maxPassengersWithLuggage": 5,
-      "tourPricePercent": 100,
-      "dayWithDriverIdr": 450000,
-      "dayWithDriverAndFuelIdr": 600000,
-      "transferRate": {
-        "baseIdr": 50000,
-        "perKmIdr": 4000,
-        "minimumIdr": 250000
-      },
       "published": true
     },
     {
@@ -1080,10 +1208,6 @@ export const defaultContent: SiteContent = {
       "seats": "7",
       "maxPassengers": 7,
       "maxPassengersWithLuggage": 5,
-      "tourPricePercent": 100,
-      "dayWithDriverIdr": 450000,
-      "dayWithDriverAndFuelIdr": 600000,
-      "transferRate": null,
       "published": true
     },
     {
@@ -1093,14 +1217,6 @@ export const defaultContent: SiteContent = {
       "seats": "7",
       "maxPassengers": 7,
       "maxPassengersWithLuggage": 6,
-      "tourPricePercent": 135,
-      "dayWithDriverIdr": 600000,
-      "dayWithDriverAndFuelIdr": 800000,
-      "transferRate": {
-        "baseIdr": 70000,
-        "perKmIdr": 5500,
-        "minimumIdr": 350000
-      },
       "published": true
     },
     {
@@ -1110,14 +1226,6 @@ export const defaultContent: SiteContent = {
       "seats": "7",
       "maxPassengers": 7,
       "maxPassengersWithLuggage": 6,
-      "tourPricePercent": 150,
-      "dayWithDriverIdr": 650000,
-      "dayWithDriverAndFuelIdr": 900000,
-      "transferRate": {
-        "baseIdr": 80000,
-        "perKmIdr": 6000,
-        "minimumIdr": 375000
-      },
       "published": true
     },
     {
@@ -1127,14 +1235,6 @@ export const defaultContent: SiteContent = {
       "seats": "10–12",
       "maxPassengers": 12,
       "maxPassengersWithLuggage": 9,
-      "tourPricePercent": 215,
-      "dayWithDriverIdr": 1000000,
-      "dayWithDriverAndFuelIdr": 1300000,
-      "transferRate": {
-        "baseIdr": 110000,
-        "perKmIdr": 8500,
-        "minimumIdr": 550000
-      },
       "published": true
     }
   ],
@@ -1467,27 +1567,63 @@ export const defaultContent: SiteContent = {
   "routes": [
     {
       "from": "yia",
-      "to": "yogyakarta"
+      "to": "yogyakarta",
+      "carPrices": {
+        "avanza": 250000,
+        "innova-reborn": 350000,
+        "innova-zenix": 375000,
+        "hiace": 550000
+      }
     },
     {
       "from": "yia",
-      "to": "magelang"
+      "to": "magelang",
+      "carPrices": {
+        "avanza": 325000,
+        "innova-reborn": 445000,
+        "innova-zenix": 490000,
+        "hiace": 690000
+      }
     },
     {
       "from": "yogyakarta",
-      "to": "solo"
+      "to": "solo",
+      "carPrices": {
+        "avanza": 350000,
+        "innova-reborn": 485000,
+        "innova-zenix": 530000,
+        "hiace": 750000
+      }
     },
     {
       "from": "yogyakarta",
-      "to": "bromo"
+      "to": "bromo",
+      "carPrices": {
+        "avanza": 1590000,
+        "innova-reborn": 2190000,
+        "innova-zenix": 2390000,
+        "hiace": 3385000
+      }
     },
     {
       "from": "yogyakarta",
-      "to": "pangandaran"
+      "to": "pangandaran",
+      "carPrices": {
+        "avanza": 1070000,
+        "innova-reborn": 1475000,
+        "innova-zenix": 1610000,
+        "hiace": 2280000
+      }
     },
     {
       "from": "yogyakarta",
-      "to": "bali"
+      "to": "bali",
+      "carPrices": {
+        "avanza": 2975000,
+        "innova-reborn": 4095000,
+        "innova-zenix": 4470000,
+        "hiace": 6325000
+      }
     }
   ],
   "reviews": [

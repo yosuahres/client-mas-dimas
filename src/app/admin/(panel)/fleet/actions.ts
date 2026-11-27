@@ -2,7 +2,7 @@
 
 import { databaseFailure, failure, invalid, type ActionResult } from "@/lib/admin/action-result";
 import { formObject } from "@/lib/admin/form-data";
-import { contentChanged, lastTransferCarProblem, newKey, nextPosition } from "@/lib/admin/mutations";
+import { contentChanged, lastShownCarProblem, newKey, nextPosition } from "@/lib/admin/mutations";
 import { vehicleInput } from "@/lib/admin/schemas";
 import { requireAdmin } from "@/lib/admin/session";
 import { tables, vehicleToRow } from "@/lib/content/rows";
@@ -15,8 +15,7 @@ export async function saveVehicle(originalId: string | null, formData: FormData)
   if (!parsed.success) return invalid(parsed.error);
   const id = originalId ?? (await newKey(tables.vehicles, "id", parsed.data.name, "mobil"));
   const row = vehicleToRow({ ...parsed.data, id });
-  const stopsTransfers = !parsed.data.published || parsed.data.transferRate === null;
-  const problem = originalId !== null && stopsTransfers ? await lastTransferCarProblem(originalId) : null;
+  const problem = originalId !== null && !parsed.data.published ? await lastShownCarProblem(originalId) : null;
   if (problem) return failure(problem);
 
   const { error } =

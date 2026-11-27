@@ -48,32 +48,31 @@ export type TourText = {
   photoAlt: string;
 };
 
+/** Fixed prices by car id, in rupiah. A car left out is quoted on request. */
+export type CarPrices = Record<string, number>;
+
 export type TourRecord = {
   slug: string;
   /** The client's own package letter, e.g. "A". */
   code: string;
   length: TourLength;
   interests: TourInterest[];
-  /** Cheapest price for the whole vehicle with driver, fuel and parking, in rupiah; null when quoted on request. */
-  priceFromIdr: number | null;
   /** Whether the package is also sold with the hotel arranged. */
   accommodationOffered: boolean;
   /** Cheapest price with the hotel included, in rupiah; null when quoted on request. */
   accommodationPriceFromIdr: number | null;
-  /** Transport-only price of each part in text.<locale>.parts, for the cheapest car; null when quoted on request. */
-  partPrices: (number | null)[];
+  /**
+   * The whole package's price in each car, with driver, fuel and parking, in rupiah, by car id:
+   * {"avanza": 550000, "hiace": 1190000}. A car left out is quoted on request ("Hubungi kami").
+   */
+  carPrices: CarPrices;
+  /** The same per-car prices for each part in text.<locale>.parts, in that order. */
+  partPrices: CarPrices[];
   /** A Supabase Storage key ("tours/abc.webp"), or a path under /public for the bundled photos ("/photos/borobudur.jpg"). */
   photo: string | null;
   photoCredit: PhotoCredit | null;
   text: Translations<TourText>;
   published: boolean;
-};
-
-/** Per-car transfer fare: a fixed start, a rate per kilometre, and a floor for short trips. */
-export type FareRate = {
-  baseIdr: number;
-  perKmIdr: number;
-  minimumIdr: number;
 };
 
 export type VehicleRecord = {
@@ -87,12 +86,6 @@ export type VehicleRecord = {
   maxPassengers: number;
   /** Most adults and children when they bring suitcases or large bags. */
   maxPassengersWithLuggage: number;
-  /** A package's price in this car, as a percentage of its price in the cheapest car (100). */
-  tourPricePercent: number;
-  dayWithDriverIdr: number;
-  dayWithDriverAndFuelIdr: number;
-  /** Null when the car isn't offered for transfers. */
-  transferRate: FareRate | null;
   published: boolean;
 };
 
@@ -105,9 +98,12 @@ export type PlaceRecord = {
   published: boolean;
 };
 
+/** A transfer route with its fixed price per car. The prices count in both directions. */
 export type RouteRecord = {
   from: string;
   to: string;
+  /** A car left out shows "Hubungi kami" on this route. */
+  carPrices: CarPrices;
 };
 
 export type ReviewRecord = {
@@ -127,8 +123,46 @@ export type FaqRecord = {
   published: boolean;
 };
 
+/** A photo on the Gallery page. Every language of the caption may be empty: the photo then shows without one. */
+export type GalleryPhotoRecord = {
+  id: string;
+  /** A Supabase Storage key ("gallery/<uuid>.webp"). */
+  photo: string;
+  caption: Translations<string>;
+  published: boolean;
+};
+
+export type ArticleText = {
+  title: string;
+  /** One or two sentences on the article list. */
+  excerpt: string;
+  /**
+   * Plain text. A blank line starts a new paragraph, a line starting "## " is a heading and lines starting "- " are
+   * a bulleted list (see src/lib/article-body.ts).
+   */
+  body: string;
+};
+
+export type ArticleRecord = {
+  slug: string;
+  text: Translations<ArticleText>;
+  /** A Supabase Storage key ("articles/<uuid>.webp"); null shows the article without a photo. */
+  cover: string | null;
+  /** Extra photos shown under the body, in order. */
+  photos: string[];
+  /** The date shown on the article, "2026-11-27". Articles are listed newest first by it. */
+  publishedOn: string;
+  published: boolean;
+  /** Only on the samples shown before the first real article: kept out of search engines and the sitemap. */
+  sample?: boolean;
+};
+
 export type SiteSettings = {
   businessName: string;
+  /** The registered company behind the brand, "PT Jogja Transport Sukses Mandiri". Empty hides it. */
+  companyName: string;
+  /** The company's own website, which the company name links to. Empty shows the name without a link. */
+  companyUrl: string;
   siteUrl: string;
   whatsappNumber: string;
   phoneDisplay: string;

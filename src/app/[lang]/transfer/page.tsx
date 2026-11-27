@@ -7,10 +7,11 @@ import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { PageHeader } from "@/components/page-header";
 import { TripSearch } from "@/components/search/trip-search";
-import { intlLocale, languageAlternates, localePath, type Locale } from "@/i18n/config";
+import { intlLocale, localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { fill, formatDuration } from "@/i18n/format";
 import { getDictionary, getLocale } from "@/i18n/server";
+import { pageMetadata } from "@/lib/page-metadata";
 import { getPlaces, getPopularRoutes, getSite, getTours, getTransferVehicles } from "@/lib/content/public";
 import { formatApproxUsd, formatIdr } from "@/lib/money";
 import { seatClasses, seatOptions, type SeatOption } from "@/lib/fleet";
@@ -20,7 +21,9 @@ import {
   estimateRoute,
   findPlace,
   parseTransferSearch,
+  quoteCost,
   quoteTransfer,
+  routePrices,
   transferHref,
   type Place,
   type PopularRoute,
@@ -30,13 +33,8 @@ import {
 } from "@/lib/transfers";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
   const t = (await getDictionary()).transferPage;
-  return {
-    title: t.title,
-    description: t.metaDescription,
-    alternates: languageAlternates(locale, "/transfer"),
-  };
+  return pageMetadata("/transfer", t.title, t.metaDescription);
 }
 
 export default async function TransferPage({ searchParams }: PageProps<"/[lang]/transfer">) {
@@ -64,15 +62,11 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
   // of the trip with a Change button replaces the big header and the open form.
   const defaultView = (
     <>
-      <PageHeader title={t.title} lede={t.lede} />
+      <PageHeader title={t.title} look="peach" />
       <div className="mx-auto max-w-7xl px-3 sm:px-8">
         <SearchOnEdge>
           <TripSearch {...searchProps} />
         </SearchOnEdge>
-        <div className="mt-14 px-2 sm:px-0">
-          <h2 className="text-2xl font-medium">{t.emptyTitle}</h2>
-          <p className="mt-2 max-w-prose text-ink-muted">{t.emptyBody}</p>
-        </div>
       </div>
     </>
   );
@@ -98,7 +92,7 @@ export default async function TransferPage({ searchParams }: PageProps<"/[lang]/
                   <TripSearch key={JSON.stringify([search, party])} {...searchProps} defaultTransfer={search} defaultParty={party} />
                 </TripSummary>
                 <div className="mx-auto max-w-7xl px-5 sm:px-8">
-                  <TransferResults trip={trip} vehicles={vehicles} site={site} locale={locale} dict={dict} />
+                  <TransferResults trip={trip} vehicles={vehicles} routes={routes} site={site} locale={locale} dict={dict} />
                 </div>
               </>
             );
@@ -187,13 +181,15 @@ function TripSummary({ trip, locale, dict, children }: Omit<SharedProps, "site">
   );
 }
 
-type ResultsProps = SharedProps & { trip: Trip; vehicles: TransferVehicle[] };
+type ResultsProps = SharedProps & { trip: Trip; vehicles: TransferVehicle[]; routes: PopularRoute[] };
 
 // One row per seat group: the smallest the party fits in and the next one up, each at its cheapest car.
-function TransferResults({ trip, vehicles, site, locale, dict }: ResultsProps) {
+// A trip with no route priced in the admin shows the groups on request.
+function TransferResults({ trip, vehicles, routes, site, locale, dict }: ResultsProps) {
   const t = dict.transferPage;
   const route = estimateRoute(trip.from, trip.to);
-  const options = seatOptions(quoteTransfer(vehicles, route.distanceKm), trip.party, (quote) => quote.totalIdr);
+  const prices = routePrices(routes, trip.from.id, trip.to.id);
+  const options = seatOptions(quoteTransfer(vehicles, prices), trip.party, quoteCost);
   const facts = [fill(t.distance, { km: route.distanceKm }), fill(t.duration, { duration: formatDuration(route.minutes, dict.transfer.duration) })];
 
   return (
@@ -239,10 +235,16 @@ function SeatGroupRow({ option, recommended, trip, site, locale, dict }: SeatGro
         <p className="mt-1 text-[0.95rem] text-ink-muted">{names}</p>
       </div>
       <p className="sm:row-span-2 sm:row-start-1 sm:col-start-2 sm:text-right lg:row-auto lg:col-start-auto">
-        <span className="block text-2xl font-medium tabular-nums">{formatIdr(price, locale)}</span>
-        <span className="text-[0.95rem] text-ink-muted">
-          {t.perCar}, ≈ {formatApproxUsd(price, locale, site.idrPerUsd)}
-        </span>
+        {price === null ? (
+          <span className="block text-2xl font-medium">{dict.tourPage.onRequest}</span>
+        ) : (
+          <>
+            <span className="block text-2xl font-medium tabular-nums">{formatIdr(price, locale)}</span>
+            <span className="text-[0.95rem] text-ink-muted">
+              {t.perCar}, ≈ {formatApproxUsd(price, locale, site.idrPerUsd)}
+            </span>
+          </>
+        )}
       </p>
       <a
         href={whatsappLink(site, transferMessage(trip, `${label} (${names})`, price, locale, dict))}
@@ -284,7 +286,7 @@ function PopularRoutes({ routes, places, vehicles, site, locale, dict }: Popular
           const from = findPlace(places, route.from)!;
           const to = findPlace(places, route.to)!;
           const { distanceKm, minutes } = estimateRoute(from, to);
-          const groups = seatOptions(quoteTransfer(vehicles, distanceKm), defaultParty, (quote) => quote.totalIdr, seatClasses.length);
+          const groups = seatOptions(quoteTransfer(vehicles, route.carPrices), defaultParty, quoteCost, seatClasses.length);
           return (
             <li key={`${route.from}-${route.to}`}>
               <Link
@@ -306,7 +308,9 @@ function PopularRoutes({ routes, places, vehicles, site, locale, dict }: Popular
                     {groups.map((group) => (
                       <span key={group.seatClass} className="flex items-baseline justify-between gap-3 py-1.5">
                         <span>{dict.transfer.seatClasses[group.seatClass]}</span>
-                        <span className="font-medium whitespace-nowrap tabular-nums">{formatIdr(group.vehicle.totalIdr, locale)}</span>
+                        <span className="font-medium whitespace-nowrap tabular-nums">
+                          {group.vehicle.totalIdr === null ? dict.tourPage.onRequest : formatIdr(group.vehicle.totalIdr, locale)}
+                        </span>
                       </span>
                     ))}
                   </span>
@@ -321,7 +325,7 @@ function PopularRoutes({ routes, places, vehicles, site, locale, dict }: Popular
   );
 }
 
-function transferMessage({ search, party, from, to }: Trip, vehicle: string, priceIdr: number, locale: Locale, dict: Dictionary) {
+function transferMessage({ search, party, from, to }: Trip, vehicle: string, priceIdr: number | null, locale: Locale, dict: Dictionary) {
   const t = dict.transferPage;
   const p = dict.pickers.party;
   return [
@@ -333,7 +337,7 @@ function transferMessage({ search, party, from, to }: Trip, vehicle: string, pri
     fill(p.messagePassengers, { party: describeParty(party, p, locale) }),
     party.luggage ? p.messageLuggage : p.messageNoLuggage,
     fill(t.messageVehicle, { vehicle }),
-    fill(t.messagePrice, { price: formatIdr(priceIdr, locale) }),
+    ...(priceIdr === null ? [] : [fill(t.messagePrice, { price: formatIdr(priceIdr, locale) })]),
   ].join("\n");
 }
 

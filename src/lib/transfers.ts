@@ -1,10 +1,10 @@
-// Private transfers: your own car and driver from one place to another, priced per car by distance.
-// Places, popular routes and per-car rates are edited in /admin/transfers and /admin/fleet, and read with
-// getPlaces(), getPopularRoutes() and getTransferVehicles() from @/lib/content/public.
+// Private transfers: your own car and driver from one place to another. Each route has a fixed price per car,
+// typed in /admin/transfers; a trip with no route, or a car without a price on it, is quoted on request.
+// Read with getPlaces(), getPopularRoutes() and getTransferVehicles() from @/lib/content/public.
 // These helpers also run in the browser (trip search), so the data is passed in.
 
-import type { FareRate, PlaceKind, RouteRecord, SeatClass } from "@/lib/content/schema";
-import { transferFare } from "@/lib/pricing";
+import type { CarPrices, PlaceKind, RouteRecord, SeatClass } from "@/lib/content/schema";
+import { carPrice } from "@/lib/pricing";
 
 export { placeKinds } from "@/lib/content/schema";
 export type { PlaceKind };
@@ -17,7 +17,7 @@ export type Place = {
   name: string;
 };
 
-/** A car offered for transfers, with its per-car rate. */
+/** A car offered for transfers. Its price depends on the route. */
 export type TransferVehicle = {
   id: string;
   name: string;
@@ -25,7 +25,6 @@ export type TransferVehicle = {
   seats: string;
   maxPassengers: number;
   maxPassengersWithLuggage: number;
-  rate: FareRate;
 };
 
 export type PopularRoute = RouteRecord;
@@ -34,14 +33,21 @@ export function findPlace(places: Place[], id: string): Place | undefined {
   return places.find((place) => place.id === id);
 }
 
+/** The fixed prices for a trip: its route, or the route the other way round. Null when there's no such route. */
+export function routePrices(routes: PopularRoute[], from: string, to: string): CarPrices | null {
+  const route =
+    routes.find((candidate) => candidate.from === from && candidate.to === to) ??
+    routes.find((candidate) => candidate.from === to && candidate.to === from);
+  return route?.carPrices ?? null;
+}
+
 export type RouteEstimate = {
   distanceKm: number;
   minutes: number;
 };
 
-// PLACEHOLDER estimate: straight-line distance stretched by a typical road factor.
-// Replace with real road distances (a routing API on the server, or a fixed table the client agrees)
-// before prices are shown as final.
+// The distance and time shown with a trip: straight-line distance stretched by a typical road factor. Only shown,
+// never priced; a routing API on the server would make them exact.
 const ROAD_FACTOR = 1.35;
 const AVERAGE_SPEED_KMH = 45;
 
@@ -69,22 +75,28 @@ export type VehicleQuote = {
   seats: string;
   maxPassengers: number;
   maxPassengersWithLuggage: number;
-  totalIdr: number;
+  /** Null when it's quoted on request. */
+  totalIdr: number | null;
 };
 
-/** A price for every transfer car over this distance, cheapest first. */
-export function quoteTransfer(vehicles: TransferVehicle[], distanceKm: number): VehicleQuote[] {
+/** Every transfer car with its price on this route (null prices: no route), cheapest first, on request last. */
+export function quoteTransfer(vehicles: TransferVehicle[], prices: CarPrices | null): VehicleQuote[] {
   return vehicles
-    .map(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, rate }) => ({
+    .map(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage }) => ({
       vehicle: id,
       name,
       seatClass,
       seats,
       maxPassengers,
       maxPassengersWithLuggage,
-      totalIdr: transferFare(rate, distanceKm),
+      totalIdr: prices ? carPrice(prices, { id }) : null,
     }))
-    .toSorted((a, b) => a.totalIdr - b.totalIdr);
+    .toSorted((a, b) => quoteCost(a) - quoteCost(b));
+}
+
+/** Sort key for a quote: on request goes last. */
+export function quoteCost(quote: Pick<VehicleQuote, "totalIdr">) {
+  return quote.totalIdr ?? Number.MAX_SAFE_INTEGER;
 }
 
 export type TransferSearch = {

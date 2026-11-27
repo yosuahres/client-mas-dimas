@@ -1,51 +1,72 @@
 "use client";
 
 import { ChevronDown, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { saveTour } from "@/app/admin/(panel)/tours/actions";
+import { CarPricesField, type PriceCar } from "@/app/admin/(panel)/tours/car-prices-field";
 import { PartsEditor } from "@/app/admin/(panel)/tours/parts-editor";
 import { autoTranslatedPlaceholder, Field, FormSection, GuestExample, LocaleTabs, SaveBar, SwitchField, TextAreaField, TextField } from "@/components/admin/form-fields";
 import { PhotoField } from "@/components/admin/photo-field";
+import { seatClassLabels } from "@/components/admin/seat-class-labels";
 import { useAdminForm } from "@/components/admin/use-admin-form";
 import { Button } from "@/components/ui/button";
 import type { TourRecord } from "@/lib/content/schema";
-import { tourInterests, tourLengths } from "@/lib/content/schema";
+import { seatClasses, tourInterests, tourLengths } from "@/lib/content/schema";
 import { formatIdr } from "@/lib/money";
+import { cheapestCarPrice } from "@/lib/pricing";
 
 const lengthLabels = { "day-trip": "Perjalanan sehari", "multi-day": "Beberapa hari" } as const;
 const interestLabels = { temples: "Candi", culture: "Sejarah dan budaya", nature: "Alam dan gunung api", adventure: "Petualangan" } as const;
 
-/** "550.000" → "Mulai Rp 550.000"; empty → "Hubungi kami", as on the website. */
-function priceLabel(typed: string) {
+/** "550.000" → 550000; empty, or no digits → null (on request). */
+function typedPrice(typed: string) {
   const digits = typed.replace(/\D/g, "");
-  return digits && Number(digits) > 0 ? `Mulai ${formatIdr(Number(digits), "id")}` : "Hubungi kami";
+  return digits && Number(digits) > 0 ? Number(digits) : null;
+}
+
+/** 550000 → "Mulai Rp 550.000"; null → "Hubungi kami", as on the website. */
+function priceLabel(price: number | null) {
+  return price === null ? "Hubungi kami" : `Mulai ${formatIdr(price, "id")}`;
 }
 
 type TourFormProps = {
   tour: TourRecord | null;
   photoPreview: string | null;
+  /** Every car, for the package's own price in each. */
+  cars: PriceCar[];
 };
 
-export function TourForm({ tour, photoPreview }: TourFormProps) {
+export function TourForm({ tour, photoPreview, cars }: TourFormProps) {
   const { onSubmit, pending, fieldErrors: errors } = useAdminForm(saveTour.bind(null, tour?.slug ?? null));
   // Typed prices, read live for the "what guests see" box.
-  const [price, setPrice] = useState(String(tour?.priceFromIdr ?? ""));
+  const [carPrices, setCarPrices] = useState<Record<string, string>>(() =>
+    Object.fromEntries(Object.entries(tour?.carPrices ?? {}).map(([car, value]) => [car, String(value)])),
+  );
+  const typedCarPrices = Object.fromEntries(
+    Object.entries(carPrices).flatMap(([car, typed]) => {
+      const value = typedPrice(typed);
+      return value === null ? [] : [[car, value]];
+    }),
+  );
+  // Guests see the lowest price across the cars on the website.
+  const shownCars = cars.filter((car) => car.published);
+  const transportFrom = cheapestCarPrice(typedCarPrices, shownCars);
   const [accommodationOffered, setAccommodationOffered] = useState(tour?.accommodationOffered ?? true);
   const [accommodationPrice, setAccommodationPrice] = useState(String(tour?.accommodationPriceFromIdr ?? ""));
   const creditHasError = Object.keys(errors).some((key) => key.startsWith("credit."));
 
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-6">
-      <FormSection title="Paket" description="Cara paket ditampilkan dan difilter di halaman Tour.">
+      <FormSection title="Paket">
         <TextField
           name="code"
           label="Huruf paket"
+          placeholder="A"
           defaultValue={tour?.code}
           errors={errors}
           maxLength={4}
           className="max-w-md"
-          hint="Misalnya A atau P2. Hanya terlihat di admin, untuk mengenali paket di daftar, seperti Paket A–O di website lama. Tamu tidak melihatnya."
         />
 
         <Field label="Lama perjalanan" error={errors.length}>
@@ -59,7 +80,7 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
           </div>
         </Field>
 
-        <Field label="Minat" hint="Dipakai filter di halaman Tour dan empat kotak foto di beranda." error={errors.interests}>
+        <Field label="Minat" error={errors.interests}>
           <div className="flex flex-wrap gap-2">
             {tourInterests.map((interest) => (
               <label key={interest} className="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-accent">
@@ -73,26 +94,30 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
         <SwitchField
           name="published"
           label="Tampilkan di website"
-          hint="Matikan untuk menyimpan sebagai draf atau menyembunyikan paket sementara."
           defaultChecked={tour?.published ?? true}
         />
       </FormSection>
 
-      <FormSection title="Harga" description="Per mobil, untuk mobil termurah. Kosongkan harga untuk menampilkan “Hubungi kami”.">
-        <TextField
-          name="priceFromIdr"
-          label="Transport saja: harga mulai (Rp)"
-          inputMode="numeric"
-          placeholder="Kosong: Hubungi kami"
-          value={price}
-          onChange={(event) => setPrice(event.target.value)}
-          errors={errors}
-          hint="Mobil, sopir, BBM, dan parkir."
-        />
+      <FormSection title="Harga">
+        <div className="grid gap-2">
+          <div>
+            <p className="text-[13px] font-medium">Transport saja: harga paket per mobil (Rp)</p>
+            <p className="text-xs text-muted-foreground">Kosong: tamu melihat Hubungi kami untuk mobil itu.</p>
+          </div>
+          <CarPricesField
+            cars={cars}
+            name="carPrices"
+            defaultValues={tour?.carPrices ?? {}}
+            onPriceChange={(car, typed) => setCarPrices((current) => ({ ...current, [car]: typed }))}
+            errors={errors}
+          />
+        </div>
+
+        <PartsEditor names={tour?.text.id?.parts ?? []} prices={tour?.partPrices ?? []} cars={cars} errors={errors} />
+
         <SwitchField
           name="accommodationOffered"
           label="Juga dijual termasuk akomodasi"
-          hint="Tamu bisa memilih paket ini dengan hotel, di halaman Tour dan saat memesan."
           defaultChecked={accommodationOffered}
           onCheckedChange={setAccommodationOffered}
         />
@@ -105,22 +130,31 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
             value={accommodationPrice}
             onChange={(event) => setAccommodationPrice(event.target.value)}
             errors={errors}
-            hint="Mobil dan hotel termurah, dijumlahkan. Kosongkan kalau Anda mengirim pilihan hotel lewat WhatsApp."
           />
         ) : null}
         <GuestExample title="Yang dilihat tamu">
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
             <dt className="text-muted-foreground">Transport saja</dt>
-            <dd className="font-medium">{priceLabel(price)}</dd>
+            <dd className="font-medium">{priceLabel(transportFrom)}</dd>
+            {/* A seat group costs its cheapest car, as in the website's car picker. */}
+            {seatClasses.map((seatClass) => {
+              const group = shownCars.filter((car) => car.seatClass === seatClass);
+              if (group.length === 0) return null;
+              const price = cheapestCarPrice(typedCarPrices, group);
+              return (
+                <Fragment key={seatClass}>
+                  <dt className="pl-3 text-muted-foreground">{seatClassLabels[seatClass]}</dt>
+                  <dd>{price === null ? "Hubungi kami" : formatIdr(price, "id")}</dd>
+                </Fragment>
+              );
+            })}
             <dt className="text-muted-foreground">Termasuk akomodasi</dt>
-            <dd className="font-medium">{accommodationOffered ? priceLabel(accommodationPrice) : "Tidak dijual"}</dd>
+            <dd className="font-medium">{accommodationOffered ? priceLabel(typedPrice(accommodationPrice)) : "Tidak dijual"}</dd>
           </dl>
         </GuestExample>
-
-        <PartsEditor names={tour?.text.id?.parts ?? []} prices={tour?.partPrices ?? []} errors={errors} />
       </FormSection>
 
-      <FormSection title="Foto" description="Foto besar di atas halaman paket dan di kartunya.">
+      <FormSection title="Foto">
         <PhotoField name="photo" defaultValue={tour?.photo ?? null} defaultPreview={photoPreview} error={errors.photo} />
         {/* Rarely needed, so folded; the summary says what's there. Opens by itself when a field in it has an error. */}
         <details className="group rounded-lg border px-3 text-sm" open={creditHasError}>
@@ -131,9 +165,6 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
             </span>
             <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
           </summary>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Hanya untuk foto yang bukan milik Anda, misalnya dari Wikimedia Commons. Kosongkan nama pembuat untuk foto sendiri.
-          </p>
           <div className="mt-3 mb-3 grid gap-3 sm:grid-cols-2">
             <TextField name="credit.author" label="Pembuat" defaultValue={tour?.photoCredit?.author} errors={errors} />
             <TextField name="credit.license" label="Lisensi" placeholder="CC BY-SA 4.0" defaultValue={tour?.photoCredit?.license} errors={errors} />
@@ -143,7 +174,7 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
         </details>
       </FormSection>
 
-      <FormSection title="Teks" description="Yang dibaca tamu, dalam setiap bahasa.">
+      <FormSection title="Teks">
         <LocaleTabs errors={errors} prefixes={["text"]}>
           {(locale) => {
             const text = tour?.text[locale];
@@ -164,8 +195,7 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
                   label="Durasi"
                   defaultValue={text?.duration}
                   errors={errors}
-                  hint='Misalnya "Perjalanan sehari, pulang pergi" atau "2 hari 1 malam"'
-                  placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
+                  placeholder={locale === "id" ? "2 hari 1 malam" : autoTranslatedPlaceholder}
                 />
                 <TextAreaField
                   name={`${prefix}.destinations`}
@@ -173,7 +203,6 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
                   rows={4}
                   defaultValue={text?.destinations.join("\n")}
                   errors={errors}
-                  hint="Satu tujuan per baris, sesuai urutan."
                   placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
                 />
                 <TextAreaField
@@ -182,7 +211,6 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
                   rows={3}
                   defaultValue={text?.dropOffs.join("\n")}
                   errors={errors}
-                  hint='Tempat tamu bisa diantar di akhir perjalanan, satu per baris, misalnya "Bandara Juanda, Surabaya". Yang pertama adalah yang biasa. Kosongkan untuk "kembali ke hotel di Jogja".'
                   placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
                 />
                 {locale === "id" ? null : (
@@ -192,7 +220,6 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
                     rows={2}
                     defaultValue={text?.parts.join("\n")}
                     errors={errors}
-                    hint="Diterjemahkan dari pilihan sebagian paket di bagian Paket. Satu per baris, urutannya sama."
                     placeholder={autoTranslatedPlaceholder}
                   />
                 )}
@@ -201,7 +228,6 @@ export function TourForm({ tour, photoPreview }: TourFormProps) {
                   label="Deskripsi foto"
                   defaultValue={text?.photoAlt}
                   errors={errors}
-                  hint="Menjelaskan isi foto untuk pengunjung tunanetra dan Google."
                   placeholder={locale === "id" ? "" : autoTranslatedPlaceholder}
                 />
               </div>

@@ -1,4 +1,4 @@
-// Admin forms name their fields by path ("text.fr.name", "transferRate.baseIdr"); names ending in "[]" are lists
+// Admin forms name their fields by path ("text.fr.name", "carPrices.avanza"); names ending in "[]" are lists
 // ("interests[]"). This turns the submitted FormData back into that nested object for zod to check.
 
 type Nested = { [key: string]: unknown };

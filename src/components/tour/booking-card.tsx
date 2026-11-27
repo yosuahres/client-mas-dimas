@@ -13,14 +13,15 @@ import { fill } from "@/i18n/format";
 import { seatOptions, type SeatClass, type Vehicle } from "@/lib/fleet";
 import { formatApproxUsd, formatIdr } from "@/lib/money";
 import { defaultParty, describeParty, parseParty, type Party } from "@/lib/party";
-import { tourPriceInVehicle } from "@/lib/pricing";
+import { carPrice } from "@/lib/pricing";
+import type { CarPrices } from "@/lib/content/schema";
 import { whatsappLink, type SiteSettings } from "@/lib/site";
 import { isTourStay, tourStays, type TourPart, type TourStay } from "@/lib/tours";
 
 type BookingCardProps = {
   tourName: string;
-  /** Transport-only price for the cheapest car; null when quoted on request. */
-  priceFromIdr: number | null;
+  /** The whole package's price in each car, by car id; a car left out is quoted on request. */
+  carPrices: CarPrices;
   /** Parts of the package a guest can book on their own instead, e.g. "Borobudur only"; empty when it isn't split. */
   parts: TourPart[];
   /** Price with the hotel included, or undefined when the package isn't sold that way; null when quoted on request. */
@@ -33,7 +34,7 @@ type BookingCardProps = {
   stayText: Dictionary["catalog"]["stays"];
   priceText: Pick<Dictionary["tourPage"], "fromPrice" | "fromPriceAccommodation" | "onRequest">;
   /** The cars, in the order set in the admin panel. Only those the group fits in are offered; the cheapest is preselected. */
-  fleet: Pick<Vehicle, "id" | "name" | "seatClass" | "seats" | "maxPassengers" | "maxPassengersWithLuggage" | "tourPricePercent">[];
+  fleet: Pick<Vehicle, "id" | "name" | "seatClass" | "seats" | "maxPassengers" | "maxPassengersWithLuggage">[];
   seatClassText: Dictionary["transfer"]["seatClasses"];
   site: Pick<SiteSettings, "whatsappNumber" | "idrPerUsd">;
   initialDate?: string;
@@ -64,7 +65,7 @@ export function BookingCardFromSearch(props: Omit<BookingCardProps, "initialDate
 // Until online checkout exists, the request goes out as a WhatsApp message and the client replies with the final price.
 export function BookingCard({
   tourName,
-  priceFromIdr,
+  carPrices,
   parts,
   accommodationPriceFromIdr,
   dropOffs,
@@ -98,16 +99,17 @@ export function BookingCard({
   const withHotel = stay === "accommodation";
   // Parts are sold as transport only; with the hotel, it's the whole package
   const part = !withHotel && partIndex >= 0 ? parts[partIndex] : undefined;
-  // The smallest seat group the party fits in and the next one up, each priced at its cheapest car
-  const carOptions = seatOptions(fleet, party, (car) => car.tourPricePercent);
+  // The smallest seat group the party fits in and the next one up, each priced at its cheapest car for the package
+  const carOptions = seatOptions(fleet, party, (car) => carPrice(carPrices, car) ?? Number.MAX_SAFE_INTEGER);
   const carOption = carOptions.find((option) => option.seatClass === pickedClass) ?? carOptions[0];
   const vehicle = carOption?.vehicle;
   const carLabel = carOption ? seatClassText[carOption.seatClass] : "";
   const carNames = carOption ? carOption.vehicles.map((car) => car.name).join(" / ") : "";
 
-  const basePrice = withHotel ? (accommodationPriceFromIdr ?? null) : part ? part.priceFromIdr : priceFromIdr;
   // The hotel price is quoted as a whole; the transport price follows the car
-  const price = basePrice === null || !vehicle ? null : withHotel ? basePrice : tourPriceInVehicle(basePrice, vehicle);
+  const priceIn = (car: { id: string }) =>
+    withHotel ? (accommodationPriceFromIdr ?? null) : carPrice(part ? part.carPrices : carPrices, car);
+  const price = vehicle ? priceIn(vehicle) : null;
   const formattedPrice = price === null ? null : formatIdr(price, locale);
   const partyText = describeParty(party, pickerText.party, locale) + (party.luggage ? `, ${pickerText.party.withLuggage}` : "");
   const message = [
@@ -151,9 +153,9 @@ export function BookingCard({
             {text.visit}
           </p>
           <div role="radiogroup" aria-labelledby={visitLabelId} className="mt-2 grid grid-cols-1 gap-2">
-            {[{ name: text.wholePackage, priceFromIdr }, ...parts].map((option, index) => {
+            {[{ name: text.wholePackage, carPrices }, ...parts].map((option, index) => {
               const value = index - 1;
-              const optionPrice = option.priceFromIdr === null || !vehicle ? null : tourPriceInVehicle(option.priceFromIdr, vehicle);
+              const optionPrice = vehicle ? carPrice(option.carPrices, vehicle) : null;
               return (
                 <button
                   key={option.name}
@@ -221,7 +223,7 @@ export function BookingCard({
             <div role="radiogroup" aria-labelledby={vehicleLabelId} className="mt-2 grid grid-cols-1 gap-2">
               {carOptions.map((option, index) => {
                 const checked = option.seatClass === carOption?.seatClass;
-                const optionPrice = basePrice === null ? null : withHotel ? null : tourPriceInVehicle(basePrice, option.vehicle);
+                const optionPrice = withHotel ? null : priceIn(option.vehicle);
                 return (
                   <button
                     key={option.seatClass}

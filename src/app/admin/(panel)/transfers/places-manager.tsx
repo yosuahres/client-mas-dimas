@@ -3,7 +3,8 @@
 import { ArrowRight, MapPin, Plus } from "lucide-react";
 import { useState } from "react";
 
-import { addRoute, savePlace } from "@/app/admin/(panel)/transfers/actions";
+import { CarPricesField, type PriceCar } from "@/app/admin/(panel)/tours/car-prices-field";
+import { addRoute, savePlace, saveRoutePrices } from "@/app/admin/(panel)/transfers/actions";
 import { autoTranslatedPlaceholder, LocaleTabs, SelectField, SwitchField, TextField } from "@/components/admin/form-fields";
 import { ItemList } from "@/components/admin/item-list";
 import { RecordDialog } from "@/components/admin/record-dialog";
@@ -12,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { placeKinds, type PlaceKind, type PlaceRecord, type RouteRecord } from "@/lib/content/schema";
 import { translate } from "@/lib/content/translate";
+import { formatIdr } from "@/lib/money";
+import { cheapestCarPrice } from "@/lib/pricing";
 
 const kindLabels: Record<PlaceKind, string> = {
   airport: "Bandara",
@@ -21,14 +24,22 @@ const kindLabels: Record<PlaceKind, string> = {
   sight: "Wisata dan pulau",
 };
 
+type Route = RouteRecord & { id: string };
+
 type PlacesManagerProps = {
   places: PlaceRecord[];
-  routes: (RouteRecord & { id: string })[];
+  routes: Route[];
+  /** Every car, for the price boxes on each route. */
+  cars: PriceCar[];
 };
 
-export function PlacesManager({ places, routes }: PlacesManagerProps) {
+export function PlacesManager({ places, routes, cars }: PlacesManagerProps) {
   const [editing, setEditing] = useState<string | null>(null);
   const place = places.find((candidate) => candidate.id === editing) ?? null;
+  // The route whose prices are open, by id.
+  const [pricing, setPricing] = useState<string | null>(null);
+  const pricedRoute = routes.find((candidate) => candidate.id === pricing) ?? null;
+  const shownCars = cars.filter((car) => car.published);
   const placeName = (id: string) => {
     const place = places.find((candidate) => candidate.id === id);
     return place ? translate(place.name, "id") : id;
@@ -38,38 +49,39 @@ export function PlacesManager({ places, routes }: PlacesManagerProps) {
     <div className="grid grid-cols-1 gap-10">
       <section>
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-semibold">Rute populer</h2>
-            <p className="text-sm text-muted-foreground">Pintasan di beranda dan halaman antar jemput, dengan harga terendahnya.</p>
-          </div>
+          <h2 className="text-sm font-semibold">Rute dan harga</h2>
         </div>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Ketuk rute untuk mengisi harga per mobil. Perjalanan yang tidak ada di daftar: tamu melihat Hubungi kami.
+        </p>
         <ItemList
           list="routes"
-          emptyText="Belum ada rute populer."
-          items={routes.map((route) => ({
-            key: route.id,
-            label: `${placeName(route.from)} ke ${placeName(route.to)}`,
-            content: (
-              <p className="text-sm">
-                {placeName(route.from)}
-                <ArrowRight className="mx-1.5 inline size-3.5 align-[-2px] text-muted-foreground" />
-                {placeName(route.to)}
-              </p>
-            ),
-          }))}
+          emptyText="Belum ada rute."
+          onEdit={setPricing}
+          items={routes.map((route) => {
+            const from = cheapestCarPrice(route.carPrices, shownCars);
+            return {
+              key: route.id,
+              label: `${placeName(route.from)} ke ${placeName(route.to)}`,
+              content: (
+                <div className="min-w-0">
+                  <p className="text-sm">
+                    {placeName(route.from)}
+                    <ArrowRight className="mx-1.5 inline size-3.5 align-[-2px] text-muted-foreground" />
+                    {placeName(route.to)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{from === null ? "Belum ada harga: Hubungi kami" : `mulai ${formatIdr(from, "id")}`}</p>
+                </div>
+              ),
+            };
+          })}
         />
         <AddRouteForm places={places} />
       </section>
 
       <section>
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-semibold">Tempat</h2>
-            <p className="max-w-xl text-sm text-muted-foreground">
-              Pilihan Dari dan Ke di pencarian antar jemput, dikelompokkan seperti di bawah. Posisi di peta dipakai untuk
-              memperkirakan jarak dan harga.
-            </p>
-          </div>
+          <h2 className="text-sm font-semibold">Tempat</h2>
           <Button size="sm" onClick={() => setEditing("new")}>
             <Plus />
             Tambah tempat
@@ -97,6 +109,15 @@ export function PlacesManager({ places, routes }: PlacesManagerProps) {
       </section>
 
       {editing !== null ? <PlaceDialog key={editing} place={place} onClose={() => setEditing(null)} /> : null}
+      {pricedRoute ? (
+        <RoutePricesDialog
+          key={pricedRoute.id}
+          route={pricedRoute}
+          title={`${placeName(pricedRoute.from)} ke ${placeName(pricedRoute.to)}`}
+          cars={cars}
+          onClose={() => setPricing(null)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -116,6 +137,32 @@ function AddRouteForm({ places }: { places: PlaceRecord[] }) {
         Tambah rute
       </Button>
     </form>
+  );
+}
+
+type RoutePricesDialogProps = { route: Route; title: string; cars: PriceCar[]; onClose: () => void };
+
+function RoutePricesDialog({ route, title, cars, onClose }: RoutePricesDialogProps) {
+  const { onSubmit, pending, fieldErrors: errors } = useAdminForm(saveRoutePrices.bind(null, route.id), { onSuccess: onClose });
+  return (
+    <RecordDialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      title={title}
+      onSubmit={onSubmit}
+      pending={pending}
+      submitLabel="Simpan harga"
+    >
+      <div className="grid gap-2">
+        <div>
+          <p className="text-[13px] font-medium">Harga per mobil (Rp)</p>
+          <p className="text-xs text-muted-foreground">Berlaku dua arah. Kosong: tamu melihat Hubungi kami untuk mobil itu.</p>
+        </div>
+        <CarPricesField cars={cars} name="carPrices" defaultValues={route.carPrices} errors={errors} />
+      </div>
+    </RecordDialog>
   );
 }
 
@@ -150,7 +197,6 @@ function PlaceDialog({ place, onClose }: { place: PlaceRecord | null; onClose: (
             placeholder="https://maps.app.goo.gl/…"
             defaultValue={place ? `${place.lat}, ${place.lng}` : ""}
             errors={errors}
-            hint="Di aplikasi Google Maps, buka tempatnya, ketuk Bagikan, lalu Salin link dan tempel di sini. Angka posisi seperti -7.7956, 110.3695 juga bisa."
           />
           {place ? (
             <a

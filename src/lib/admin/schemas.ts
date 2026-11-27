@@ -1,7 +1,7 @@
 // What the admin forms may save. Field paths match the input names, so errors land under the right field.
 import { z } from "zod";
 
-import { homePhotoSlots, placeKinds, seatClasses, tourInterests, tourLengths, type HomePhotoSlot } from "@/lib/content/schema";
+import { homePhotoSlots, placeKinds, seatClasses, tourInterests, tourLengths, type CarPrices, type HomePhotoSlot } from "@/lib/content/schema";
 import type { Draft } from "@/lib/machine-translation/plan";
 
 /** A web link. z.url() alone also accepts "javascript:" and "data:", which must never reach an href. */
@@ -30,6 +30,24 @@ const positiveRupiah = rupiah.pipe(z.number().min(1, "Harus lebih dari 0."));
 
 /** A price field left empty (or with no digits in it) means the price is on request. */
 const hasDigits = (value: string | undefined): value is string => /\d/.test(value ?? "");
+
+/** Price fields named by car id ("carPrices.avanza"), as typed. */
+const typedCarPrices = z.record(z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/), z.string()).optional().default({});
+
+/** The typed car prices as rupiah, leaving out empty ones (on request). Null, with the error added, when one is invalid. */
+function parseCarPrices(typed: Record<string, string>, path: string[], context: z.RefinementCtx): CarPrices | null {
+  const prices: CarPrices = {};
+  for (const [vehicle, value] of Object.entries(typed)) {
+    if (!hasDigits(value)) continue;
+    const price = positiveRupiah.safeParse(value);
+    if (!price.success) {
+      context.addIssue({ code: "custom", path: [...path, vehicle], message: price.error.issues[0].message });
+      return null;
+    }
+    prices[vehicle] = price.data;
+  }
+  return prices;
+}
 
 /** An unchecked checkbox sends nothing; a checked one sends "on". */
 const checkbox = z.preprocess((value) => value === "on" || value === "true", z.boolean());
@@ -105,11 +123,14 @@ export const tourInput = z
     code: z.string().trim().min(1, "Wajib diisi.").max(4, "Maksimal 4 karakter, misalnya A atau P2."),
     length: z.enum(tourLengths, "Pilih perjalanan sehari atau beberapa hari."),
     interests: z.array(z.enum(tourInterests)).optional().default([]),
-    // An empty price shows "Hubungi kami" (contact us) instead.
-    priceFromIdr: z.string().optional(),
+    // Typed prices by car id. An empty price shows "Hubungi kami" (contact us) for that car.
+    carPrices: typedCarPrices,
     accommodationOffered: checkbox,
+    // An empty price shows "Hubungi kami" instead.
     accommodationPriceFromIdr: z.string().optional(),
-    partPrices: z.array(z.string()).optional().default([]),
+    // Each split option's row key, in order, and its typed car prices under that key.
+    partKeys: z.array(z.string()).optional().default([]),
+    partPrices: z.record(z.string(), typedCarPrices).optional().default({}),
     photo: photo.optional().default(""),
     credit: z
       .object({ subject: optionalText, author: optionalText, license: optionalText, source: optionalText })
@@ -118,15 +139,8 @@ export const tourInput = z
     published: checkbox,
   })
   .transform((input, context) => {
-    let priceFromIdr: number | null = null;
-    if (hasDigits(input.priceFromIdr)) {
-      const price = positiveRupiah.safeParse(input.priceFromIdr);
-      if (!price.success) {
-        context.addIssue({ code: "custom", path: ["priceFromIdr"], message: price.error.issues[0].message });
-        return z.NEVER;
-      }
-      priceFromIdr = price.data;
-    }
+    const carPrices = parseCarPrices(input.carPrices, ["carPrices"], context);
+    if (!carPrices) return z.NEVER;
     let accommodationPriceFromIdr: number | null = null;
     if (input.accommodationOffered && hasDigits(input.accommodationPriceFromIdr)) {
       const price = positiveRupiah.safeParse(input.accommodationPriceFromIdr);
@@ -136,22 +150,15 @@ export const tourInput = z
       }
       accommodationPriceFromIdr = price.data;
     }
-    // Split options: drop rows left without a name, and keep each price next to its name. Empty price: on request.
+    // Split options: drop rows left without a name, and keep each one's car prices next to its name.
     const names = input.text.id.parts;
     const kept = names.flatMap((name, index) => (name ? [index] : []));
-    const partPrices: (number | null)[] = [];
+    const partPrices: CarPrices[] = [];
     for (const index of kept) {
-      const typed = (input.partPrices[index] ?? "").replace(/\D/g, "");
-      if (!typed) {
-        partPrices.push(null);
-        continue;
-      }
-      const price = positiveRupiah.safeParse(typed);
-      if (!price.success) {
-        context.addIssue({ code: "custom", path: ["partPrices", String(index)], message: price.error.issues[0].message });
-        return z.NEVER;
-      }
-      partPrices.push(price.data);
+      const key = input.partKeys[index] ?? "";
+      const prices = parseCarPrices(input.partPrices[key] ?? {}, ["partPrices", key], context);
+      if (!prices) return z.NEVER;
+      partPrices.push(prices);
     }
     const text = { ...input.text, id: { ...input.text.id, parts: kept.map((index) => names[index]) } };
     const credit = input.credit;
@@ -159,10 +166,10 @@ export const tourInput = z
       code: input.code.toUpperCase(),
       length: input.length,
       interests: input.interests,
-      priceFromIdr,
       accommodationOffered: input.accommodationOffered,
       accommodationPriceFromIdr,
       partPrices,
+      carPrices,
       photo: input.photo || null,
       photoCredit: credit?.author ? { subject: credit.subject || input.text.id.name, author: credit.author, license: credit.license, source: credit.source } : null,
       text,
@@ -177,31 +184,18 @@ export const vehicleInput = z
     seats: required,
     maxPassengers: z.coerce.number().int("Harus bilangan bulat.").min(1, "Minimal 1.").max(60, "Maksimal 60."),
     maxPassengersWithLuggage: z.coerce.number().int("Harus bilangan bulat.").min(1, "Minimal 1.").max(60, "Maksimal 60."),
-    tourPricePercent: z.coerce.number().int("Harus bilangan bulat.").min(50, "Minimal 50.").max(1000, "Maksimal 1000."),
-    dayWithDriverIdr: positiveRupiah,
-    dayWithDriverAndFuelIdr: positiveRupiah,
-    offersTransfers: checkbox,
-    transferRate: z.object({ baseIdr: z.string(), perKmIdr: z.string(), minimumIdr: z.string() }).partial().optional(),
     published: checkbox,
   })
   .refine((input) => input.maxPassengersWithLuggage <= input.maxPassengers, {
     path: ["maxPassengersWithLuggage"],
     message: "Tidak boleh lebih dari jumlah tanpa bagasi.",
-  })
-  .transform((input, context) => {
-    const { offersTransfers, transferRate, ...vehicle } = input;
-    if (!offersTransfers) return { ...vehicle, transferRate: null };
-    const rate = z
-      .object({ baseIdr: rupiah, perKmIdr: positiveRupiah, minimumIdr: rupiah })
-      .safeParse(transferRate ?? {});
-    if (!rate.success) {
-      for (const issue of rate.error.issues) {
-        context.addIssue({ code: "custom", path: ["transferRate", ...issue.path.map(String)], message: issue.message });
-      }
-      return z.NEVER;
-    }
-    return { ...vehicle, transferRate: rate.data };
   });
+
+/** A transfer route's fixed price per car, typed in /admin/transfers. */
+export const routePricesInput = z.object({ carPrices: typedCarPrices }).transform((input, context) => {
+  const carPrices = parseCarPrices(input.carPrices, ["carPrices"], context);
+  return carPrices ?? z.NEVER;
+});
 
 export const placeInput = z.object({
   kind: z.enum(placeKinds, "Pilih kelompok."),
@@ -235,6 +229,8 @@ export const faqInput = z.object({
 
 export const settingsInput = z.object({
   businessName: required,
+  companyName: optionalText,
+  companyUrl: webUrl("Isi alamat lengkap, diawali https://, atau kosongkan.").or(z.literal("")),
   siteUrl: webUrl("Isi alamat lengkap, diawali https://"),
   whatsappNumber: z
     .string()
@@ -264,3 +260,37 @@ const homePhoto = z
 export const homePhotosInput = z.object(
   Object.fromEntries(homePhotoSlots.map((slot) => [slot, homePhoto])) as Record<HomePhotoSlot, typeof homePhoto>,
 );
+
+/**
+ * A photo uploaded to one of the bucket's folders ("gallery/<uuid>.webp"), or one bundled with the site
+ * ("/photos/borobudur.jpg"), which the sample gallery photos and articles use.
+ */
+const uploaded = (folder: "gallery" | "articles") =>
+  z
+    .string()
+    .trim()
+    .regex(new RegExp(`^(${folder}/[0-9a-f-]{36}\\.webp|/photos/[A-Za-z0-9][A-Za-z0-9._-]*)$`), "Unggah fotonya sekali lagi.");
+
+/** Photos just uploaded with "Upload photos" on the Gallery page, saved without captions. */
+export const newGalleryPhotos = z.array(uploaded("gallery")).min(1).max(100);
+
+export const galleryPhotoInput = z.object({
+  photo: uploaded("gallery").or(z.literal("")).pipe(z.string().min(1, "Unggah fotonya.")),
+  // Optional in every language: an empty Indonesian caption clears them all.
+  caption: z.object({ id: optionalText, en: optionalText, fr: optionalText }),
+  published: checkbox,
+});
+
+const articleText = z.object({ title: required, excerpt: required, body: required });
+const optionalArticleText = z.object({ title: optionalText, excerpt: optionalText, body: optionalText });
+
+/** What an article must have in English once translated. */
+export const completeArticleText = articleText;
+
+export const articleInput = z.object({
+  text: draftTranslations(articleText, optionalArticleText),
+  cover: uploaded("articles").or(z.literal("")).transform((value) => value || null),
+  photos: z.array(uploaded("articles")).max(40, "Paling banyak 40 foto.").optional().default([]),
+  publishedOn: z.iso.date("Pilih tanggal."),
+  published: checkbox,
+});

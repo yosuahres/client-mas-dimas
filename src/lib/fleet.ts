@@ -1,5 +1,6 @@
-// The cars Jogja Travel drives, with their day rates, how many people fit, and their price level for packages.
-// Edited in /admin/fleet; read with getFleet() from @/lib/content/public. All amounts are whole rupiah.
+// The cars Jogja Travel drives and how many people fit. Package prices per car are set on
+// each package (TourRecord.carPrices).
+// Edited in /admin/fleet; read with getFleet() from @/lib/content/public.
 // These helpers also run in the browser (booking card), so the data is passed in.
 import { seatClasses, type SeatClass, type VehicleRecord } from "@/lib/content/schema";
 import type { Party } from "@/lib/party";

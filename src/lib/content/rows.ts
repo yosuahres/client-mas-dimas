@@ -1,7 +1,10 @@
 // Converts between Supabase rows (snake_case) and the content records in ./schema.
 import { defaultContent } from "@/lib/content/defaults";
 import type {
+  ArticleRecord,
+  CarPrices,
   FaqRecord,
+  GalleryPhotoRecord,
   HomePhotos,
   HomePhotoSlot,
   PlaceRecord,
@@ -22,10 +25,16 @@ export const tables = {
   faqs: "faqs",
   text: "page_text",
   homePhotos: "home_photos",
+  gallery: "gallery_photos",
+  articles: "articles",
 } as const;
 
 export type SettingsRow = {
   business_name: string;
+  /** Missing until 20261128000000_company_name.sql has run. */
+  company_name?: string;
+  /** Missing until 20261128010000_company_url.sql has run. */
+  company_url?: string;
   site_url: string;
   whatsapp_number: string;
   phone_display: string;
@@ -40,6 +49,8 @@ export type SettingsRow = {
 export function settingsFromRow(row: SettingsRow): SiteSettings {
   return {
     businessName: row.business_name,
+    companyName: row.company_name ?? "",
+    companyUrl: row.company_url ?? "",
     siteUrl: row.site_url,
     whatsappNumber: row.whatsapp_number,
     phoneDisplay: row.phone_display,
@@ -56,6 +67,8 @@ export function settingsToRow(settings: SiteSettings): SettingsRow & { id: 1 } {
   return {
     id: 1,
     business_name: settings.businessName,
+    company_name: settings.companyName,
+    company_url: settings.companyUrl,
     site_url: settings.siteUrl,
     whatsapp_number: settings.whatsappNumber,
     phone_display: settings.phoneDisplay,
@@ -73,10 +86,10 @@ export type TourRow = {
   code: string;
   length: TourRecord["length"];
   interests: TourRecord["interests"];
-  price_from_idr: number | null;
   accommodation_offered: boolean;
   accommodation_price_from_idr: number | null;
   part_prices: TourRecord["partPrices"] | null;
+  car_prices: TourRecord["carPrices"] | null;
   photo: string | null;
   photo_credit: TourRecord["photoCredit"];
   text: TourRecord["text"];
@@ -90,11 +103,13 @@ export function tourFromRow(row: TourRow): TourRecord {
     code: row.code,
     length: row.length,
     interests: row.interests,
-    priceFromIdr: row.price_from_idr,
     // Defaults cover a database that hasn't had the 20261108 migration yet.
     accommodationOffered: row.accommodation_offered ?? true,
     accommodationPriceFromIdr: row.accommodation_price_from_idr ?? null,
-    partPrices: row.part_prices ?? builtInTour(row.slug)?.partPrices ?? [],
+    // Until the 20261128020000 migration has run, part prices are plain numbers and car prices are missing:
+    // everything shows "Hubungi kami" rather than a wrong price.
+    partPrices: (row.part_prices ?? builtInTour(row.slug)?.partPrices ?? []).map((prices) => (typeof prices === "object" && prices !== null ? prices : {})),
+    carPrices: row.car_prices ?? {},
     photo: row.photo,
     photoCredit: row.photo_credit,
     text: withBuiltInParts(withDropOffs(row.text), row),
@@ -134,10 +149,10 @@ export function tourToRow(tour: TourRecord): Omit<TourRow, "position"> {
     code: tour.code,
     length: tour.length,
     interests: tour.interests,
-    price_from_idr: tour.priceFromIdr,
     accommodation_offered: tour.accommodationOffered,
     accommodation_price_from_idr: tour.accommodationPriceFromIdr,
     part_prices: tour.partPrices,
+    car_prices: tour.carPrices,
     photo: tour.photo,
     photo_credit: tour.photoCredit,
     text: tour.text,
@@ -152,19 +167,11 @@ export type VehicleRow = {
   seats: string;
   max_passengers: number;
   max_passengers_with_luggage: number | null;
-  tour_price_percent: number | null;
-  day_with_driver_idr: number;
-  day_with_driver_and_fuel_idr: number;
-  transfer_base_idr: number | null;
-  transfer_per_km_idr: number | null;
-  transfer_minimum_idr: number | null;
   position: number;
   published: boolean;
 };
 
 export function vehicleFromRow(row: VehicleRow): VehicleRecord {
-  const offersTransfers =
-    row.transfer_base_idr !== null && row.transfer_per_km_idr !== null && row.transfer_minimum_idr !== null;
   return {
     id: row.id,
     name: row.name,
@@ -174,12 +181,6 @@ export function vehicleFromRow(row: VehicleRow): VehicleRecord {
     maxPassengers: row.max_passengers,
     maxPassengersWithLuggage:
       row.max_passengers_with_luggage ?? Math.min(builtInVehicle(row.id)?.maxPassengersWithLuggage ?? row.max_passengers, row.max_passengers),
-    tourPricePercent: row.tour_price_percent ?? builtInVehicle(row.id)?.tourPricePercent ?? 100,
-    dayWithDriverIdr: row.day_with_driver_idr,
-    dayWithDriverAndFuelIdr: row.day_with_driver_and_fuel_idr,
-    transferRate: offersTransfers
-      ? { baseIdr: row.transfer_base_idr!, perKmIdr: row.transfer_per_km_idr!, minimumIdr: row.transfer_minimum_idr! }
-      : null,
     published: row.published,
   };
 }
@@ -192,12 +193,6 @@ export function vehicleToRow(vehicle: VehicleRecord): Omit<VehicleRow, "position
     seats: vehicle.seats,
     max_passengers: vehicle.maxPassengers,
     max_passengers_with_luggage: vehicle.maxPassengersWithLuggage,
-    tour_price_percent: vehicle.tourPricePercent,
-    day_with_driver_idr: vehicle.dayWithDriverIdr,
-    day_with_driver_and_fuel_idr: vehicle.dayWithDriverAndFuelIdr,
-    transfer_base_idr: vehicle.transferRate?.baseIdr ?? null,
-    transfer_per_km_idr: vehicle.transferRate?.perKmIdr ?? null,
-    transfer_minimum_idr: vehicle.transferRate?.minimumIdr ?? null,
     published: vehicle.published,
   };
 }
@@ -224,11 +219,13 @@ export type RouteRow = {
   id: string;
   from_place: string;
   to_place: string;
+  car_prices: CarPrices | null;
   position: number;
 };
 
 export function routeFromRow(row: RouteRow): RouteRecord & { id: string } {
-  return { id: row.id, from: row.from_place, to: row.to_place };
+  // car_prices is undefined until the 20261128030000 migration has run: every price then shows "Hubungi kami".
+  return { id: row.id, from: row.from_place, to: row.to_place, carPrices: row.car_prices ?? {} };
 }
 
 export type ReviewRow = {
@@ -285,4 +282,47 @@ export type HomePhotoRow = {
 
 export function homePhotosFromRows(rows: HomePhotoRow[]): HomePhotos {
   return Object.fromEntries(rows.map(({ slot, photo }) => [slot, photo]));
+}
+
+export type GalleryPhotoRow = {
+  id: string;
+  photo: string;
+  caption: GalleryPhotoRecord["caption"];
+  position: number;
+  published: boolean;
+};
+
+export function galleryPhotoFromRow(row: GalleryPhotoRow): GalleryPhotoRecord {
+  return { id: row.id, photo: row.photo, caption: row.caption, published: row.published };
+}
+
+export type ArticleRow = {
+  slug: string;
+  text: ArticleRecord["text"];
+  cover: string | null;
+  photos: string[];
+  published_on: string;
+  published: boolean;
+};
+
+export function articleFromRow(row: ArticleRow): ArticleRecord {
+  return {
+    slug: row.slug,
+    text: row.text,
+    cover: row.cover,
+    photos: row.photos,
+    publishedOn: row.published_on,
+    published: row.published,
+  };
+}
+
+export function articleToRow(article: ArticleRecord): ArticleRow {
+  return {
+    slug: article.slug,
+    text: article.text,
+    cover: article.cover,
+    photos: article.photos,
+    published_on: article.publishedOn,
+    published: article.published,
+  };
 }

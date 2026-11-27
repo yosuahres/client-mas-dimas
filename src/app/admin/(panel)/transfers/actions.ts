@@ -5,7 +5,7 @@ import { savedMessage, translateText } from "@/lib/admin/auto-translate";
 import { formObject } from "@/lib/admin/form-data";
 import { resolveMapLocation } from "@/lib/admin/map-location";
 import { contentChanged, newKey, nextPosition } from "@/lib/admin/mutations";
-import { completeText, placeInput, routeInput } from "@/lib/admin/schemas";
+import { completeText, placeInput, routeInput, routePricesInput } from "@/lib/admin/schemas";
 import { requireAdmin } from "@/lib/admin/session";
 import { placeToRow, tables, type PlaceRow } from "@/lib/content/rows";
 import { contentTags } from "@/lib/content/store";
@@ -50,5 +50,18 @@ export async function addRoute(formData: FormData): Promise<ActionResult> {
   if (error) return databaseFailure(error, "rute");
 
   contentChanged(contentTags.routes);
-  return { ok: true, message: "Rute ditambahkan." };
+  return { ok: true, message: "Rute ditambahkan. Ketuk rutenya untuk mengisi harga." };
+}
+
+export async function saveRoutePrices(id: string, formData: FormData): Promise<ActionResult> {
+  const { supabase } = await requireAdmin();
+  const parsed = routePricesInput.safeParse(formObject(formData));
+  if (!parsed.success) return invalid(parsed.error);
+
+  const { data, error } = await supabase.from(tables.routes).update({ car_prices: parsed.data }).eq("id", id).select("id");
+  if (error) return databaseFailure(error, "harga rute");
+  if (!data?.length) return failure("Rute ini sudah tidak ada. Mungkin sudah dihapus di tab lain.");
+
+  contentChanged(contentTags.routes);
+  return { ok: true, message: "Harga rute disimpan." };
 }

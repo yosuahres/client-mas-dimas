@@ -69,7 +69,7 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
     : [{ label: t.price, value: priceLabel(tour.priceFromIdr, t.fromPrice) }];
   const bookingProps = {
     tourName: tour.name,
-    priceFromIdr: tour.priceFromIdr,
+    carPrices: tour.carPrices,
     parts: tourParts(tour),
     accommodationPriceFromIdr: tour.accommodationOffered ? tour.accommodationPriceFromIdr : undefined,
     dropOffs,
@@ -79,14 +79,13 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
     stayText: dict.catalog.stays,
     seatClassText: dict.transfer.seatClasses,
     priceText: { fromPrice: t.fromPrice, fromPriceAccommodation: t.fromPriceAccommodation, onRequest: t.onRequest },
-    fleet: fleet.map(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, tourPricePercent }) => ({
+    fleet: fleet.map(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage }) => ({
       id,
       name,
       seatClass,
       seats,
       maxPassengers,
       maxPassengersWithLuggage,
-      tourPricePercent,
     })),
     site: { whatsappNumber: site.whatsappNumber, idrPerUsd: site.idrPerUsd },
   };
@@ -112,7 +111,7 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
                 href={localePath(locale, "/tours")}
                 className="inline-flex items-center gap-1.5 text-[0.95rem] font-medium text-jade sm:pill sm:bg-white/15 sm:px-4 sm:py-2 sm:text-[0.9rem] sm:text-white sm:backdrop-blur-md sm:hover:bg-white/25"
               >
-                ← {t.allTours}
+                {t.allTours}
               </Link>
               <h1 id="tour-title" className="display mt-4 max-w-5xl text-[clamp(2.5rem,6.5vw,5.5rem)] sm:mt-8">
                 {tour.name}
@@ -167,11 +166,8 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tours/[slu
               </h2>
               <ul className="mt-6 divide-y divide-ink/10 border-y border-ink/10">
                 {dropOffs.map((place) => (
-                  <li key={place} className="flex items-baseline gap-5 py-4">
-                    <span aria-hidden="true" className="w-6 shrink-0 text-jade">
-                      →
-                    </span>
-                    <span className="text-xl tracking-[-0.01em]">{place}</span>
+                  <li key={place} className="py-4 text-xl tracking-[-0.01em]">
+                    {place}
                   </li>
                 ))}
               </ul>
