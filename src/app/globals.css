@@ -68,13 +68,6 @@
 }
 
 @layer base {
-  :root {
-    /* Lines carousels and full-bleed rows up with the max-w-7xl content column */
-    --gutter: 1.25rem;
-    @media (min-width: 40rem) {
-      --gutter: max(2rem, calc((100vw - 80rem) / 2 + 2rem));
-    }
-  }
   html {
     scroll-behavior: smooth;
   }
@@ -168,10 +161,3 @@ details[open] .disclosure-icon {
   transform: rotate(45deg);
 }
 
-/* Horizontal carousels: scroll by touch or trackpad, no visible scrollbar */
-.no-scrollbar {
-  scrollbar-width: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}

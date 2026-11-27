@@ -4,16 +4,17 @@ export const id: Dictionary = {
   meta: {
     title: "Sewa mobil, sopir, dan paket tour di Yogyakarta",
     description:
-      "Mobil dan sopir pribadi di Yogyakarta: jemput Bandara YIA 24 jam, tour sehari ke Borobudur, Prambanan, dan Merapi, sampai ke Bromo dan Ijen. Harga per kendaraan.",
+      "{brand}: sewa mobil dan sopir pribadi di Yogyakarta. Jemput Bandara YIA 24 jam, tour sehari ke Borobudur, Prambanan, dan Merapi, sampai ke Bromo dan Ijen. Harga per kendaraan.",
     city: "Yogyakarta, Indonesia",
   },
   header: {
     nav: {
       tours: "Paket tour",
-      plan: "Rencanakan kunjungan",
       booking: "Cara memesan",
       faq: "Pertanyaan",
       transfers: "Bandara & antar jemput",
+      gallery: "Galeri",
+      articles: "Artikel",
     },
     chat: "Chat di WhatsApp",
     chatMessage: "Halo Jogja Travel! Saya sedang merencanakan perjalanan dan ingin bertanya.",
@@ -23,17 +24,10 @@ export const id: Dictionary = {
   hero: {
     kicker: "Mobil dan sopir pribadi di",
     title: "Yogyakarta",
-    lede: "Jemput bandara, tour sehari ke candi dan gunung api, sampai ke Bromo dan Ijen. Mobil pribadi dan sopir lokal, harga per kendaraan.",
     seeTours: "Lihat paket tour",
     planOnWhatsapp: "Rencanakan lewat WhatsApp",
     planMessage: "Halo Jogja Travel! Saya ingin merencanakan perjalanan.",
     photoAlt: "Pemandangan Yogyakarta",
-  },
-  toursSection: {
-    title: "Tour transportasi pribadi",
-    intro:
-      "Satu harga per mobil, sudah termasuk sopir, BBM, parkir, dan air mineral. Tiket masuk tidak termasuk.",
-    viewAll: "Lihat semua",
   },
   firstStep: {
     left: "Jogja Anda dimulai di sini.",
@@ -48,7 +42,6 @@ export const id: Dictionary = {
   transfersFeature: {
     label: "Antar jemput bandara, 24 jam",
     title: "Dari YIA ke mana saja di Jawa",
-    body: "Kami jemput di YIA jam berapa pun dan antar ke Jogja, Solo, Bromo, bahkan Bali. Harga per mobil, sesuai jarak.",
     cta: "Cek harga transfer",
     cardTitle: "Rute populer",
     perCar: "per kendaraan, mulai dari",
@@ -69,46 +62,12 @@ export const id: Dictionary = {
     kicker: "Diantar oleh",
     title: "Sopir yang hafal jalan",
     cta: "Cara memesan",
-    lede: "Sopir lokal yang hafal jalan pintas, dari Borobudur sebelum subuh sampai perjalanan malam ke Bromo.",
     photoAlt: "Seorang pembatik lanjut usia menggambar pola dengan malam di atas kain di sebuah bengkel batik di Imogiri",
-    included: ["Mobil dan sopir pribadi", "BBM, parkir, dan air mineral", "Jemput di hotel atau bandara, 24 jam", "Rencana Anda, tempo Anda"],
-  },
-  plan: {
-    title: "Rencanakan kunjungan",
-    lede: "Yang perlu Anda tahu sebelum tiba.",
-    facts: [
-      {
-        figure: "1 jam",
-        label: "Dari bandara",
-        detail: "YIA sekitar 45 km di barat kota. Kami jemput di pintu kedatangan, jam berapa pun.",
-      },
-      {
-        figure: "Apr–Okt",
-        label: "Musim kemarau",
-        detail: "Pagi cerah, sunrise terbaik. Nov–Mar biasanya hujan di sore hari.",
-      },
-      {
-        figure: "UTC+7",
-        label: "Waktu setempat",
-        detail: "Waktu Indonesia Barat (WIB). Semua jam jemput memakai waktu setempat.",
-      },
-    ],
-    stayTitle: "Berapa lama menginap",
-    stays: [
-      { nights: "Dua malam", plan: "Borobudur dan Prambanan dalam sehari." },
-      {
-        nights: "Tiga malam",
-        plan: "Tambah Kraton, Taman Sari, dan Malioboro.",
-      },
-      {
-        nights: "Empat malam atau lebih",
-        plan: "Tambah Merapi, Goa Jomblang, pantai, atau Bromo dan Ijen.",
-      },
-    ],
   },
   booking: {
     title: "Cara memesan",
-    lede: "Tiga langkah, lalu berangkat.",
+    metaDescription:
+      "Cara memesan mobil dan sopir pribadi di {brand}: pilih perjalanan, konfirmasi lewat WhatsApp, bertemu sopir Anda.",
     steps: [
       {
         title: "Pilih perjalanan dan tanggal",
@@ -133,30 +92,47 @@ export const id: Dictionary = {
     translated: "Diterjemahkan oleh Google",
     readReviews: "Baca ulasannya",
   },
+  gallery: {
+    title: "Galeri",
+    metaDescription:
+      "Foto tamu {brand} dalam perjalanan mereka di Jogja dan di seluruh Jawa.",
+    empty: "Foto segera hadir.",
+    open: "Buka foto {n}",
+    close: "Tutup",
+    previous: "Foto sebelumnya",
+    next: "Foto berikutnya",
+    counter: "{n} dari {total}",
+    count: "{count} foto",
+  },
+  articles: {
+    title: "Artikel",
+    metaDescription:
+      "Cerita perjalanan tamu {brand}, dan tips berkunjung ke Yogyakarta.",
+    empty: "Belum ada artikel.",
+    readMore: "Baca artikel",
+    allArticles: "Semua artikel",
+    more: "Artikel lainnya",
+    photos: "Foto",
+  },
   faq: {
     title: "Pertanyaan",
-    lede: "Harga, tiket, penjemputan, dan rencana perjalanan.",
-    anythingElse: "Ada pertanyaan lain?",
-    link: "Kirim pesan di WhatsApp",
-    after: ". Kami balas cepat, 24 jam.",
-    message: "Halo Jogja Travel! Saya punya pertanyaan.",
+    metaDescription:
+      "Pertanyaan seputar {brand}: harga, tiket masuk, jemput bandara, dan rencana perjalanan.",
   },
   footer: {
     sticker: ["Mobil Anda.", "Rencana Anda."],
-    lede: "Kirim tanggal dan tujuan Anda. Kami balas cepat, 24 jam.",
     columns: { tours: "Paket tour", plan: "Rencanakan perjalanan", contact: "Kontak" },
     title: "Beri tahu tanggal Anda. Sisanya kami yang atur.",
     cta: "Kirim pesan di WhatsApp",
     message: "Halo Jogja Travel! Kami akan ke Jogja. Tanggal kami: ",
     orEmail: "Atau email ke",
+    operatedBy: "dikelola oleh",
     floatingLabel: "Chat dengan kami di WhatsApp",
   },
   toursPage: {
     title: "Tour transportasi pribadi",
     metaDescription:
-      "Paket transportasi privat dari Yogyakarta: Borobudur, Prambanan, Merapi, goa dan pantai Gunungkidul, Dieng, Bromo, dan Ijen. Harga per kendaraan.",
-    lede: "Mobil dan sopir pribadi dari Jogja, dengan atau tanpa hotel. Harga per mobil; tiket masuk tidak termasuk.",
-    cantFind: "Tidak menemukan yang Anda cari?",
+      "Paket transportasi privat dari Yogyakarta oleh {brand}: Borobudur, Prambanan, Merapi, goa dan pantai Gunungkidul, Dieng, Bromo, dan Ijen. Harga per kendaraan.",
   },
   catalog: {
     stayLabel: "Jenis paket",
@@ -235,10 +211,6 @@ export const id: Dictionary = {
     messagePart: "Kunjungan: {part}",
     messageTooBig: "Kendaraan: perlu lebih dari satu mobil",
   },
-  pageCta: {
-    title: "Siap memilih perjalanan?",
-    button: "Lihat semua paket",
-  },
   pickers: {
     close: "Tutup",
     done: "Selesai",
@@ -314,16 +286,13 @@ export const id: Dictionary = {
   transferPage: {
     title: "Antar jemput bandara dan transfer",
     metaDescription:
-      "Antar jemput privat di Bandara Internasional Yogyakarta (YIA), 24 jam sehari, dan transfer dari Jogja ke seluruh Jawa hingga Bali. Harga per kendaraan, mulai dari Rp 250.000.",
-    lede: "Jemput Bandara YIA 24 jam dan transfer ke seluruh Jawa. Harga per mobil, mulai Rp 250.000.",
+      "Antar jemput privat {brand} di Bandara Internasional Yogyakarta (YIA), 24 jam sehari, dan transfer dari Jogja ke seluruh Jawa hingga Bali. Harga per kendaraan, mulai dari Rp 250.000.",
     resultsTitle: "{from} ke {to}",
     distance: "Sekitar {km} km",
     duration: "sekitar {duration} perjalanan",
     perCar: "per kendaraan",
     request: "Pesan lewat WhatsApp",
-    emptyTitle: "Mau ke mana?",
-    emptyBody: "Pilih asal dan tujuan di atas untuk melihat harga.",
-    estimateTitle: "Harga perkiraan",
+    estimateTitle: "Perlu diketahui",
     estimateBody:
       "Karimunjawa dan Bali termasuk kapal. Harga final kami konfirmasi lewat WhatsApp.",
     popularTitle: "Rute populer",

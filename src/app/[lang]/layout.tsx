@@ -3,6 +3,7 @@ import { Geist, Manrope } from "next/font/google";
 
 import { WhatsappIcon } from "@/components/icons";
 import { languageAlternates, locales, ogLocale } from "@/i18n/config";
+import { fill } from "@/i18n/format";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getSite } from "@/lib/content/public";
 import { whatsappLink } from "@/lib/site";
@@ -34,10 +35,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(site.siteUrl),
     title: {
-      default: `${t.title} | ${site.businessName}`,
+      default: `${site.businessName} | ${t.title}`,
       template: `%s | ${site.businessName}`,
     },
-    description: t.description,
+    description: fill(t.description, { brand: site.businessName }),
     applicationName: site.businessName,
     category: "travel",
     alternates: languageAlternates(locale),

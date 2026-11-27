@@ -23,11 +23,11 @@ export async function ReviewsSection() {
 
   return (
     <section aria-labelledby="reviews-title">
-      <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-28">
-        <h2 id="reviews-title" className="display text-center text-[clamp(2.25rem,4.5vw,3.5rem)]">
+      <div className="mx-auto max-w-7xl px-5 py-9 sm:px-8 sm:py-20">
+        <h2 id="reviews-title" className="display text-[1.85rem] sm:text-center sm:text-[clamp(2.25rem,4.5vw,3.5rem)]">
           {t.title}
         </h2>
-        <p className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 sm:mt-5 sm:justify-center">
           <span className="label text-[0.95rem]">
             <span aria-hidden="true" className="text-gold">
               ★★★★★
@@ -46,7 +46,7 @@ export async function ReviewsSection() {
           </a>
         </p>
 
-        <ul className="mt-14 grid gap-4 md:grid-cols-3">
+        <ul className="-mx-5 mt-6 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:-mx-8 sm:mt-14 sm:scroll-px-8 sm:gap-4 sm:px-8 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
           {live ? googleReviews.map((review) => <GoogleReviewCard key={review.id} review={review} t={t} />) : <AdminReviewCards locale={locale} />}
         </ul>
       </div>
@@ -58,7 +58,7 @@ type ReviewsText = Awaited<ReturnType<typeof getDictionary>>["reviews"];
 
 function GoogleReviewCard({ review, t }: { review: GoogleReview; t: ReviewsText }) {
   return (
-    <li className="rounded-3xl bg-cream p-7 sm:p-8">
+    <li className="w-[85%] shrink-0 snap-start rounded-3xl bg-cream p-7 sm:w-[60%] sm:p-8 md:w-auto">
       <figure className="flex h-full flex-col justify-between gap-8">
         <div>
           <p className="text-gold" role="img" aria-label={fill(t.stars, { rating: review.rating })}>
@@ -90,7 +90,7 @@ function GoogleReviewCard({ review, t }: { review: GoogleReview; t: ReviewsText 
 async function AdminReviewCards({ locale }: { locale: Locale }) {
   const reviews = await getReviews(locale);
   return reviews.slice(0, SHOWN).map((review) => (
-    <li key={review.id} className="rounded-3xl bg-cream p-7 sm:p-8">
+    <li key={review.id} className="w-[85%] shrink-0 snap-start rounded-3xl bg-cream p-7 sm:w-[60%] sm:p-8 md:w-auto">
       <figure className="flex h-full flex-col justify-between gap-8">
         <blockquote className="text-[1.2rem] leading-[1.5] tracking-[-0.01em]">&ldquo;{review.quote}&rdquo;</blockquote>
         <figcaption>

@@ -4,13 +4,13 @@ import { Hero } from "@/components/landing/hero";
 import { ReviewsSection } from "@/components/landing/reviews-section";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
-import { ToursSection } from "@/components/landing/tours-section";
 import { TransfersFeature } from "@/components/landing/transfers-feature";
+import { fill } from "@/i18n/format";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getSite, getTours } from "@/lib/content/public";
 import { homeJsonLd, jsonLdScript } from "@/lib/structured-data";
 
-// Laid out after lonelyplanet.com: photo hero with a tilted card, a cobalt band, a card carousel,
+// Laid out after lonelyplanet.com: photo hero with a tilted card, a cobalt band,
 // a full-bleed photo feature, four photo tiles on stone, a split feature, testimonials, then the footer.
 // Title, description and share image come from the [lang] layout.
 export default async function Home() {
@@ -20,7 +20,7 @@ export default async function Home() {
   const jsonLd = homeJsonLd({
     site,
     locale,
-    description: dict.meta.description,
+    description: fill(dict.meta.description, { brand: site.businessName }),
     catalogName: dict.toursPage.title,
     tours,
   });
@@ -31,7 +31,6 @@ export default async function Home() {
       <SiteHeader path="/" overPhoto />
       <main>
         <Hero />
-        <ToursSection />
         <GuidesSection />
         <FirstStepSection />
         <TransfersFeature />

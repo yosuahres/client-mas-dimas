@@ -25,9 +25,9 @@ export async function Hero() {
   return (
     <section aria-labelledby="hero-title">
       {/* The photo runs edge to edge with square corners. Only the photo layer clips, so dropdowns in the search can open past it.
-          Phones: a wide photo, then the search as a white bar of two tabs right under it */}
+          Phones: a tall photo with the title on its lower part, and the search card overlapping its bottom edge */}
       <div className="relative isolate flex flex-col justify-end text-white sm:min-h-svh">
-        <div className="absolute inset-x-0 top-0 -z-10 h-[56vw] overflow-hidden bg-ink sm:inset-y-0 sm:h-auto">
+        <div className="absolute inset-x-0 top-0 -z-10 h-[78vw] overflow-hidden bg-ink sm:inset-y-0 sm:h-auto">
           {photo ? (
             <Image
               src={photo.src}
@@ -35,7 +35,7 @@ export async function Hero() {
               priority
               fill
               sizes="100vw"
-              className="object-cover object-[70%_40%]"
+              className="object-cover object-[70%_40%] opacity-70"
             />
           ) : null}
           <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/25 to-black/5" />
@@ -43,15 +43,13 @@ export async function Hero() {
           <div className="absolute inset-x-0 top-0 hidden h-40 bg-linear-to-b from-black/45 to-transparent sm:block" />
         </div>
 
-        <div className="mx-auto w-full max-w-[90rem] pt-[56vw] sm:px-8 sm:pt-28 sm:pb-[clamp(2rem,12svh,9rem)] lg:px-12">
-          <p className="kicker text-[1.05rem] text-white/85 animate-rise max-sm:hidden">{t.kicker}</p>
-          {/* Phones show only the photo; the h1 stays for screen readers */}
-          <h1 id="hero-title" className="display mt-2 text-[clamp(3.25rem,8vw,7rem)] animate-rise [animation-delay:100ms] max-sm:sr-only">
+        <div className="mx-auto w-full max-w-[90rem] px-4 pt-[30vw] sm:px-8 sm:pt-28 sm:pb-[clamp(2rem,12svh,9rem)] lg:px-12">
+          <p className="kicker text-[1.05rem] text-white/85 animate-rise">{t.kicker}</p>
+          <h1 id="hero-title" className="display mt-1 text-[clamp(2.75rem,8vw,7rem)] sm:mt-2 animate-rise [animation-delay:100ms]">
             {t.title}
           </h1>
-          {/* Phones skip the intro; the floating WhatsApp button covers chat */}
-          <div className="mt-4 hidden flex-wrap items-end justify-between gap-x-10 gap-y-3 animate-rise [animation-delay:180ms] sm:flex">
-            <p className="max-w-2xl text-[1.1rem] leading-[1.5] text-white/90">{t.lede}</p>
+          {/* Phones skip this; the floating WhatsApp button covers chat */}
+          <div className="mt-6 hidden animate-rise [animation-delay:180ms] sm:flex">
             <a
               href={whatsappLink(site, t.planMessage)}
               className="pill shrink-0 bg-white/15 text-white backdrop-blur-md hover:bg-white/25"
@@ -61,8 +59,8 @@ export async function Hero() {
             </a>
           </div>
 
-          {/* Phones: folded to the two tabs until one is tapped */}
-          <div className="animate-rise [animation-delay:260ms] sm:mt-7">
+          {/* Phones: open on the first tab; tapping the open tab folds it */}
+          <div className="mt-4 animate-rise [animation-delay:260ms] sm:mt-7">
             <TripSearch
               locale={locale}
               text={dict.search}

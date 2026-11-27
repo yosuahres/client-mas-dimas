@@ -3,31 +3,28 @@ import type { Metadata } from "next";
 import { FaqSection } from "@/components/landing/faq-section";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
-import { PageCta } from "@/components/page-cta";
 import { PageHeader } from "@/components/page-header";
-import { languageAlternates } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
+import { getFaqs } from "@/lib/content/public";
+import { pageMetadata } from "@/lib/page-metadata";
+import { faqJsonLd, jsonLdScript } from "@/lib/structured-data";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
   const t = (await getDictionary()).faq;
-  return {
-    title: t.title,
-    description: t.lede,
-    alternates: languageAlternates(locale, "/faq"),
-  };
+  return pageMetadata("/faq", t.title, t.metaDescription);
 }
 
 export default async function Page() {
   const t = (await getDictionary()).faq;
+  const faqs = await getFaqs(await getLocale());
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(faqJsonLd(faqs)) }} />
       <SiteHeader path="/faq" />
       <main>
-        <PageHeader title={t.title} lede={t.lede} />
+        <PageHeader title={t.title} look="wheat" centered />
         <FaqSection />
-        <PageCta />
       </main>
       <SiteFooter />
     </>

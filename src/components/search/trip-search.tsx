@@ -5,7 +5,6 @@ import { createContext, useContext, useId, useRef, useState, useSyncExternalStor
 
 import { Dropdown } from "@/components/dropdown";
 import {
-  ArrowRightIcon,
   CalendarIcon,
   CarIcon,
   ClockIcon,
@@ -50,7 +49,7 @@ type TripSearchProps = {
   defaultParty?: Party;
   /** Phones: this tab's recent searches under the form, one tap to run them again. */
   showRecent?: boolean;
-  /** Phones: start with only the two tabs showing; tapping one opens its form below, tapping it again folds it. */
+  /** Phones: a card with two icon tabs over the open form; tapping the open tab folds it, tapping a tab opens it again. */
   collapsible?: boolean;
   /** Phones: shown in the "Private transport tour" tab in place of the tour form, e.g. a short list of packages. */
   phoneTours?: ReactNode;
@@ -80,8 +79,8 @@ export function TripSearch({
   const baseId = useId();
   const tabRefs = useRef<Record<SearchMode, HTMLButtonElement | null>>({ tours: null, transfer: null });
 
-  // Phones only, and only where asked (the home page): the form folds away under the two tabs until one is tapped
-  const [open, setOpen] = useState(false);
+  // Phones only, and only where asked (the home page): the form starts open and folds away when its tab is tapped again
+  const [open, setOpen] = useState(true);
   const phone = useSyncExternalStore(subscribeToPhone, isPhone, () => false);
   const folded = collapsible && !open;
 
@@ -115,12 +114,15 @@ export function TripSearch({
     ? "relative grid grid-cols-2 border-b border-ink/10 before:absolute before:inset-y-5 before:left-1/2 before:w-px before:bg-ink/15 sm:flex sm:gap-2 sm:border-0 sm:px-5 sm:pt-5 sm:before:hidden"
     : "mx-4 mt-4 flex gap-1 rounded-full bg-cream p-1 sm:mx-0 sm:mt-0 sm:gap-2 sm:overflow-x-auto sm:rounded-none sm:bg-transparent sm:px-5 sm:pt-5 sm:pb-0";
   const tabClass = collapsible
-    ? "pill text-ink-muted hover:text-ink aria-selected:bg-cream aria-selected:text-ink max-sm:min-w-0 max-sm:flex-col max-sm:gap-1.5 max-sm:text-center max-sm:leading-tight max-sm:whitespace-normal max-sm:rounded-none max-sm:bg-transparent max-sm:px-2 max-sm:pt-4 max-sm:pb-3.5 max-sm:text-[0.95rem] max-sm:text-ink max-sm:aria-selected:bg-transparent max-sm:data-[open=true]:text-jade sm:shrink-0 sm:px-4 sm:py-2.5 sm:text-[0.95rem]"
+    ? "pill text-ink-muted hover:text-ink aria-selected:bg-cream aria-selected:text-ink max-sm:min-w-0 max-sm:flex-col max-sm:gap-1.5 max-sm:text-center max-sm:leading-tight max-sm:whitespace-normal max-sm:rounded-none max-sm:bg-transparent max-sm:px-2 max-sm:pt-3 max-sm:pb-3 max-sm:text-[0.95rem] max-sm:text-ink max-sm:aria-selected:bg-transparent max-sm:data-[open=true]:text-jade sm:shrink-0 sm:px-4 sm:py-2.5 sm:text-[0.95rem]"
     : "pill min-w-0 flex-1 justify-center px-2 py-2.5 text-[0.85rem] text-ink-muted max-sm:text-center max-sm:leading-tight max-sm:whitespace-normal hover:text-ink aria-selected:bg-white aria-selected:text-ink sm:flex-none sm:shrink-0 sm:px-4 sm:text-[0.95rem] sm:aria-selected:bg-cream";
   const panelClass = `p-4 sm:p-5 ${folded ? "max-sm:hidden" : ""}`;
 
   return (
-    <section aria-label={text.label} className="relative bg-white text-ink sm:rounded-3xl sm:shadow-[0_20px_50px_-20px_rgb(0_0_0/0.35)]">
+    <section
+      aria-label={text.label}
+      className={`relative bg-white text-ink sm:rounded-3xl sm:shadow-[0_20px_50px_-20px_rgb(0_0_0/0.35)] ${collapsible ? "max-sm:rounded-2xl max-sm:shadow-[0_16px_40px_-16px_rgb(0_0_0/0.35)]" : ""}`}
+    >
       <div role="tablist" aria-label={text.label} className={tablistClass}>
         {modes.map((value) => (
           <button
@@ -193,8 +195,8 @@ export function TripSearch({
 }
 
 const tabIcons: Record<SearchMode, ReactNode> = {
-  tours: <MapIcon className="size-7" />,
-  transfer: <CarIcon className="size-7" />,
+  tours: <MapIcon className="size-6" />,
+  transfer: <CarIcon className="size-6" />,
 };
 
 const PHONE = "(max-width: 39.99rem)";
@@ -444,7 +446,6 @@ function SubmitButton({ className = "", children }: { className?: string; childr
       className={`pill min-h-12 rounded-xl bg-jade px-7 text-white hover:bg-jade/90 lg:min-h-[4.25rem] lg:rounded-2xl lg:max-xl:px-5 active:scale-[0.98] ${className}`}
     >
       {children}
-      <ArrowRightIcon className="size-4" />
     </button>
   );
 }

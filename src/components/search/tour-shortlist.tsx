@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ArrowRightIcon, MapIcon } from "@/components/icons";
+import { MapIcon } from "@/components/icons";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { fill } from "@/i18n/format";
@@ -51,7 +51,6 @@ export function TourShortlist({ locale, dict, tours }: TourShortlistProps) {
         className="mx-auto mt-5 flex w-fit items-center gap-2 py-1 font-medium text-jade underline-offset-4 hover:underline"
       >
         {dict.search.viewAllPackages}
-        <ArrowRightIcon aria-hidden="true" className="size-4" />
       </Link>
     </div>
   );

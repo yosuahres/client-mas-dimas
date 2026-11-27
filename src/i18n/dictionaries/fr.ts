@@ -4,16 +4,17 @@ export const fr: Dictionary = {
   meta: {
     title: "Voiture privée, chauffeur et circuits à Yogyakarta",
     description:
-      "Voiture privée avec chauffeur à Yogyakarta : accueil à l'aéroport YIA 24 h/24, excursions à Borobudur, Prambanan et au Merapi, jusqu'au Bromo et à l'Ijen. Prix par véhicule.",
+      "{brand} : voiture privée avec chauffeur à Yogyakarta. Accueil à l'aéroport YIA 24 h/24, excursions à Borobudur, Prambanan et au Merapi, et trajets vers le Bromo et l'Ijen. Prix par véhicule.",
     city: "Yogyakarta, Indonésie",
   },
   header: {
     nav: {
       tours: "Circuits",
-      plan: "Préparer votre séjour",
       booking: "Comment réserver",
       faq: "Questions",
       transfers: "Aéroport et transferts",
+      gallery: "Galerie",
+      articles: "Articles",
     },
     chat: "Écrire sur WhatsApp",
     chatMessage: "Bonjour Jogja Travel ! Je prépare un voyage et j'ai une question.",
@@ -23,17 +24,10 @@ export const fr: Dictionary = {
   hero: {
     kicker: "Voiture privée avec chauffeur à",
     title: "Yogyakarta",
-    lede: "Accueil à l'aéroport, excursions aux temples et au volcan, jusqu'au Bromo et à l'Ijen. Votre voiture et un chauffeur local, prix par véhicule.",
     seeTours: "Voir les circuits",
     planOnWhatsapp: "Organiser sur WhatsApp",
     planMessage: "Bonjour Jogja Travel ! J'aimerais organiser un voyage.",
     photoAlt: "Une vue de Yogyakarta",
-  },
-  toursSection: {
-    title: "Circuits en transport privé",
-    intro:
-      "Un prix par voiture, avec chauffeur, carburant, parking et eau. Billets d'entrée en sus.",
-    viewAll: "Tout voir",
   },
   firstStep: {
     left: "Votre Jogja commence ici.",
@@ -48,7 +42,6 @@ export const fr: Dictionary = {
   transfersFeature: {
     label: "Accueil à l'aéroport, 24 h/24",
     title: "De YIA à partout à Java",
-    body: "Nous vous accueillons à YIA à toute heure, direction Jogja, Solo, le Bromo ou même Bali. Prix par voiture, selon la distance.",
     cta: "Calculer un transfert",
     cardTitle: "Trajets fréquents",
     perCar: "par véhicule, à partir de",
@@ -69,46 +62,12 @@ export const fr: Dictionary = {
     kicker: "Conduit par",
     title: "Des gens qui connaissent la route",
     cta: "Comment réserver",
-    lede: "Des chauffeurs locaux qui connaissent tous les raccourcis, de Borobudur avant l'aube à la route de nuit vers le Bromo.",
     photoAlt: "Une artisane âgée dessine des motifs à la cire sur un tissu dans un atelier de batik à Imogiri",
-    included: ["Voiture et chauffeur privés", "Carburant, parking et eau", "Prise en charge hôtel ou aéroport, 24 h/24", "Votre programme, votre rythme"],
-  },
-  plan: {
-    title: "Préparer votre séjour",
-    lede: "L'essentiel avant d'atterrir.",
-    facts: [
-      {
-        figure: "1 heure",
-        label: "Depuis l'aéroport",
-        detail: "YIA est à environ 45 km à l'ouest de la ville. Accueil à l'arrivée, à toute heure.",
-      },
-      {
-        figure: "Avr–oct",
-        label: "Saison sèche",
-        detail: "Matins dégagés, plus beaux levers de soleil. De nov. à mars, pluie l'après-midi.",
-      },
-      {
-        figure: "UTC+7",
-        label: "Heure locale",
-        detail: "Heure de l'Indonésie occidentale (WIB). Toutes nos heures sont locales.",
-      },
-    ],
-    stayTitle: "Combien de temps rester",
-    stays: [
-      { nights: "Deux nuits", plan: "Borobudur et Prambanan en une journée." },
-      {
-        nights: "Trois nuits",
-        plan: "Ajoutez le palais du Sultan, Taman Sari et Malioboro.",
-      },
-      {
-        nights: "Quatre nuits ou plus",
-        plan: "Ajoutez le Merapi, la grotte de Jomblang, les plages, ou le Bromo et l'Ijen.",
-      },
-    ],
   },
   booking: {
     title: "Comment réserver",
-    lede: "Trois étapes, et c'est parti.",
+    metaDescription:
+      "Réserver une voiture privée avec chauffeur chez {brand} : choisissez un trajet, confirmez sur WhatsApp, retrouvez votre chauffeur.",
     steps: [
       {
         title: "Choisissez un voyage et une date",
@@ -133,30 +92,47 @@ export const fr: Dictionary = {
     translated: "Traduit par Google",
     readReviews: "Lire les avis",
   },
+  gallery: {
+    title: "Galerie",
+    metaDescription:
+      "Les photos des clients de {brand} pendant leurs voyages à Jogja et partout à Java.",
+    empty: "Les photos arrivent bientôt.",
+    open: "Ouvrir la photo {n}",
+    close: "Fermer",
+    previous: "Photo précédente",
+    next: "Photo suivante",
+    counter: "{n} sur {total}",
+    count: "{count} photos",
+  },
+  articles: {
+    title: "Articles",
+    metaDescription:
+      "Les récits de voyage des clients de {brand}, et des conseils pour visiter Yogyakarta.",
+    empty: "Pas encore d'articles.",
+    readMore: "Lire l'article",
+    allArticles: "Tous les articles",
+    more: "Autres articles",
+    photos: "Photos",
+  },
   faq: {
     title: "Questions",
-    lede: "Prix, billets, prise en charge et programme.",
-    anythingElse: "Autre chose ?",
-    link: "Écrivez-nous sur WhatsApp",
-    after: ". Nous répondons vite, 24 h/24.",
-    message: "Bonjour Jogja Travel ! J'ai une question.",
+    metaDescription:
+      "Questions sur {brand} : prix, billets d'entrée, accueil à l'aéroport et organisation du voyage.",
   },
   footer: {
     sticker: ["Votre voiture.", "Votre programme."],
-    lede: "Envoyez vos dates et vos envies. Nous répondons vite, 24 h/24.",
     columns: { tours: "Circuits", plan: "Préparer le voyage", contact: "Contact" },
     title: "Donnez-nous vos dates. On s'occupe du reste.",
     cta: "Écrivez-nous sur WhatsApp",
     message: "Bonjour Jogja Travel ! Nous venons à Jogja. Nos dates : ",
     orEmail: "Ou par e-mail",
+    operatedBy: "exploité par",
     floatingLabel: "Discuter avec nous sur WhatsApp",
   },
   toursPage: {
     title: "Circuits en transport privé",
     metaDescription:
-      "Circuits en transport privé depuis Yogyakarta : Borobudur, Prambanan, le Merapi, les grottes et plages de Gunungkidul, Dieng, le Bromo et l'Ijen. Prix par véhicule.",
-    lede: "Votre voiture et votre chauffeur depuis Jogja, avec ou sans hôtel. Prix par voiture ; billets d'entrée en sus.",
-    cantFind: "Vous ne trouvez pas votre bonheur ?",
+      "Circuits en transport privé depuis Yogyakarta avec {brand} : Borobudur, Prambanan, le Merapi, les grottes et plages de Gunungkidul, Dieng, le Bromo et l'Ijen. Prix par véhicule.",
   },
   catalog: {
     stayLabel: "Type de circuit",
@@ -235,10 +211,6 @@ export const fr: Dictionary = {
     messagePart: "Visite : {part}",
     messageTooBig: "Véhicule : plus d'un véhicule nécessaire",
   },
-  pageCta: {
-    title: "Prêt à choisir un voyage ?",
-    button: "Voir tous les circuits",
-  },
   pickers: {
     close: "Fermer",
     done: "OK",
@@ -314,16 +286,13 @@ export const fr: Dictionary = {
   transferPage: {
     title: "Accueil à l'aéroport et transferts",
     metaDescription:
-      "Accueil privé à l'aéroport international de Yogyakarta (YIA), 24 h/24, et transferts depuis Jogja à travers Java et jusqu'à Bali. Prix par véhicule, à partir de Rp 250 000.",
-    lede: "Accueil à l'aéroport YIA 24 h/24 et transferts à travers Java. Prix par voiture, à partir de Rp 250 000.",
+      "Accueil privé {brand} à l'aéroport international de Yogyakarta (YIA), 24 h/24, et transferts depuis Jogja à travers Java et jusqu'à Bali. Prix par véhicule, à partir de Rp 250 000.",
     resultsTitle: "{from} → {to}",
     distance: "Environ {km} km",
     duration: "environ {duration} de route",
     perCar: "par véhicule",
     request: "Demander sur WhatsApp",
-    emptyTitle: "Où allez-vous ?",
-    emptyBody: "Choisissez départ et arrivée ci-dessus pour voir les prix.",
-    estimateTitle: "Prix estimés",
+    estimateTitle: "Bon à savoir",
     estimateBody:
       "Ferry compris pour Karimunjawa et Bali. Nous confirmons le prix final sur WhatsApp.",
     popularTitle: "Trajets fréquents",
