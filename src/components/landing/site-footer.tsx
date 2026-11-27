@@ -12,7 +12,7 @@ import { tourHref } from "@/lib/tours";
 // The most popular packages; the rest are one click away on /tours.
 const FOOTER_TOUR_COUNT = 5;
 
-// A rounded green call-to-action card, then a light footer (a dark one with folding rows on phones).
+// One near-black footer: the call to action on top, then the links (folding rows on phones).
 export async function SiteFooter() {
   const locale = await getLocale();
   const dict = await getDictionary();
@@ -21,7 +21,8 @@ export async function SiteFooter() {
   const [site, tours] = await Promise.all([getSite(), getTours(locale)]);
   const pages = [
     { path: "/transfer", label: nav.transfers },
-    { path: "/plan-your-visit", label: nav.plan },
+    { path: "/gallery", label: nav.gallery },
+    { path: "/articles", label: nav.articles },
     { path: "/how-to-book", label: nav.booking },
     { path: "/faq", label: nav.faq },
   ];
@@ -40,7 +41,7 @@ export async function SiteFooter() {
           ))}
           <li>
             <Link href={localePath(locale, "/tours")} className="font-medium hover:underline">
-              {dict.tourPage.allTours} →
+              {dict.tourPage.allTours}
             </Link>
           </li>
         </>
@@ -83,23 +84,21 @@ export async function SiteFooter() {
         </>
       ),
       // Phones show the address under the logo instead
-      extra: <li className="text-ink-muted">{site.address}</li>,
+      extra: <li className="text-white/55">{site.address}</li>,
     },
   ];
 
   return (
-    <footer>
-      <div className="sm:px-3">
-      <div className="mx-auto max-w-[90rem] bg-jade text-white sm:rounded-3xl">
-        <div className="mx-auto max-w-3xl px-5 py-20 text-center sm:px-8 sm:py-24">
-          <p className="kicker text-white/75">{t.sticker.join(" ")}</p>
+    <footer className="bg-ink text-white">
+      <div className="border-b border-white/10">
+        <div className="mx-auto max-w-3xl px-5 py-12 text-center sm:px-8 sm:py-20">
+          <p className="kicker text-white/60">{t.sticker.join(" ")}</p>
           <h2 className="display mt-3 text-[clamp(2.25rem,4.5vw,3.5rem)]">{t.title}</h2>
-          <p className="mx-auto mt-5 max-w-xl text-[1.1rem] text-white/90">{t.lede}</p>
           <a href={whatsappLink(site, t.message)} className="pill mt-8 bg-white text-ink hover:bg-white/90">
             <WhatsappIcon className="size-4" />
             {t.cta}
           </a>
-          <p className="mt-6 text-white/85">
+          <p className="mt-6 text-white/70">
             {t.orEmail}{" "}
             <a href={`mailto:${site.email}`} className="underline underline-offset-4">
               {site.email}
@@ -107,10 +106,9 @@ export async function SiteFooter() {
           </p>
         </div>
       </div>
-      </div>
 
       {/* Phones: a dark footer, Disney-style: each column folds into a row, then social icons, logo and copyright */}
-      <div className="bg-linear-to-b from-[#10261f] to-jade px-5 pt-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] text-white sm:hidden">
+      <div className="px-5 pt-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:hidden">
         <div className="divide-y divide-white/12 border-b border-white/12">
           {columns.map((column) => (
             <details key={column.title} className="group">
@@ -145,12 +143,13 @@ export async function SiteFooter() {
           </Link>
           <p className="mx-auto mt-4 max-w-xs text-[0.9rem] leading-relaxed text-white/70">{site.address}</p>
           <p className="mt-5 text-[0.85rem] text-white/60">
-            © <CurrentYear /> {site.businessName}. {dict.meta.city}.
+            © <CurrentYear /> {site.businessName}
+              <CompanyCredit name={site.companyName} url={site.companyUrl} operatedBy={t.operatedBy} />. {dict.meta.city}.
           </p>
         </div>
       </div>
 
-      <div className="text-ink max-sm:hidden">
+      <div className="max-sm:hidden">
         <div className="mx-auto max-w-7xl px-5 pt-20 pb-10 sm:px-8">
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-3">
@@ -168,9 +167,10 @@ export async function SiteFooter() {
             ))}
           </div>
 
-          <div className="mt-16 space-y-3 border-t border-ink/10 pt-8 text-[0.85rem] text-ink-muted">
+          <div className="mt-16 space-y-3 border-t border-white/10 pt-8 text-[0.85rem] text-white/50">
             <p>
-              © <CurrentYear /> {site.businessName}. {dict.meta.city}.
+              © <CurrentYear /> {site.businessName}
+              <CompanyCredit name={site.companyName} url={site.companyUrl} operatedBy={t.operatedBy} />. {dict.meta.city}.
             </p>
           </div>
         </div>
@@ -182,9 +182,26 @@ export async function SiteFooter() {
 function FooterColumn({ title, className, children }: { title: string; className: string; children: ReactNode }) {
   return (
     <nav aria-label={title} className={className}>
-      <h2 className="label text-ink-muted">{title}</h2>
-      <ul className="mt-4 space-y-2.5">{children}</ul>
+      <h2 className="label text-white/50">{title}</h2>
+      <ul className="mt-4 space-y-2.5 text-white/85 [&_a]:hover:text-white">{children}</ul>
     </nav>
+  );
+}
+
+// ", operated by PT …", the company name linking to its own website when one is set.
+function CompanyCredit({ name, url, operatedBy }: { name: string; url: string; operatedBy: string }) {
+  if (!name) return null;
+  return (
+    <>
+      , {operatedBy}{" "}
+      {url ? (
+        <a href={url} className="underline underline-offset-4 hover:text-white">
+          {name}
+        </a>
+      ) : (
+        name
+      )}
+    </>
   );
 }
 
