@@ -1,16 +1,15 @@
 "use client";
 
-import { ArrowDown, ArrowDownToLine, ArrowUp, ArrowUpToLine, Ellipsis, Pencil, Trash2, type LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowDownToLine, ArrowUp, ArrowUpToLine, Ellipsis, Eye, EyeOff, Pencil, Trash2, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useOptimistic, useState, useTransition, type ReactNode } from "react";
-import { toast } from "sonner";
 
 import { deleteItem, reorder, setPublished, type ListName } from "@/app/admin/(panel)/list-actions";
 import { ConfirmDelete } from "@/components/admin/confirm-delete";
+import { runAction } from "@/components/admin/use-admin-form";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import type { ActionResult } from "@/lib/admin/action-result";
 import { cn } from "@/lib/utils";
 
 export type ListItem = {
@@ -30,17 +29,15 @@ type ItemListProps = {
   onEdit?: (key: string) => void;
   /** e.g. "Reviews of this package stay, without the package name." */
   deleteNote?: string;
+  /** False for a list in a fixed order, such as articles by date: no move buttons. */
+  reorderable?: boolean;
 };
 
-function report(result: ActionResult) {
-  if (result.ok) toast.success(result.message ?? "Tersimpan.");
-  else toast.error(result.error);
-}
-
 // A bordered list in the CRM's panel style. Order, visibility and deletes save straight away.
-// Tapping a row edits it. On phones the small arrow, edit and delete buttons give way to one "more" button that opens
-// a bottom sheet with thumb-sized actions.
-export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemListProps) {
+// Tapping a row edits it. On phones the visibility switch and the small arrow, edit and delete buttons give way to one
+// "more" button that opens a bottom sheet with thumb-sized actions, leaving the row's width to its text; a hidden item
+// is faded with a crossed-out eye.
+export function ItemList({ list, items, emptyText, onEdit, deleteNote, reorderable = true }: ItemListProps) {
   const [, startTransition] = useTransition();
   const [optimisticItems, applyOptimistic] = useOptimistic(items);
   const [toDelete, setToDelete] = useState<ListItem | null>(null);
@@ -56,21 +53,21 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
     next.splice(target, 0, moved);
     startTransition(async () => {
       applyOptimistic(next);
-      report(await reorder(list, next.map((item) => item.key)));
+      await runAction(() => reorder(list, next.map((item) => item.key)));
     });
   }
 
   function togglePublished(item: ListItem, published: boolean) {
     startTransition(async () => {
       applyOptimistic(optimisticItems.map((candidate) => (candidate.key === item.key ? { ...candidate, published } : candidate)));
-      report(await setPublished(list, item.key, published));
+      await runAction(() => setPublished(list, item.key, published));
     });
   }
 
   function remove(item: ListItem) {
     startTransition(async () => {
       applyOptimistic(optimisticItems.filter((candidate) => candidate.key !== item.key));
-      report(await deleteItem(list, item.key));
+      await runAction(() => deleteItem(list, item.key));
     });
   }
 
@@ -85,7 +82,7 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
       <ul className="overflow-hidden rounded-xl border">
         {optimisticItems.map((item, index) => (
           <li key={item.key} className="flex items-center gap-1 border-b py-1 pr-1 pl-3 last:border-b-0 sm:gap-3 sm:px-3 sm:py-0.5">
-            <div className="hidden shrink-0 flex-col sm:flex">
+            <div className={cn("hidden shrink-0 flex-col", reorderable && "sm:flex")}>
               <button
                 type="button"
                 aria-label="Naikkan"
@@ -106,7 +103,7 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
               </button>
             </div>
 
-            <div className="min-w-0 flex-1">
+            <div className={cn("min-w-0 flex-1", item.published === false && "max-sm:opacity-55")}>
               {item.href ? (
                 <Link href={item.href} className="block rounded-md py-1.5 hover:text-primary">
                   {item.content}
@@ -121,7 +118,7 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
             </div>
 
             {item.published !== undefined ? (
-              <label className="flex shrink-0 items-center gap-2 px-2 sm:px-0">
+              <label className="hidden shrink-0 items-center gap-2 sm:flex">
                 <span className="hidden text-xs text-muted-foreground sm:inline">{item.published ? "Tampil" : "Tersembunyi"}</span>
                 <Switch
                   checked={item.published}
@@ -154,6 +151,10 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
               </Button>
             </div>
 
+            {item.published === false ? (
+              <EyeOff aria-label="Tersembunyi dari website" className="size-4 shrink-0 text-muted-foreground sm:hidden" />
+            ) : null}
+
             <Button
               variant="ghost"
               size="icon"
@@ -183,6 +184,13 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
                 </SheetDescription>
               </SheetHeader>
               <div className="grid py-1">
+                {actionsItem.published !== undefined ? (
+                  <label className="flex h-12 items-center gap-3 px-4 text-sm font-medium active:bg-accent">
+                    {actionsItem.published ? <Eye className="size-4 text-muted-foreground" /> : <EyeOff className="size-4 text-muted-foreground" />}
+                    <span className="flex-1">{actionsItem.published ? "Tampil di website" : "Tersembunyi dari website"}</span>
+                    <Switch checked={actionsItem.published} onCheckedChange={(checked) => togglePublished(actionsItem, checked)} />
+                  </label>
+                ) : null}
                 {canEdit(actionsItem) ? (
                   actionsItem.href ? (
                     <SheetRow icon={Pencil} label="Ubah" href={actionsItem.href} />
@@ -197,21 +205,25 @@ export function ItemList({ list, items, emptyText, onEdit, deleteNote }: ItemLis
                     />
                   )
                 ) : null}
-                {/* The sheet stays open while moving, so the item can be nudged several places in a row. */}
-                <SheetRow icon={ArrowUp} label="Naikkan" disabled={actionsIndex === 0} onClick={() => moveTo(actionsIndex, actionsIndex - 1)} />
-                <SheetRow
-                  icon={ArrowDown}
-                  label="Turunkan"
-                  disabled={actionsIndex === optimisticItems.length - 1}
-                  onClick={() => moveTo(actionsIndex, actionsIndex + 1)}
-                />
-                <SheetRow icon={ArrowUpToLine} label="Pindah ke paling atas" disabled={actionsIndex === 0} onClick={() => moveTo(actionsIndex, 0)} />
-                <SheetRow
-                  icon={ArrowDownToLine}
-                  label="Pindah ke paling bawah"
-                  disabled={actionsIndex === optimisticItems.length - 1}
-                  onClick={() => moveTo(actionsIndex, optimisticItems.length - 1)}
-                />
+                {reorderable ? (
+                  <>
+                    {/* The sheet stays open while moving, so the item can be nudged several places in a row. */}
+                    <SheetRow icon={ArrowUp} label="Naikkan" disabled={actionsIndex === 0} onClick={() => moveTo(actionsIndex, actionsIndex - 1)} />
+                    <SheetRow
+                      icon={ArrowDown}
+                      label="Turunkan"
+                      disabled={actionsIndex === optimisticItems.length - 1}
+                      onClick={() => moveTo(actionsIndex, actionsIndex + 1)}
+                    />
+                    <SheetRow icon={ArrowUpToLine} label="Pindah ke paling atas" disabled={actionsIndex === 0} onClick={() => moveTo(actionsIndex, 0)} />
+                    <SheetRow
+                      icon={ArrowDownToLine}
+                      label="Pindah ke paling bawah"
+                      disabled={actionsIndex === optimisticItems.length - 1}
+                      onClick={() => moveTo(actionsIndex, optimisticItems.length - 1)}
+                    />
+                  </>
+                ) : null}
                 <SheetRow
                   icon={Trash2}
                   label="Hapus"

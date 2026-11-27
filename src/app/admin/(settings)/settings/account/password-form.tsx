@@ -16,7 +16,7 @@ export function PasswordForm() {
     <form key={formKey} onSubmit={onSubmit} noValidate>
       <FormSection title="Ganti kata sandi">
         <TextField name="current" label="Kata sandi saat ini" type="password" autoComplete="current-password" errors={errors} />
-        <TextField name="password" label="Kata sandi baru" type="password" autoComplete="new-password" errors={errors} hint="Minimal 10 karakter." />
+        <TextField name="password" label="Kata sandi baru" type="password" autoComplete="new-password" errors={errors} />
         <TextField name="confirm" label="Ulangi kata sandi baru" type="password" autoComplete="new-password" errors={errors} />
         <div>
           <Button type="submit" disabled={pending}>

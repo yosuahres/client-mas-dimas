@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
+import { MenuIcon, PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -180,7 +180,9 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          // On phones the menu dims the page behind it and has its own close button.
+          overlayClassName="bg-black/40"
+          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) max-w-[85vw] p-0 [&>button]:top-3 [&>button]:right-3 [&>button]:flex [&>button]:size-9 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-md [&>button]:opacity-100 [&>button]:text-muted-foreground [&>button_svg]:size-5"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -192,7 +194,7 @@ function Sidebar({
             <SheetTitle>Menu</SheetTitle>
             <SheetDescription>Menu admin.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div className="flex h-full w-full flex-col p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">{children}</div>
         </SheetContent>
       </Sheet>
     )
@@ -264,7 +266,9 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      {/* A burger on phones, where the menu opens over the page; the panel icon on wider screens. */}
+      <MenuIcon className="md:hidden" />
+      <PanelLeftIcon className="max-md:hidden" />
       <span className="sr-only">Buka atau tutup menu</span>
     </Button>
   )

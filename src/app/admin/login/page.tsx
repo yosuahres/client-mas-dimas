@@ -38,10 +38,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
         </p>
         <Card className="w-full">
           <CardContent className="flex flex-col gap-4 pt-6">
-            <div className="mb-2 text-center">
-              <h1 className="text-xl font-semibold">Masuk ke panel admin</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Kelola tour, harga, ulasan, dan teks website.</p>
-            </div>
+            <h1 className="mb-2 text-center text-xl font-semibold">Masuk ke panel admin</h1>
             <LoginForm notice={notice} />
           </CardContent>
         </Card>

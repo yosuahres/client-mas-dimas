@@ -124,11 +124,6 @@ export default async function DashboardPage() {
             ))}
           </ul>
         </section>
-
-        <p className="mt-6 text-sm text-muted-foreground">
-          Perubahan langsung tampil di website begitu disimpan. Kalau Anda mengubah langsung di dashboard Supabase, website
-          menyesuaikan dalam satu jam.
-        </p>
       </PageBody>
     </>
   );

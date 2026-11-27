@@ -1,7 +1,7 @@
 import type { z } from "zod";
 
 // What every admin server action returns to its form.
-export type ActionResult = { ok: true; message?: string } | { ok: false; error: string; fieldErrors?: Record<string, string> };
+export type ActionResult = { ok: true; message?: string; redirectTo?: string } | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
 export function failure(error: string, fieldErrors?: Record<string, string>): ActionResult {
   return { ok: false, error, fieldErrors };

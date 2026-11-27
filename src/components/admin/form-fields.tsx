@@ -27,13 +27,12 @@ export function GuestExample({ title, className, children }: { title: string; cl
 type FieldProps = {
   label: string;
   htmlFor?: string;
-  hint?: ReactNode;
   error?: string;
   className?: string;
   children: ReactNode;
 };
 
-export function Field({ label, htmlFor, hint, error, className, children }: FieldProps) {
+export function Field({ label, htmlFor, error, className, children }: FieldProps) {
   return (
     <div className={cn("grid content-start gap-1.5", className)}>
       <Label htmlFor={htmlFor} className="text-[13px]">
@@ -44,8 +43,6 @@ export function Field({ label, htmlFor, hint, error, className, children }: Fiel
         <p role="alert" className="text-xs text-destructive">
           {error}
         </p>
-      ) : hint ? (
-        <p className="text-xs text-muted-foreground">{hint}</p>
       ) : null}
     </div>
   );
@@ -54,14 +51,13 @@ export function Field({ label, htmlFor, hint, error, className, children }: Fiel
 type TextFieldProps = Omit<ComponentProps<typeof Input>, "name"> & {
   name: string;
   label: string;
-  hint?: ReactNode;
   errors: FieldErrors;
 };
 
-export function TextField({ name, label, hint, errors, className, ...input }: TextFieldProps) {
+export function TextField({ name, label, errors, className, ...input }: TextFieldProps) {
   const error = errors[name];
   return (
-    <Field label={label} htmlFor={name} hint={hint} error={error} className={className}>
+    <Field label={label} htmlFor={name} error={error} className={className}>
       <Input id={name} name={name} aria-invalid={error ? true : undefined} {...input} />
     </Field>
   );
@@ -70,14 +66,13 @@ export function TextField({ name, label, hint, errors, className, ...input }: Te
 type TextAreaFieldProps = Omit<ComponentProps<typeof Textarea>, "name"> & {
   name: string;
   label: string;
-  hint?: ReactNode;
   errors: FieldErrors;
 };
 
-export function TextAreaField({ name, label, hint, errors, className, ...textarea }: TextAreaFieldProps) {
+export function TextAreaField({ name, label, errors, className, ...textarea }: TextAreaFieldProps) {
   const error = errors[name];
   return (
-    <Field label={label} htmlFor={name} hint={hint} error={error} className={className}>
+    <Field label={label} htmlFor={name} error={error} className={className}>
       <Textarea id={name} name={name} aria-invalid={error ? true : undefined} {...textarea} />
     </Field>
   );
@@ -91,17 +86,16 @@ type SelectFieldProps = {
   options: SelectOption[];
   defaultValue?: string;
   placeholder?: string;
-  hint?: ReactNode;
   errors: FieldErrors;
   className?: string;
   onValueChange?: (value: string) => void;
 };
 
 /** Radix select (no native <select>), which still submits with the form under its name. */
-export function SelectField({ name, label, options, defaultValue, placeholder, hint, errors, className, onValueChange }: SelectFieldProps) {
+export function SelectField({ name, label, options, defaultValue, placeholder, errors, className, onValueChange }: SelectFieldProps) {
   const error = errors[name];
   return (
-    <Field label={label} htmlFor={name} hint={hint} error={error} className={className}>
+    <Field label={label} htmlFor={name} error={error} className={className}>
       <Select name={name} defaultValue={defaultValue} onValueChange={onValueChange}>
         <SelectTrigger id={name} className="w-full" aria-invalid={error ? true : undefined}>
           <SelectValue placeholder={placeholder} />
@@ -121,21 +115,17 @@ export function SelectField({ name, label, options, defaultValue, placeholder, h
 type SwitchFieldProps = {
   name: string;
   label: string;
-  hint?: ReactNode;
   defaultChecked: boolean;
   onCheckedChange?: (checked: boolean) => void;
 };
 
 /** A switch that submits "on" when on and nothing when off, like a checkbox. */
-export function SwitchField({ name, label, hint, defaultChecked, onCheckedChange }: SwitchFieldProps) {
+export function SwitchField({ name, label, defaultChecked, onCheckedChange }: SwitchFieldProps) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-lg border px-3 py-2.5">
-      <div className="grid gap-0.5">
-        <Label htmlFor={name} className="text-[13px]">
-          {label}
-        </Label>
-        {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
-      </div>
+    <div className="flex items-center justify-between gap-4 rounded-lg border px-3 py-2.5">
+      <Label htmlFor={name} className="text-[13px]">
+        {label}
+      </Label>
       <Switch id={name} name={name} defaultChecked={defaultChecked} onCheckedChange={onCheckedChange} />
     </div>
   );
@@ -158,26 +148,17 @@ export function LocaleTabs({ errors, prefixes, children }: { errors: FieldErrors
 
   return (
     <Tabs defaultValue="id">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <TabsList className="w-full sm:w-fit">
-          {tabOrder.map((locale) => (
-            <TabsTrigger key={locale} value={locale} className="flex-1 gap-1.5 text-[13px] sm:flex-none">
-              {localeLabels[locale]}
-              {locale === "id" ? null : <span className="hidden text-[10px] font-normal text-muted-foreground sm:inline">otomatis</span>}
-              {hasError(locale) ? <span aria-label="ada kesalahan" className="size-1.5 rounded-full bg-destructive" /> : null}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <p className="text-xs text-muted-foreground">Tulis dalam bahasa Indonesia. Bahasa Inggris dan Prancis diterjemahkan saat disimpan.</p>
-      </div>
+      <TabsList className="w-full sm:w-fit">
+        {tabOrder.map((locale) => (
+          <TabsTrigger key={locale} value={locale} className="flex-1 gap-1.5 text-[13px] sm:flex-none">
+            {localeLabels[locale]}
+            {locale === "id" ? null : <span className="hidden text-[10px] font-normal text-muted-foreground sm:inline">otomatis</span>}
+            {hasError(locale) ? <span aria-label="ada kesalahan" className="size-1.5 rounded-full bg-destructive" /> : null}
+          </TabsTrigger>
+        ))}
+      </TabsList>
       {tabOrder.map((locale) => (
         <TabsContent key={locale} value={locale} forceMount className="mt-4 data-[state=inactive]:hidden">
-          {locale === "id" ? null : (
-            <p className="mb-4 rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-              Diterjemahkan otomatis dari bahasa Indonesia setiap kali teksnya berubah. Ubah di sini hanya untuk memperbaiki
-              terjemahan; perbaikan Anda tetap dipakai sampai teks Indonesianya berubah lagi.
-            </p>
-          )}
           {children(locale)}
         </TabsContent>
       ))}
@@ -186,13 +167,10 @@ export function LocaleTabs({ errors, prefixes, children }: { errors: FieldErrors
 }
 
 /** A titled block of fields inside a form, in the bordered-panel style of the CRM. */
-export function FormSection({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+export function FormSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-xl border">
-      <div className="border-b px-4 py-3">
-        <h2 className="text-sm font-semibold">{title}</h2>
-        {description ? <p className="mt-0.5 text-xs text-muted-foreground">{description}</p> : null}
-      </div>
+      <h2 className="border-b px-4 py-3 text-sm font-semibold">{title}</h2>
       <div className="grid gap-4 p-4">{children}</div>
     </section>
   );

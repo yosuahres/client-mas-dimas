@@ -19,7 +19,6 @@ export function FaqManager({ faqs }: { faqs: FaqRecord[] }) {
   return (
     <>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <p className="max-w-xl text-sm text-muted-foreground">Pertanyaan di halaman Pertanyaan, sesuai urutan ini.</p>
         <Button size="sm" onClick={() => setEditing("new")}>
           <Plus />
           Tambah pertanyaan
@@ -35,7 +34,7 @@ export function FaqManager({ faqs }: { faqs: FaqRecord[] }) {
           published: candidate.published,
           content: (
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{translate(candidate.question, "id")}</p>
+              <p className="line-clamp-2 text-sm font-medium sm:line-clamp-1">{translate(candidate.question, "id")}</p>
               <p className="truncate text-xs text-muted-foreground">{translate(candidate.answer, "id")}</p>
             </div>
           ),

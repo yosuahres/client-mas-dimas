@@ -3,13 +3,12 @@
 import type { FormEvent, ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type RecordDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  description?: string;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   pending: boolean;
   submitLabel?: string;
@@ -23,14 +22,13 @@ const phoneScreen =
 const phoneFrame = "max-sm:min-h-full max-sm:w-full max-sm:max-w-none max-sm:overflow-visible max-sm:rounded-none max-sm:border-0";
 
 // Add/edit form in a dialog, like the CRM's record dialogs: header, scrolling fields, Cancel and Save.
-export function RecordDialog({ open, onOpenChange, title, description, onSubmit, pending, submitLabel = "Simpan", children }: RecordDialogProps) {
+export function RecordDialog({ open, onOpenChange, title, onSubmit, pending, submitLabel = "Simpan", children }: RecordDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`max-w-2xl ${phoneFrame}`} positionClassName={phoneScreen}>
         <form onSubmit={onSubmit} noValidate className="flex flex-col">
           <DialogHeader className="z-10 bg-background p-4 pr-12 max-sm:sticky max-sm:top-0 sm:p-6">
             <DialogTitle className="leading-snug">{title}</DialogTitle>
-            {description ? <DialogDescription>{description}</DialogDescription> : null}
           </DialogHeader>
           <div className="grid flex-1 content-start gap-4 p-4 sm:p-6">{children}</div>
           <DialogFooter className="z-10 flex-row bg-background p-4 max-sm:sticky max-sm:bottom-0 sm:p-6">

@@ -8,7 +8,6 @@ import merapi from "@/assets/photos/merapi.jpg";
 import prambanan from "@/assets/photos/prambanan.jpg";
 import { PageBody, PageHeader } from "@/components/admin/page-header";
 import { adminHomePhotos, adminTours } from "@/lib/admin/queries";
-import { translateFields } from "@/lib/content/translate";
 import { photoUrl } from "@/lib/photos";
 
 export const metadata: Metadata = { title: "Foto beranda" };
@@ -18,22 +17,12 @@ export default async function HomePhotosPage() {
   const firstTour = tours.find((tour) => tour.published);
 
   const slots: Omit<HomePhotoField, "photo" | "preview">[] = [
-    {
-      slot: "hero",
-      title: "Foto besar di atas",
-      description: `Selama belum dipilih, yang tampil adalah foto paket pertama${firstTour ? ` (${translateFields(firstTour.text, "id").name})` : ""}. Setelah menggantinya, perbarui “Deskripsi foto” di Teks website → Beranda → Foto besar di atas.`,
-      builtIn: photoUrl(firstTour?.photo ?? null),
-    },
+    { slot: "hero", title: "Foto besar di atas", builtIn: photoUrl(firstTour?.photo ?? null) },
     { slot: "temples", title: "Kotak: Candi", builtIn: prambanan.src },
     { slot: "culture", title: "Kotak: Budaya", builtIn: kraton.src },
     { slot: "nature", title: "Kotak: Alam", builtIn: merapi.src },
     { slot: "adventure", title: "Kotak: Petualangan", builtIn: jomblang.src },
-    {
-      slot: "drivers",
-      title: "Bagian sopir",
-      description: "Setelah menggantinya, perbarui “Deskripsi foto” di Teks website → Beranda → Sopir.",
-      builtIn: batik.src,
-    },
+    { slot: "drivers", title: "Bagian sopir", builtIn: batik.src },
   ];
   const fields: HomePhotoField[] = slots.map((field) => {
     const photo = photos?.[field.slot] ?? null;

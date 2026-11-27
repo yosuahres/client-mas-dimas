@@ -1,7 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { databaseFailure, failure, invalid, type ActionResult } from "@/lib/admin/action-result";
 import { savedMessage, translateDraft } from "@/lib/admin/auto-translate";
 import { formObject } from "@/lib/admin/form-data";
@@ -43,6 +41,9 @@ export async function saveTour(originalSlug: string | null, formData: FormData):
 
   // Reviews show the package name, so they change too.
   contentChanged(contentTags.tours, contentTags.reviews);
-  if (originalSlug !== tour.slug) redirect(`/admin/tours/${tour.slug}`);
-  return { ok: true, message: savedMessage("Paket disimpan.", [text.problem]) };
+  return {
+    ok: true,
+    message: savedMessage("Paket disimpan.", [text.problem]),
+    redirectTo: originalSlug === tour.slug ? undefined : `/admin/tours/${tour.slug}`,
+  };
 }

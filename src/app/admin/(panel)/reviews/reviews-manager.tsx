@@ -15,24 +15,15 @@ import { translate } from "@/lib/content/translate";
 type ReviewsManagerProps = {
   reviews: ReviewRecord[];
   tours: SelectOption[];
-  googleReviewsUrl: string;
 };
 
-export function ReviewsManager({ reviews, tours, googleReviewsUrl }: ReviewsManagerProps) {
+export function ReviewsManager({ reviews, tours }: ReviewsManagerProps) {
   const [editing, setEditing] = useState<string | null>(null);
   const review = reviews.find((candidate) => candidate.id === editing) ?? null;
 
   return (
     <>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <p className="max-w-xl text-sm text-muted-foreground">
-          Kutipan tamu di beranda. Salin ulasan asli dari{" "}
-          <a href={googleReviewsUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">
-            ulasan Google
-          </a>{" "}
-          Anda, dengan izin tamu. Beranda menampilkan tiga ulasan pertama yang tampil, kecuali kalau terhubung ke ulasan
-          Google: yang tampil ulasan Google, dan ulasan di sini jadi cadangan.
-        </p>
         <Button size="sm" onClick={() => setEditing("new")}>
           <Plus />
           Tambah ulasan

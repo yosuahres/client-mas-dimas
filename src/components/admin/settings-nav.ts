@@ -4,8 +4,6 @@ import type { ElementType } from "react";
 export type SettingsPage = {
   href: string;
   title: string;
-  /** The line under the page's heading. */
-  description: string;
   icon: ElementType;
 };
 
@@ -28,7 +26,6 @@ export const settingsGroups: SettingsGroup[] = [
       {
         href: "/admin/settings/account",
         title: "Akun",
-        description: "Email dan kata sandi untuk masuk.",
         icon: KeyRound,
       },
     ],
@@ -39,13 +36,11 @@ export const settingsGroups: SettingsGroup[] = [
       {
         href: "/admin/settings/business",
         title: "Data usaha",
-        description: "Kontak, link, dan kurs yang dipakai di seluruh website.",
         icon: SlidersHorizontal,
       },
       {
         href: "/admin/settings/users",
         title: "Pengguna admin",
-        description: "Semua orang yang bisa masuk ke panel admin ini.",
         icon: Users,
       },
     ],

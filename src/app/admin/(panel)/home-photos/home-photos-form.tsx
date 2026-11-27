@@ -9,7 +9,6 @@ import type { HomePhotoSlot } from "@/lib/content/schema";
 export type HomePhotoField = {
   slot: HomePhotoSlot;
   title: string;
-  description?: string;
   /** The uploaded photo's key, or null while the built-in one shows. */
   photo: string | null;
   preview: string | null;
@@ -22,7 +21,7 @@ export function HomePhotosForm({ fields }: { fields: HomePhotoField[] }) {
 
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-6">
-      <FormSection title={hero.title} description={hero.description}>
+      <FormSection title={hero.title}>
         <PhotoField
           name={hero.slot}
           folder="home"
@@ -33,12 +32,11 @@ export function HomePhotosForm({ fields }: { fields: HomePhotoField[] }) {
         />
       </FormSection>
 
-      <FormSection title="Foto lainnya" description="Empat kotak foto dan bagian sopir di bawahnya pada beranda.">
+      <FormSection title="Foto lainnya">
         <div className="grid gap-6 sm:grid-cols-2">
           {rest.map((field) => (
             <div key={field.slot} className="grid content-start gap-2">
               <h3 className="text-[13px] font-medium">{field.title}</h3>
-              {field.description ? <p className="text-xs text-muted-foreground">{field.description}</p> : null}
               <PhotoField
                 name={field.slot}
                 folder="home"

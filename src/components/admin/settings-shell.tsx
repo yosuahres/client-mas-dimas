@@ -10,7 +10,6 @@ import { LogoMark } from "@/components/icons";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -19,7 +18,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarSeparator,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -53,10 +51,20 @@ function SettingsSidebar() {
         <Link
           href={PANEL_HOME}
           onClick={closeMobileSidebar}
-          className="flex items-center gap-2 px-1 pt-2 pb-3 text-[15px] font-medium tracking-[-0.02em]"
+          className="flex items-center gap-2 px-1 pt-2 pb-1 text-[15px] font-medium tracking-[-0.02em]"
         >
           <LogoMark className="size-5 text-brand" />
           jogja travel
+        </Link>
+        {/* At the top, styled like "Lihat website" in the main menu, so the way back to editing the website is the
+            first thing seen rather than a footer link a phone's bottom edge can hide. */}
+        <Link
+          href={backHref}
+          onClick={closeMobileSidebar}
+          className="mb-2 flex w-full items-center gap-2 rounded-md border border-foreground/15 bg-white px-2.5 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-white/90 max-md:py-2.5 max-md:text-[13px]"
+        >
+          <ChevronLeft className="size-3.5 shrink-0" />
+          Kembali ke admin
         </Link>
       </SidebarHeader>
 
@@ -88,26 +96,13 @@ function SettingsSidebar() {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="px-0">
-        <SidebarMenu>
-          <SidebarSeparator className="mx-0" />
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild size="sm" tooltip="Kembali ke admin" className="pl-1 max-md:h-10">
-              <Link href={backHref} onClick={closeMobileSidebar}>
-                <ChevronLeft />
-                <span className="text-[13px] font-medium">Kembali ke admin</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }
 
 /**
  * The settings area, on its own pages with its own sidebar as in the CRM in majorsales-binapatria:
- * a 48px bar naming the page, then a centred column with the page's heading and description.
+ * a 48px bar naming the page, then a centred column with the page heading.
  */
 export function SettingsShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -127,10 +122,7 @@ export function SettingsShell({ children }: { children: ReactNode }) {
         {/* Bottom padding matches PageBody's, which the sticky SaveBar is measured against. */}
         <div className="flex-1 overflow-y-auto px-4 pt-8 pb-4 sm:px-6 sm:pt-16 sm:pb-6">
           <div className="mx-auto max-w-4xl space-y-8">
-            <div className="space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-              {page ? <p className="text-sm text-muted-foreground">{page.description}</p> : null}
-            </div>
+            <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
             {children}
           </div>
         </div>

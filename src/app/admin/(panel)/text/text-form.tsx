@@ -69,13 +69,11 @@ const names: Record<string, string> = {
   allTours: "Semua tour",
   anyDate: "Tanggal bebas",
   anyLength: "Semua durasi",
-  anythingElse: "Ada pertanyaan lain",
   around: "Sekitar Jogja",
   askCustom: "Minta rute sendiri",
   back: "Tombol kembali",
   biggerVehicle: "Mobil lebih besar",
   biggerVehicleLink: "Link mobil lebih besar",
-  cantFind: "Tidak ketemu",
   carNote: "Catatan mobil",
   cardTitle: "Judul kartu",
   change: "Tombol ubah",
@@ -329,26 +327,6 @@ export function TextEditor({ locale, fields, examples }: { locale: Locale; field
         </div>
       </div>
 
-      <p
-        className={cn(
-          "rounded-lg px-4 py-3 text-sm",
-          locale === "id" ? "bg-muted text-muted-foreground" : "bg-amber-50 text-amber-900",
-        )}
-      >
-        {locale === "id" ? (
-          <>
-            Pilih halaman, lalu ketuk bagian yang mau diubah, atau cari katanya di kotak pencarian. Tekan <strong>Lihat</strong> untuk
-            membuka bagian itu di website. Setelah selesai, tekan <strong>Simpan</strong>; bahasa Inggris dan Prancis diterjemahkan
-            otomatis. Kata di dalam kurung kurawal, seperti {"{price}"}, jangan diubah: website yang mengisinya.
-          </>
-        ) : (
-          <>
-            Anda sedang memperbaiki terjemahan bahasa {locale === "en" ? "Inggris" : "Prancis"}. Terjemahan ini dibuat otomatis
-            dari bahasa Indonesia, jadi ubah hanya kalau salah. Perbaikan Anda tetap dipakai sampai teks Indonesianya berubah.
-          </>
-        )}
-      </p>
-
       {search ? (
         <div className="flex items-center gap-2 text-sm">
           <span>
@@ -407,7 +385,7 @@ export function TextEditor({ locale, fields, examples }: { locale: Locale; field
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold">{section.title}</span>
                     <span className="block text-xs text-muted-foreground">
-                      {section.where} · {sectionFields.length} teks
+                      {sectionFields.length} teks
                       {changed > 0 ? ` · ${changed} sudah diubah` : ""}
                     </span>
                   </span>

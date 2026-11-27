@@ -2,12 +2,11 @@
 
 import { Trash2, UserPlus } from "lucide-react";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
 
 import { addAdmin, removeAdmin } from "@/app/admin/(settings)/settings/users/actions";
 import { ConfirmDelete } from "@/components/admin/confirm-delete";
 import { FormSection, TextField } from "@/components/admin/form-fields";
-import { useAdminForm } from "@/components/admin/use-admin-form";
+import { runAction, useAdminForm } from "@/components/admin/use-admin-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -57,10 +56,10 @@ export function UsersManager({ admins, currentUserId }: { admins: AdminAccount[]
       </ul>
 
       <form key={formKey} onSubmit={onSubmit} noValidate>
-        <FormSection title="Tambah admin" description="Mereka bisa langsung masuk di /admin. Kirim kata sandinya secara pribadi.">
+        <FormSection title="Tambah admin">
           <div className="grid gap-4 sm:grid-cols-2">
             <TextField name="email" label="Email" type="email" autoComplete="off" errors={errors} />
-            <TextField name="password" label="Kata sandi awal" type="text" autoComplete="off" errors={errors} hint="Minimal 10 karakter. Mereka bisa menggantinya di Pengaturan → Akun." />
+            <TextField name="password" label="Kata sandi awal" type="text" autoComplete="off" errors={errors} />
           </div>
           <div>
             <Button type="submit" disabled={pending}>
@@ -83,9 +82,7 @@ export function UsersManager({ admins, currentUserId }: { admins: AdminAccount[]
           setToRemove(null);
           if (!admin) return;
           startTransition(async () => {
-            const result = await removeAdmin(admin.id);
-            if (result.ok) toast.success(result.message);
-            else toast.error(result.error);
+            await runAction(() => removeAdmin(admin.id));
           });
         }}
       />
