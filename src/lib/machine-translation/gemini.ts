@@ -19,6 +19,7 @@ Rules:
 - Translate only. Never add notes, explanations, quotes or extra sentences.
 - Keep words in curly brackets, like {price} or {tour}, exactly as written.
 - Keep line breaks: each line of a text becomes one line of its translation, same number of lines.
+- Keep "## " or "- " at the start of a line exactly as written: they mark headings and list items.
 - Keep numbers, prices (Rp 350.000), times, phone numbers, links and email addresses as written.
 - Keep names of places, temples, beaches, mountains and the company (Borobudur, Prambanan, Malioboro, Kraton, Merapi, Jogja Travel) as written. Translate ordinary words around them, e.g. "Pantai Parangtritis" becomes "Parangtritis Beach".
 - Write natural, friendly website copy for foreign tourists, not word-for-word translation.`;

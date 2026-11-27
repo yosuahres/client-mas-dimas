@@ -4,16 +4,22 @@ import { cacheLife, cacheTag } from "next/cache";
 
 import type { Locale } from "@/i18n/config";
 import { defaultContent } from "@/lib/content/defaults";
+import { sampleArticles, sampleGallery } from "@/lib/content/samples";
 import {
+  articleFromRow,
   faqFromRow,
+  galleryPhotoFromRow,
   homePhotosFromRows,
   placeFromRow,
   reviewFromRow,
+  routeFromRow,
   settingsFromRow,
   tables,
   tourFromRow,
   vehicleFromRow,
+  type ArticleRow,
   type FaqRow,
+  type GalleryPhotoRow,
   type HomePhotoRow,
   type PlaceRow,
   type ReviewRow,
@@ -23,7 +29,9 @@ import {
   type VehicleRow,
 } from "@/lib/content/rows";
 import type {
+  ArticleRecord,
   FaqRecord,
+  GalleryPhotoRecord,
   HomePhotos,
   PlaceRecord,
   ReviewRecord,
@@ -50,6 +58,8 @@ export const contentTags = {
   faqs: "content:faqs",
   text: "content:text",
   homePhotos: "content:home-photos",
+  gallery: "content:gallery",
+  articles: "content:articles",
 } as const;
 
 function usingDefaults() {
@@ -103,7 +113,7 @@ export async function loadRoutes(): Promise<RouteRecord[]> {
   cacheLife("hours");
   cacheTag(contentTags.routes, contentTags.places);
   if (usingDefaults()) return defaultContent.routes;
-  return (await selectAll<RouteRow>(tables.routes)).map(({ from_place, to_place }) => ({ from: from_place, to: to_place }));
+  return (await selectAll<RouteRow>(tables.routes)).map(routeFromRow).map(({ from, to, carPrices }) => ({ from, to, carPrices }));
 }
 
 export async function loadReviews(): Promise<ReviewRecord[]> {
@@ -146,4 +156,43 @@ export async function loadHomePhotos(): Promise<HomePhotos> {
     throw new Error(`Couldn't read the home page photos from Supabase: ${error.message}`);
   }
   return homePhotosFromRows(data as HomePhotoRow[]);
+}
+
+/** No such table (42P01 from Postgres, PGRST205 from the API): its migration hasn't run yet. */
+function isMissingTable(error: { code?: string }) {
+  return error.code === "42P01" || error.code === "PGRST205";
+}
+
+/** Published gallery photos, in the order set in the admin panel. Samples while Supabase isn't connected. */
+export async function loadGallery(): Promise<GalleryPhotoRecord[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(contentTags.gallery);
+  if (usingDefaults()) return sampleGallery;
+
+  const { data, error } = await createPublicClient().from(tables.gallery).select("*").order("position");
+  if (error) {
+    if (isMissingTable(error)) return [];
+    throw new Error(`Couldn't read the gallery from Supabase: ${error.message}`);
+  }
+  return (data as GalleryPhotoRow[]).map(galleryPhotoFromRow);
+}
+
+/** Published articles, newest first. Samples while Supabase isn't connected. */
+export async function loadArticles(): Promise<ArticleRecord[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(contentTags.articles);
+  if (usingDefaults()) return sampleArticles;
+
+  const { data, error } = await createPublicClient()
+    .from(tables.articles)
+    .select("*")
+    .order("published_on", { ascending: false })
+    .order("updated_at", { ascending: false });
+  if (error) {
+    if (isMissingTable(error)) return [];
+    throw new Error(`Couldn't read the articles from Supabase: ${error.message}`);
+  }
+  return (data as ArticleRow[]).map(articleFromRow);
 }

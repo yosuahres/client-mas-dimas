@@ -3,7 +3,7 @@
 import { z } from "zod";
 
 import { failure, type ActionResult } from "@/lib/admin/action-result";
-import { contentChanged, discardPhoto, lastShownTourProblem, lastTransferCarProblem } from "@/lib/admin/mutations";
+import { contentChanged, discardPhoto, lastShownTourProblem, lastShownCarProblem } from "@/lib/admin/mutations";
 import { requireAdmin } from "@/lib/admin/session";
 import { tables } from "@/lib/content/rows";
 import { contentTags } from "@/lib/content/store";
@@ -17,6 +17,8 @@ const lists = {
   routes: { table: tables.routes, key: "id", what: "rute", tags: [contentTags.routes] },
   reviews: { table: tables.reviews, key: "id", what: "ulasan", tags: [contentTags.reviews] },
   faqs: { table: tables.faqs, key: "id", what: "pertanyaan", tags: [contentTags.faqs] },
+  gallery: { table: tables.gallery, key: "id", what: "foto", tags: [contentTags.gallery] },
+  articles: { table: tables.articles, key: "slug", what: "artikel", tags: [contentTags.articles] },
 } as const;
 
 export type ListName = keyof typeof lists;
@@ -35,7 +37,7 @@ function listFor(name: ListName) {
 /** Why removing this item from the website would break it, if it would. */
 async function removalProblem(name: ListName, key: string) {
   if (name === "tours") return lastShownTourProblem(key);
-  if (name === "vehicles") return lastTransferCarProblem(key);
+  if (name === "vehicles") return lastShownCarProblem(key);
   return null;
 }
 
@@ -75,8 +77,12 @@ export async function deleteItem(name: ListName, key: string): Promise<ActionRes
   if (error) return failure(`Gagal menghapus ${list.what}: ${error.message}`);
   if (!data?.length) return failure(`${list.what[0].toUpperCase()}${list.what.slice(1)} ini sudah dihapus.`);
 
-  // An uploaded package photo goes with its package.
-  if (name === "tours") await discardPhoto((data[0] as { photo: string | null }).photo);
+  // Uploaded photos go with their package, gallery item or article.
+  if (name === "tours" || name === "gallery") await discardPhoto((data[0] as { photo: string | null }).photo);
+  if (name === "articles") {
+    const article = data[0] as { cover: string | null; photos: string[] };
+    await Promise.all([article.cover, ...article.photos].map(discardPhoto));
+  }
 
   contentChanged(...list.tags);
   return { ok: true, message: "Dihapus." };

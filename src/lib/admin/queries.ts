@@ -2,7 +2,9 @@ import "server-only";
 
 import { readAsAdmin } from "@/lib/admin/session";
 import {
+  articleFromRow,
   faqFromRow,
+  galleryPhotoFromRow,
   homePhotosFromRows,
   placeFromRow,
   reviewFromRow,
@@ -11,7 +13,9 @@ import {
   tables,
   tourFromRow,
   vehicleFromRow,
+  type ArticleRow,
   type FaqRow,
+  type GalleryPhotoRow,
   type HomePhotoRow,
   type PlaceRow,
   type ReviewRow,
@@ -88,4 +92,34 @@ export async function adminTextOverrides() {
   const byLocale: Record<Locale, Record<string, string>> = { en: {}, id: {}, fr: {} };
   for (const row of data as { locale: Locale; key: string; value: string }[]) byLocale[row.locale][row.key] = row.value;
   return byLocale;
+}
+
+const isMissingTable = (error: { code?: string }) => error.code === "42P01" || error.code === "PGRST205";
+
+/** Every gallery photo, hidden ones included. Null until the 20261127 migration has run. */
+export async function adminGallery() {
+  const { data, error } = await readAsAdmin((supabase) => supabase.from(tables.gallery).select("*").order("position"));
+  if (error) {
+    if (isMissingTable(error)) return null;
+    throw new Error(`Gagal membaca galeri: ${error.message}`);
+  }
+  return (data as GalleryPhotoRow[]).map(galleryPhotoFromRow);
+}
+
+/** Every article, newest first, drafts included. Null until the 20261127 migration has run. */
+export async function adminArticles() {
+  const { data, error } = await readAsAdmin((supabase) =>
+    supabase.from(tables.articles).select("*").order("published_on", { ascending: false }).order("updated_at", { ascending: false }),
+  );
+  if (error) {
+    if (isMissingTable(error)) return null;
+    throw new Error(`Gagal membaca artikel: ${error.message}`);
+  }
+  return (data as ArticleRow[]).map(articleFromRow);
+}
+
+export async function adminArticle(slug: string) {
+  const { data, error } = await readAsAdmin((supabase) => supabase.from(tables.articles).select("*").eq("slug", slug).maybeSingle<ArticleRow>());
+  if (error) throw new Error(`Gagal membaca artikel: ${error.message}`);
+  return data ? articleFromRow(data) : null;
 }

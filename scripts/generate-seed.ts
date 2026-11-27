@@ -1,6 +1,7 @@
 // Writes supabase/seed.sql from src/lib/content/defaults.ts.
 // Run: node scripts/generate-seed.ts > supabase/seed.sql
 import { defaultContent } from "../src/lib/content/defaults.ts";
+import { sampleArticles, sampleGallery } from "../src/lib/content/samples.ts";
 
 const text = (value: string | null) => (value === null ? "null" : `'${value.replaceAll("'", "''")}'`);
 const json = (value: unknown) => (value === null ? "null" : `${text(JSON.stringify(value))}::jsonb`);
@@ -19,10 +20,12 @@ const sql = [
   "begin;",
   insert(
     "site_settings",
-    ["business_name", "site_url", "whatsapp_number", "phone_display", "email", "address", "google_rating", "google_reviews_url", "instagram_url", "idr_per_usd"],
+    ["business_name", "company_name", "company_url", "site_url", "whatsapp_number", "phone_display", "email", "address", "google_rating", "google_reviews_url", "instagram_url", "idr_per_usd"],
     [
       [
         text(settings.businessName),
+        text(settings.companyName),
+        text(settings.companyUrl),
         text(settings.siteUrl),
         text(settings.whatsappNumber),
         text(settings.phoneDisplay),
@@ -37,16 +40,16 @@ const sql = [
   ),
   insert(
     "tours",
-    ["slug", "code", "length", "interests", "price_from_idr", "accommodation_offered", "accommodation_price_from_idr", "part_prices", "photo", "photo_credit", "text", "position", "published"],
+    ["slug", "code", "length", "interests", "accommodation_offered", "accommodation_price_from_idr", "part_prices", "car_prices", "photo", "photo_credit", "text", "position", "published"],
     tours.map((tour, index) => [
       text(tour.slug),
       text(tour.code),
       text(tour.length),
       `array[${tour.interests.map(text).join(", ")}]::text[]`,
-      num(tour.priceFromIdr),
       bool(tour.accommodationOffered),
       num(tour.accommodationPriceFromIdr),
       json(tour.partPrices),
+      json(tour.carPrices),
       text(tour.photo),
       json(tour.photoCredit),
       json(tour.text),
@@ -56,7 +59,7 @@ const sql = [
   ),
   insert(
     "vehicles",
-    ["id", "name", "seat_class", "seats", "max_passengers", "max_passengers_with_luggage", "tour_price_percent", "day_with_driver_idr", "day_with_driver_and_fuel_idr", "transfer_base_idr", "transfer_per_km_idr", "transfer_minimum_idr", "position", "published"],
+    ["id", "name", "seat_class", "seats", "max_passengers", "max_passengers_with_luggage", "position", "published"],
     vehicles.map((car, index) => [
       text(car.id),
       text(car.name),
@@ -64,12 +67,6 @@ const sql = [
       text(car.seats),
       num(car.maxPassengers),
       num(car.maxPassengersWithLuggage),
-      num(car.tourPricePercent),
-      num(car.dayWithDriverIdr),
-      num(car.dayWithDriverAndFuelIdr),
-      num(car.transferRate?.baseIdr),
-      num(car.transferRate?.perKmIdr),
-      num(car.transferRate?.minimumIdr),
       num(index),
       bool(car.published),
     ]),
@@ -81,8 +78,8 @@ const sql = [
   ),
   insert(
     "popular_routes",
-    ["from_place", "to_place", "position"],
-    routes.map((route, index) => [text(route.from), text(route.to), num(index)]),
+    ["from_place", "to_place", "car_prices", "position"],
+    routes.map((route, index) => [text(route.from), text(route.to), json(route.carPrices), num(index)]),
   ),
   insert(
     "reviews",
@@ -100,6 +97,24 @@ const sql = [
     "faqs",
     ["question", "answer", "position", "published"],
     faqs.map((faq, index) => [json(faq.question), json(faq.answer), num(index), bool(faq.published)]),
+  ),
+  // Samples the client edits or deletes in /admin/gallery and /admin/articles; the photos are bundled with the site.
+  insert(
+    "gallery_photos",
+    ["photo", "caption", "position", "published"],
+    sampleGallery.map((item, index) => [text(item.photo), json(item.caption), num(index), bool(item.published)]),
+  ),
+  insert(
+    "articles",
+    ["slug", "text", "cover", "photos", "published_on", "published"],
+    sampleArticles.map((article) => [
+      text(article.slug),
+      json(article.text),
+      text(article.cover),
+      `array[${article.photos.map(text).join(", ")}]::text[]`,
+      text(article.publishedOn),
+      bool(article.published),
+    ]),
   ),
   "commit;",
 ].join("\n");

@@ -30,6 +30,23 @@ async function compressToWebp(file: File): Promise<Blob> {
   return blob;
 }
 
+export type UploadedPhoto = { key: string; previewUrl: string; bytes: number };
+
+/** Shrinks a photo to WebP and puts it in the bucket. Throws with a message for the client. */
+export async function uploadPhoto(file: File, folder: PhotoFolder): Promise<UploadedPhoto> {
+  const webp = await compressToWebp(file);
+  const target = await requestPhotoUpload(folder);
+  if (!target.ok) throw new Error(target.error);
+  // Each upload gets a new key, so the file never changes and browsers may cache it for a year.
+  const response = await fetch(target.uploadUrl, {
+    method: "PUT",
+    body: webp,
+    headers: { "content-type": "image/webp", "cache-control": "max-age=31536000" },
+  });
+  if (!response.ok) throw new Error(`Gagal mengunggah (${response.status}). Coba lagi.`);
+  return { key: target.key, previewUrl: target.previewUrl, bytes: webp.size };
+}
+
 type PhotoFieldProps = {
   name: string;
   /** The stored value: a storage key or a /public path. */
@@ -55,19 +72,10 @@ export function PhotoField({ name, defaultValue, defaultPreview, folder = "tours
   function upload(file: File) {
     startUpload(async () => {
       try {
-        const webp = await compressToWebp(file);
-        const target = await requestPhotoUpload(folder);
-        if (!target.ok) throw new Error(target.error);
-        // Each upload gets a new key, so the file never changes and browsers may cache it for a year.
-        const response = await fetch(target.uploadUrl, {
-          method: "PUT",
-          body: webp,
-          headers: { "content-type": "image/webp", "cache-control": "max-age=31536000" },
-        });
-        if (!response.ok) throw new Error(`Gagal mengunggah (${response.status}). Coba lagi.`);
-        setValue(target.key);
-        setPreview(target.previewUrl);
-        toast.success(`Foto terunggah (${Math.round(webp.size / 1000)} KB). Simpan untuk memakainya.`);
+        const uploaded = await uploadPhoto(file, folder);
+        setValue(uploaded.key);
+        setPreview(uploaded.previewUrl);
+        toast.success(`Foto terunggah (${Math.round(uploaded.bytes / 1000)} KB). Simpan untuk memakainya.`);
       } catch (cause) {
         toast.error(cause instanceof Error ? cause.message : "Gagal mengunggah.");
       }
@@ -124,7 +132,7 @@ export function PhotoField({ name, defaultValue, defaultPreview, folder = "tours
           </Button>
         ) : null}
       </div>
-      {error ? <p className="text-xs text-destructive">{error}</p> : <p className="text-xs text-muted-foreground">JPG, PNG, atau WebP. Foto lebar paling bagus; ukurannya disesuaikan otomatis.</p>}
+      {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>
   );
 }

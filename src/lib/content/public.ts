@@ -4,7 +4,9 @@ import "server-only";
 // Server-only; the client-safe types and helpers are in @/lib/tours, @/lib/transfers, @/lib/fleet and @/lib/site.
 import type { Locale } from "@/i18n/config";
 import {
+  loadArticles,
   loadFaqs,
+  loadGallery,
   loadHomePhotos,
   loadPlaces,
   loadReviews,
@@ -13,10 +15,11 @@ import {
   loadTours,
   loadVehicles,
 } from "@/lib/content/store";
-import type { HomePhotoSlot, SiteSettings, TourRecord } from "@/lib/content/schema";
+import type { HomePhotoSlot, SiteSettings, TourRecord, VehicleRecord } from "@/lib/content/schema";
 import { translate, translateFields } from "@/lib/content/translate";
 import type { Vehicle } from "@/lib/fleet";
 import { photoUrl } from "@/lib/photos";
+import { cheapestCarPrice } from "@/lib/pricing";
 import type { Tour } from "@/lib/tours";
 import type { Place, PopularRoute, TransferVehicle } from "@/lib/transfers";
 
@@ -33,14 +36,15 @@ export async function getHomePhotos(): Promise<Partial<Record<HomePhotoSlot, str
   }));
 }
 
-function localizeTour(record: TourRecord, locale: Locale): Tour {
+function localizeTour(record: TourRecord, locale: Locale, fleet: VehicleRecord[]): Tour {
   return {
     ...translateFields(record.text, locale),
     slug: record.slug,
     code: record.code,
     length: record.length,
     interests: record.interests,
-    priceFromIdr: record.priceFromIdr,
+    priceFromIdr: cheapestCarPrice(record.carPrices, fleet),
+    carPrices: record.carPrices,
     accommodationOffered: record.accommodationOffered,
     accommodationPriceFromIdr: record.accommodationPriceFromIdr,
     partPrices: record.partPrices,
@@ -51,37 +55,40 @@ function localizeTour(record: TourRecord, locale: Locale): Tour {
 
 /** Published packages, in the order set in the admin panel. */
 export async function getTours(locale: Locale): Promise<Tour[]> {
-  return (await loadTours()).map((record) => localizeTour(record, locale));
+  const [tours, fleet] = await Promise.all([loadTours(), loadVehicles()]);
+  return tours.map((record) => localizeTour(record, locale, fleet));
 }
 
 export async function getTour(locale: Locale, slug: string): Promise<Tour | undefined> {
-  const record = (await loadTours()).find((tour) => tour.slug === slug);
-  return record ? localizeTour(record, locale) : undefined;
+  const [tours, fleet] = await Promise.all([loadTours(), loadVehicles()]);
+  const record = tours.find((tour) => tour.slug === slug);
+  return record ? localizeTour(record, locale, fleet) : undefined;
 }
 
 /** Published cars, in the order set in the admin panel. */
 export async function getFleet(): Promise<Vehicle[]> {
   return (await loadVehicles()).map(
-    ({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, tourPricePercent, dayWithDriverIdr, dayWithDriverAndFuelIdr, transferRate }) => ({
+    ({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage }) => ({
       id,
       name,
       seatClass,
       seats,
       maxPassengers,
       maxPassengersWithLuggage,
-      tourPricePercent,
-      dayWithDriverIdr,
-      dayWithDriverAndFuelIdr,
-      transferRate,
     }),
   );
 }
 
-/** Cars offered for transfers, with their per-car rate and how many people they take. */
+/** The cars on the website, for transfers: how many people they take. Their prices are on the routes. */
 export async function getTransferVehicles(): Promise<TransferVehicle[]> {
-  return (await loadVehicles()).flatMap(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, transferRate }) =>
-    transferRate ? [{ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage, rate: transferRate }] : [],
-  );
+  return (await loadVehicles()).map(({ id, name, seatClass, seats, maxPassengers, maxPassengersWithLuggage }) => ({
+    id,
+    name,
+    seatClass,
+    seats,
+    maxPassengers,
+    maxPassengersWithLuggage,
+  }));
 }
 
 /** Published places with their names in this language, in the order set in the admin panel. */
@@ -131,4 +138,47 @@ export async function getFaqs(locale: Locale): Promise<Faq[]> {
     question: translate(faq.question, locale),
     answer: translate(faq.answer, locale),
   }));
+}
+
+export type GalleryPhoto = {
+  id: string;
+  url: string;
+  /** Empty when the photo has no caption. */
+  caption: string;
+};
+
+export async function getGallery(locale: Locale): Promise<GalleryPhoto[]> {
+  return (await loadGallery()).flatMap((item) => {
+    const url = photoUrl(item.photo);
+    return url ? [{ id: item.id, url, caption: translate(item.caption, locale) }] : [];
+  });
+}
+
+export type Article = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  cover: string | null;
+  photos: string[];
+  /** "2026-11-27" */
+  publishedOn: string;
+  /** A sample shown before the first real article: not for search engines. */
+  sample: boolean;
+};
+
+/** Published articles in this language, newest first. */
+export async function getArticles(locale: Locale): Promise<Article[]> {
+  return (await loadArticles()).map((record) => ({
+    ...translateFields(record.text, locale),
+    slug: record.slug,
+    cover: photoUrl(record.cover),
+    photos: record.photos.flatMap((photo) => photoUrl(photo) ?? []),
+    publishedOn: record.publishedOn,
+    sample: record.sample === true,
+  }));
+}
+
+export async function getArticle(locale: Locale, slug: string): Promise<Article | undefined> {
+  return (await getArticles(locale)).find((article) => article.slug === slug);
 }

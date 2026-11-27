@@ -3,7 +3,7 @@
 import { requireAdmin } from "@/lib/admin/session";
 import { PHOTO_BUCKET, photoUrl } from "@/lib/photos";
 
-const folders = ["tours", "home"] as const;
+const folders = ["tours", "home", "gallery", "articles"] as const;
 
 export type PhotoFolder = (typeof folders)[number];
 

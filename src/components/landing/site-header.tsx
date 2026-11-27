@@ -30,7 +30,8 @@ export async function SiteHeader({ path, overPhoto = false }: SiteHeaderProps) {
   const navLinks = [
     { path: "/tours", label: t.nav.tours },
     { path: "/transfer", label: t.nav.transfers },
-    { path: "/plan-your-visit", label: t.nav.plan },
+    { path: "/gallery", label: t.nav.gallery },
+    { path: "/articles", label: t.nav.articles },
     { path: "/how-to-book", label: t.nav.booking },
     { path: "/faq", label: t.nav.faq },
   ].map((link) => ({

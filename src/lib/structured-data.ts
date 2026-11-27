@@ -1,6 +1,7 @@
 // schema.org JSON-LD for search engines, rendered as <script type="application/ld+json"> in pages.
 import { localePath, type Locale } from "@/i18n/config";
 import type { SiteSettings } from "@/lib/site";
+import type { Article, Faq } from "@/lib/content/public";
 import { tourHref, type Tour } from "@/lib/tours";
 
 /** JSON for a <script> tag: "<" is escaped so text from the admin panel can't close the tag. */
@@ -39,6 +40,8 @@ export function homeJsonLd({ site, locale, description, catalogName, tours }: Ho
         "@type": "TravelAgency",
         "@id": businessId,
         name: site.businessName,
+        ...(site.companyName && { legalName: site.companyName }),
+        ...(site.companyName && site.companyUrl && { parentOrganization: { "@type": "Organization", name: site.companyName, url: site.companyUrl } }),
         url: homeUrl,
         description,
         ...(featuredTour?.photo && { image: absolute(featuredTour.photo) }),
@@ -132,5 +135,64 @@ export function tourJsonLd({ site, locale, tour, catalogName }: TourJsonLdInput)
         })),
       },
     ],
+  };
+}
+
+function breadcrumbList(crumbs: { name: string; url: string }[]) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((crumb, index) => ({ "@type": "ListItem", position: index + 1, name: crumb.name, item: crumb.url })),
+  };
+}
+
+type ArticleJsonLdInput = {
+  site: SiteSettings;
+  locale: Locale;
+  article: Article;
+  /** Name of the articles page, for the breadcrumb trail. */
+  listName: string;
+};
+
+/** An article page: the article, published by the business, and the breadcrumb trail back to the home page. */
+export function articleJsonLd({ site, locale, article, listName }: ArticleJsonLdInput) {
+  const absolute = (path: string) => new URL(path, site.siteUrl).toString();
+  const articleUrl = absolute(localePath(locale, `/articles/${article.slug}`));
+  const business = { "@type": "Organization", "@id": absolute("/#business"), name: site.businessName, url: absolute("/") };
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `${articleUrl}#article`,
+        headline: article.title,
+        description: article.excerpt,
+        url: articleUrl,
+        mainEntityOfPage: articleUrl,
+        inLanguage: locale,
+        datePublished: article.publishedOn,
+        ...(article.cover && { image: [article.cover, ...article.photos].map((photo) => absolute(photo)) }),
+        author: business,
+        publisher: business,
+      },
+      breadcrumbList([
+        { name: site.businessName, url: absolute(localePath(locale)) },
+        { name: listName, url: absolute(localePath(locale, "/articles")) },
+        { name: article.title, url: articleUrl },
+      ]),
+    ],
+  };
+}
+
+/** The Questions page, so search engines can show the answers under the result. */
+export function faqJsonLd(faqs: Faq[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
   };
 }
