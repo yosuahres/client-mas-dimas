@@ -1,6 +1,6 @@
 # Admin panel: setup and handover
 
-The admin panel lives at `/admin`. Everything a guest reads can be changed there: tour packages and their photos, the photos on the home page, cars and prices, transfer places and popular routes, reviews, the questions page, contact details, and every heading and sentence on the site.
+The admin panel lives at `/admin`. Everything a guest reads can be changed there: tour packages and their photos, the photos on the home page, cars, transfer places and routes with their prices, reviews, the questions page, contact details, and every heading and sentence on the site.
 
 The admin itself is in **Indonesian** and is laid out for a phone, which is where the client does most of the editing (see [Using the admin](#using-the-admin)). The client writes content in **Indonesian only**. When they save, English and French are translated automatically with Gemini (Google AI Studio, free), with Google Cloud Translation as an optional fallback.
 
@@ -17,6 +17,12 @@ Content, admin logins and photos are all stored in **Supabase** (database, Auth 
    - `supabase/migrations/20261120000000_split_packages_and_car_capacity.sql` (split packages, car luggage capacity and tour price %)
    - `supabase/migrations/20261120010000_car_seat_classes.sql` (5 seater / 7 seater / above 7 groups)
    - `supabase/migrations/20261122000000_home_photos.sql` (the photos the client can swap on /admin/home-photos)
+   - `supabase/migrations/20261127000000_gallery_and_articles.sql` (the Gallery page and the articles, edited on /admin/gallery and /admin/articles)
+   - `supabase/migrations/20261128000000_company_name.sql` (the company name under the footer, PT Jogja Transport Sukses Mandiri)
+   - `supabase/migrations/20261128010000_company_url.sql` (the company name links to jogja-transport.com)
+   - `supabase/migrations/20261128020000_tour_car_prices.sql` (package prices become fixed per car: turns each package's price and each car's % into a price per car, so guests see the same prices, then removes the %. Until it has run, the website shows "Hubungi kami" for every package and saving a package fails)
+   - `supabase/migrations/20261128030000_transfer_route_prices.sql` (transfer prices become fixed per route and car: turns each car's per-km rate into prices for every route, so guests see the same prices, then removes the per-km rates. Until it has run, every transfer shows "Hubungi kami" and saving route prices fails)
+   - `supabase/migrations/20261128040000_drop_day_rates.sql` (removes the cars' day rates, which nothing on the website showed)
    - `supabase/seed.sql` (the 15 packages, 5 cars, 27 places, routes, reviews and questions the site launched with)
 3. **Authentication → Sign In / Providers → Email**: turn **off** "Allow new users to sign up". Admins are only added from `/admin/settings/users` or by you.
 4. **Project Settings → API Keys**: copy the project URL, the publishable key (`sb_publishable_…`) and a secret key (`sb_secret_…`) into the environment (step 3 below).
@@ -105,10 +111,12 @@ Everything in the admin is written in Indonesian: the menu, forms, hints, valida
 | Paket tour | Tour packages | `/admin/tours` |
 | Ulasan | Reviews | `/admin/reviews` |
 | Pertanyaan | Questions (FAQ) | `/admin/faq` |
+| Artikel | Articles: trip stories at `/articles`, newest first by their date | `/admin/articles` |
+| Galeri | Gallery: the photo grid at `/gallery`; upload many photos at once, captions optional | `/admin/gallery` |
 | Teks website | Website text | `/admin/text` |
 | Foto beranda | Home page photos | `/admin/home-photos` |
-| Mobil & harga | Cars & prices | `/admin/fleet` |
-| Tempat & rute | Places & routes | `/admin/transfers` |
+| Mobil | Cars | `/admin/fleet` |
+| Antar jemput | Transfers: routes with prices, and places | `/admin/transfers` |
 | Pengaturan | Settings: Akun (account and password), Data usaha (business details), Pengguna admin (admin users) | `/admin/settings/…` |
 
 The admin uses the website's own Indonesian terms, so the client sees one vocabulary in both: Transport saja / Termasuk akomodasi, Titik antar (drop-off), "5 kursi" for seat groups, sopir, BBM, antar jemput, and "Hubungi kami" where a package has no price. Write any new admin text in Indonesian with these terms.
@@ -132,9 +140,10 @@ The forms avoid asking for anything technical, and show what a change means for 
 - **No web addresses or ids.** Packages, cars and places get theirs from the name when they're added (see [How changes reach the website](#how-changes-reach-the-website)). A package's letter (**Huruf paket**, e.g. A or P2, like Packages A–O on the old site) is the only code left to fill in. It only shows in the admin, to tell packages apart in lists; guests never see it.
 - **Tempat (places): Lokasi di Google Maps.** On the phone: open the place in the Google Maps app, tap **Bagikan** (Share), then **Salin link** (Copy link), and paste it. Numbers such as `-7.7956, 110.3695` also work. If a link only searches for a name, the form asks to long-press the spot until a pin appears and share that instead. When editing, **Lihat posisi yang tersimpan di Google Maps** opens the saved position to check it.
 - **Mobil (cars): Kursi dan muatan.** The seat group guests choose from (**Kelompok di website**), the seat count written in search results (**Jumlah kursi**), and how many people fit with and without suitcases are grouped together. A **Yang dilihat tamu** (what guests see) box sums them up as they're typed, e.g. *Tampil di kelompok 5 kursi, ditulis “7 kursi”. Ditawarkan untuk rombongan sampai 7 orang, atau 5 orang kalau membawa koper.*
-- **Mobil (cars): prices.** Under **Harga paket tour untuk mobil ini (%)** a box shows a real package at that percentage. Under the transfer rates, another shows the first two popular routes with what a guest pays. Both update while typing. The note under the routes says their distances are the site's estimate (straight line × 1.35), so they can differ a little from Google Maps' road distance, and that guests see the same prices as the examples.
+- **Where prices live.** Every price is a fixed number typed by the client; nothing is worked out from a rate or a distance. Package prices are on each package (**Paket tour → Harga**), transfer prices on each route (**Antar jemput**). **Mobil** only describes the cars: seat group, seats, how many people fit. A new car appears with empty boxes in every package and route.
+- **Antar jemput (transfers).** **Rute dan harga** lists the routes; tapping one opens a box per car, grouped by seat group. A route's prices count in both directions (YIA → Malioboro and back). A trip between two places with no route, or a car left empty, shows "Hubungi kami" and still goes to WhatsApp. The list shows each route's lowest price, or "Belum ada harga: Hubungi kami". The distance and time shown to guests are still the site's estimate (straight line × 1.35), only for information.
 - **Teks website (Website text).** Sections start folded, so each tab is a short list of the places text appears (with how many texts each has and how many were changed); tapping one opens its fields. Searching opens every match, and a section with an error opens by itself. Each section's **Lihat** button opens the page where that text appears, in the language being edited. Field labels say where the text shows (e.g. "Label kecil di kartu rute", "Baris di bawah nama paket"), not the name it has in the code.
-- **Paket tour (packages): Harga.** Prices have their own section: **Transport saja**, the **Juga dijual termasuk akomodasi** switch with its price, and the split options (**Pilihan sebagian paket**, marked opsional: a package sold only whole leaves it empty, and the website then shows no "What to visit" picker). An empty price shows "Hubungi kami" (contact us) on the website; there are no separate on-request switches. A **Yang dilihat tamu** box shows both prices as guests will see them, e.g. "Mulai Rp 550.000", "Hubungi kami" or "Tidak dijual".
+- **Paket tour (packages): Harga.** Every price is fixed; nothing is worked out from another price. The section reads top to bottom: **Transport saja: harga paket per mobil** (one box per car, grouped as guests choose them: 5 kursi, 7 kursi, lebih dari 7 kursi), then the split options (**Pilihan sebagian paket**, marked opsional: each has its name and the same per-car boxes; a package sold only whole leaves it empty, and the website then shows no "What to visit" picker), then the **Juga dijual termasuk akomodasi** switch with its one price. Each package has its own boxes, so an Avanza can cost one amount for package A and another for package B. An empty box shows "Hubungi kami" (contact us) for that car; there are no separate on-request switches. On the website a seat group costs its cheapest car with a price, and the "from" price is the lowest across all cars. A **Yang dilihat tamu** box shows the "from" price, the price per seat group and the accommodation price as guests will see them, e.g. "Mulai Rp 550.000", "Hubungi kami" or "Tidak dijual".
 - **Paket tour (packages).** **Kredit foto** (photo credit, only for photos that aren't the client's own) is folded into one line showing the author and licence. It opens by itself if one of its fields has an error.
 
 ### The dashboard
@@ -147,7 +156,13 @@ It ends with a short checklist: whether automatic translation works, whether mor
 
 Saving in the admin updates the website straight away: each save expires the cached copy of what it changed. Edits made directly in the Supabase dashboard show within an hour.
 
-New packages get their page on first visit. Web addresses and ids are made from the name when a package, car or place is added (the package from its English name, e.g. `/en/tours/borobudur-sunrise`; a taken one gets `-2`). They never change afterwards, even when the item is renamed, so old links keep working. To change one, edit the `slug` or `id` in Supabase (a place's routes point at its id).
+New packages and articles get their page on first visit. Web addresses and ids are made from the name when a package, car or place is added (the package from its English name, e.g. `/en/tours/borobudur-sunrise`; a taken one gets `-2`). They never change afterwards, even when the item is renamed, so old links keep working. To change one, edit the `slug` or `id` in Supabase (a place's routes point at its id).
+
+### Writing an article
+
+The seed puts 12 sample gallery photos and 4 sample articles (titled "Sample:" / "Contoh:") in the database, using photos bundled with the site. The client edits or deletes them like any other; delete the sample articles before launch, since search engines will index them while they're published.
+
+The body is plain text, so it translates cleanly: a blank line starts a new paragraph, a line starting `## ` is a subheading, and lines starting `- ` make a bulleted list. The cover photo shows at the top and on the article list; the other photos show in a grid under the body, and open full screen like the Gallery. Photos removed from an article, and the photos of a deleted article or gallery photo, are deleted from storage.
 
 ## Safety rails
 
@@ -164,11 +179,11 @@ The Supabase free plan has no backups and pauses after 7 days without activity. 
 
 Give the client their phone, signed in and on the dashboard (`/admin`), and these five jobs without explaining anything first. Change things back afterwards.
 
-1. Change a package's price (**Paket tour**).
+1. Change a package's price for the Innova only (**Paket tour**), and check the 7 kursi line in **Yang dilihat tamu**.
 2. Hide a package from the website, then show it again.
-3. Add a place from a link copied in the Google Maps app (**Tempat & rute → Tambah tempat**).
+3. Add a place from a link copied in the Google Maps app (**Antar jemput → Tambah tempat**).
 4. Change a sentence on the home page (**Teks website**, tab **Beranda**, then the section it's in), and check it with **Lihat**.
-5. Change a car's per-km rate (**Mobil & harga**) and look at the example prices.
+5. Change the Avanza's price on a transfer route (**Antar jemput**, tap the route), then search that trip on the website, both ways.
 
 Note where they hesitate, tap the wrong thing or ask what something means; those are the next things to fix. Also note whether they start from **Mau mengubah apa?** on the dashboard or from the menu: if nobody uses the list, it can go.
 
